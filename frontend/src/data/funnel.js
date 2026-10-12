@@ -39,8 +39,6 @@ export const TESTIMONIALS = [
 // [status, text] — status: 'good' ✅, 'bad' ❌, 'neutral' 🟠
 export const COMPARISON = [
   [['bad', 'Buying property takes months'], ['good', 'Ownership is immediate, setup takes 7–14 days']],
-  [['bad', 'Large investments, small returns'], ['good', 'Smaller investments, bigger returns']],
-  [['bad', 'Location value can drop rapidly'], ['good', 'Servers are movable and sell internationally']],
   [['bad', 'Bad tenants can skip a month of payment'], ['good', 'Prepayments are mandatory and industry standard']],
   [['bad', 'Late payments and short payments are stressful'], ['good', "Use is limited to the user's prepayment size"]],
   [['bad', 'Evictions are slow, painful and expensive'], ['good', 'No eviction needed, immediate service suspension']],
