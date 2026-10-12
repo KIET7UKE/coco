@@ -39,8 +39,6 @@ export const TESTIMONIALS = [
 // [status, text] — status: 'good' ✅, 'bad' ❌, 'neutral' 🟠
 export const COMPARISON = [
   [['bad', 'Buying property takes months'], ['good', 'Ownership is immediate, setup takes 7–14 days']],
-  [['bad', 'Large investments, small returns'], ['good', 'Smaller investments, bigger returns']],
-  [['bad', 'Location value can drop rapidly'], ['good', 'Servers are movable and sell internationally']],
   [['bad', 'Bad tenants can skip a month of payment'], ['good', 'Prepayments are mandatory and industry standard']],
   [['bad', 'Late payments and short payments are stressful'], ['good', "Use is limited to the user's prepayment size"]],
   [['bad', 'Evictions are slow, painful and expensive'], ['good', 'No eviction needed, immediate service suspension']],
@@ -49,9 +47,9 @@ export const COMPARISON = [
   [['bad', 'Building expansion approvals take years'], ['good', 'No waiting period or approvals needed to expand']],
   [['bad', 'Property is illiquid and slow to sell'], ['good', 'Server sales take 1–2 weeks']],
   [['bad', 'Compliance and maintenance is ongoing'], ['good', 'Data centers manage compliance and maintenance']],
-  [['neutral', 'Takes 2–3 months to get a tenant'], ['neutral', 'Takes 2–3 months to get multiple users']],
-  [['good', 'Appreciation is possible in certain areas'], ['bad', 'Depreciation']],
-  [['good', 'Contract based income'], ['good', 'Contract based income on bare metal servers']],
+  [['bad', 'Takes 2–3 months to get a tenant'], ['good', 'Takes 2–3 months to get 10-50 users per server']],
+  [['good', 'Appreciation is possible'], ['bad', 'Depreciates over 7 years']],
+  [['good', 'Contract based income'], ['good', 'Guaranteed demand']],
   [['bad', 'Capital gains tax when selling'], ['good', 'No capital gains tax']],
 ];
 
