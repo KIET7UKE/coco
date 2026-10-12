@@ -4,6 +4,7 @@ import BlockContent from '../components/blog/BlockContent'
 import BlogShell, { Crumb } from '../components/blog/BlogShell'
 import { posts as localPosts, topics as localTopics } from '../content/catalog'
 import { blocksFromMarkdown } from '../lib/blocks'
+import { blogImage } from '../lib/blogImage'
 import { fetchPost } from '../lib/sanity'
 
 const modules = import.meta.glob('../content/*/*.md', { query: '?raw', import: 'default' })
@@ -17,6 +18,7 @@ function formatDate(value) {
 
 export default function BlogPost() {
   const { topic, slug } = useParams()
+  const imageSrc = blogImage(topic, slug)
   const knownTopic = localTopics.some((item) => item.slug === topic)
   const localMeta = localPosts.find((item) => item.topic === topic && item.slug === slug)
   const [post, setPost] = useState(null)
@@ -101,11 +103,12 @@ export default function BlogPost() {
       description,
       datePublished: post.publishedAt,
       mainEntityOfPage: canonical.href,
+      image: `https://coco.hibarri.com${imageSrc}`,
       author: { '@type': 'Organization', name: 'Hibarri' },
       publisher: { '@type': 'Organization', name: 'CoCo by Hibarri' },
     })
     return () => document.getElementById(id)?.remove()
-  }, [post, slug, topic])
+  }, [imageSrc, post, slug, topic])
 
   if (!knownTopic) {
     return (
@@ -140,6 +143,13 @@ export default function BlogPost() {
           <Crumb topic={topic} topicTitle={topicTitle} />
           <h1 className="mt-3 text-4xl font-bold leading-[1.05] tracking-[-0.03em] sm:text-5xl">{post.title}</h1>
           {post.publishedAt ? <p className="mt-4 text-[13px] text-white/45">{formatDate(post.publishedAt)}</p> : null}
+          <img
+            src={imageSrc}
+            alt={post.title}
+            width={1024}
+            height={1024}
+            className="mt-8 h-auto w-full rounded-2xl border border-white/10 bg-black object-contain"
+          />
           <div className="mt-10">
             <BlockContent value={post.body} />
           </div>

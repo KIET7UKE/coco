@@ -67,1008 +67,1008 @@ export const posts = [
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "render-competitor-coco-cloud-computing",
-    "title": "Render Competitor: Coco Cloud Computing",
-    "description": "Render Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "title": "Render Competitor - Coco Cloud Computing",
+    "description": "Render Competitor - Coco Cloud Computing: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "railway-competitor",
     "title": "Railway Competitor",
-    "description": "Railway Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Railway Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "heroku-competitor",
     "title": "Heroku Competitor",
-    "description": "Heroku Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Heroku Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "hetzner-competitor",
     "title": "Hetzner Competitor",
-    "description": "Hetzner Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Hetzner Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "fly-io-competitor",
     "title": "Fly.io Competitor",
-    "description": "Fly.io Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Fly.io Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "digitalocean-competitor",
     "title": "DigitalOcean Competitor",
-    "description": "DigitalOcean Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "DigitalOcean Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "vultr-alternatives",
     "title": "Vultr Alternatives",
-    "description": "Vultr Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Vultr Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "google-cloud-competitor",
     "title": "Google Cloud Competitor",
-    "description": "Google Cloud Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Google Cloud Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "azure-competitor",
     "title": "Azure Competitor",
-    "description": "Azure Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Azure Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "hyperscalers-list",
     "title": "Hyperscalers List",
-    "description": "Hyperscalers List on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Hyperscalers List: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "vercel-competitor",
     "title": "Vercel Competitor",
-    "description": "Vercel Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Vercel Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "netlify-competitor",
     "title": "Netlify Competitor",
-    "description": "Netlify Competitor on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Netlify Competitor: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "scaleway-alternatives",
     "title": "Scaleway Alternatives",
-    "description": "Scaleway Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Scaleway Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "competitors",
     "topicTitle": "Competitors",
     "slug": "cloudflare-alternatives",
     "title": "Cloudflare Alternatives",
-    "description": "Cloudflare Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloudflare Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "vercel-alternatives",
     "title": "Vercel Alternatives",
-    "description": "Vercel Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Vercel Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "netlify-alternatives",
     "title": "Netlify Alternatives",
-    "description": "Netlify Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Netlify Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "aws-ec2-alternatives",
     "title": "AWS EC2 Alternatives",
-    "description": "AWS EC2 Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AWS EC2 Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "aws-lightsail-alternatives",
     "title": "AWS Lightsail Alternatives",
-    "description": "AWS Lightsail Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AWS Lightsail Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "linode-alternatives",
     "title": "Linode Alternatives",
-    "description": "Linode Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Linode Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "vultr-alternatives",
     "title": "Vultr Alternatives",
-    "description": "Vultr Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Vultr Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "ovhcloud-alternatives",
     "title": "OVHcloud Alternatives",
-    "description": "OVHcloud Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "OVHcloud Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "hetzner-cloud-alternatives",
     "title": "Hetzner Cloud Alternatives",
-    "description": "Hetzner Cloud Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Hetzner Cloud Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "scaleway-alternatives",
     "title": "Scaleway Alternatives",
-    "description": "Scaleway Alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Scaleway Alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "vultr-vs-digitalocean-vs-coco",
     "title": "Vultr vs DigitalOcean vs Coco",
-    "description": "Vultr vs DigitalOcean vs Coco on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Vultr vs DigitalOcean vs Coco: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "hetzner-vs-digitalocean-vs-coco",
     "title": "Hetzner vs DigitalOcean vs Coco",
-    "description": "Hetzner vs DigitalOcean vs Coco on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Hetzner vs DigitalOcean vs Coco: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "render-vs-railway-vs-coco",
     "title": "Render vs Railway vs Coco",
-    "description": "Render vs Railway vs Coco on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Render vs Railway vs Coco: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "railway-vs-fly-io-vs-coco",
     "title": "Railway vs Fly.io vs Coco",
-    "description": "Railway vs Fly.io vs Coco on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Railway vs Fly.io vs Coco: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compare",
     "topicTitle": "Compare",
     "slug": "heroku-vs-hetzner-vs-coco",
     "title": "Heroku vs Hetzner vs Coco",
-    "description": "Heroku vs Hetzner vs Coco on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Heroku vs Hetzner vs Coco: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-python",
     "title": "Best cloud platforms for Python",
-    "description": "Best cloud platforms for Python on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for Python: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-node-js",
     "title": "Best cloud platforms for Node.js",
-    "description": "Best cloud platforms for Node.js on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for Node.js: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-javascript",
     "title": "Best cloud platforms for JavaScript",
-    "description": "Best cloud platforms for JavaScript on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for JavaScript: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-java",
     "title": "Best cloud platforms for Java",
-    "description": "Best cloud platforms for Java on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for Java: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-react",
     "title": "Best cloud platforms for React",
-    "description": "Best cloud platforms for React on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for React: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-tailwind",
     "title": "Best cloud platforms for Tailwind",
-    "description": "Best cloud platforms for Tailwind on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for Tailwind: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-typescript",
     "title": "Best cloud platforms for Typescript",
-    "description": "Best cloud platforms for Typescript on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for Typescript: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-rust",
     "title": "Best cloud platforms for Rust",
-    "description": "Best cloud platforms for Rust on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for Rust: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platform-for-kotlin",
     "title": "Best cloud platform for Kotlin",
-    "description": "Best cloud platform for Kotlin on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platform for Kotlin: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platforms-for-sql",
     "title": "Best cloud platforms for SQL",
-    "description": "Best cloud platforms for SQL on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platforms for SQL: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "supported-languages",
     "topicTitle": "Supported Languages",
     "slug": "best-cloud-platform-for-unity",
     "title": "Best cloud platform for Unity",
-    "description": "Best cloud platform for Unity on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best cloud platform for Unity: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "cloud-application-hosting",
     "title": "Cloud application hosting",
-    "description": "Cloud application hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud application hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "app-hosting-for-developers",
     "title": "App hosting for developers",
-    "description": "App hosting for developers on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "App hosting for developers: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "deploy-applications-online",
     "title": "Deploy applications online",
-    "description": "Deploy applications online on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Deploy applications online: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "backend-hosting",
     "title": "Backend hosting",
-    "description": "Backend hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Backend hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "api-hosting",
     "title": "API hosting",
-    "description": "API hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "API hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "node-js-hosting",
     "title": "Node.js hosting",
-    "description": "Node.js hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Node.js hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "python-application-hosting",
     "title": "Python application hosting",
-    "description": "Python application hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Python application hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "docker-container-hosting",
     "title": "Docker container hosting",
-    "description": "Docker container hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Docker container hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "container-hosting-platform",
     "title": "Container hosting platform",
-    "description": "Container hosting platform on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Container hosting platform: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "background-worker-hosting",
     "title": "Background worker hosting",
-    "description": "Background worker hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Background worker hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "web-application-hosting",
     "title": "Web application hosting",
-    "description": "Web application hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Web application hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "full-stack-application-hosting",
     "title": "Full-stack application hosting",
-    "description": "Full-stack application hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Full-stack application hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "production-application-hosting",
     "title": "Production application hosting",
-    "description": "Production application hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Production application hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "cloud-hosting-for-startups",
     "title": "Cloud hosting for startups",
-    "description": "Cloud hosting for startups on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud hosting for startups: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing",
     "topicTitle": "Cloud Computing",
     "slug": "affordable-application-hosting",
     "title": "Affordable application hosting",
-    "description": "Affordable application hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Affordable application hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "pricing",
     "topicTitle": "Pricing",
     "slug": "pricing-for-vcpu",
     "title": "Pricing for vCPU",
-    "description": "Pricing for vCPU on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Pricing for vCPU: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "pricing",
     "topicTitle": "Pricing",
     "slug": "pricing-for-ram",
     "title": "Pricing for RAM",
-    "description": "Pricing for RAM on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Pricing for RAM: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "pricing",
     "topicTitle": "Pricing",
     "slug": "pricing-for-cloud-competitors",
     "title": "Pricing for Cloud Competitors",
-    "description": "Pricing for Cloud Competitors on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Pricing for Cloud Competitors: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "pricing",
     "topicTitle": "Pricing",
     "slug": "cloud-service-pricing",
     "title": "Cloud Service Pricing",
-    "description": "Cloud Service Pricing on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud Service Pricing: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "pricing",
     "topicTitle": "Pricing",
     "slug": "cloud-service-providers-pricing-comparison",
     "title": "Cloud Service Providers Pricing Comparison",
-    "description": "Cloud Service Providers Pricing Comparison on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud Service Providers Pricing Comparison: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "vcpu-rental",
     "title": "vCPU Rental",
-    "description": "vCPU Rental on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "vCPU Rental: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "cloud-cpu-rental",
     "title": "Cloud CPU rental",
-    "description": "Cloud CPU rental on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud CPU rental: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "rent-cloud-cpu-cores",
     "title": "Rent cloud CPU cores",
-    "description": "Rent cloud CPU cores on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Rent cloud CPU cores: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "cloud-computing-resources",
     "title": "Cloud computing resources",
-    "description": "Cloud computing resources on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud computing resources: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "cloud-ram-hosting",
     "title": "Cloud RAM hosting",
-    "description": "Cloud RAM hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud RAM hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "high-ram-cloud-server",
     "title": "High RAM cloud server",
-    "description": "High RAM cloud server on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "High RAM cloud server: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "high-memory-cloud-instances",
     "title": "High memory cloud instances",
-    "description": "High memory cloud instances on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "High memory cloud instances: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "high-cpu-cloud-servers",
     "title": "High CPU cloud servers",
-    "description": "High CPU cloud servers on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "High CPU cloud servers: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "compute-instances-by-the-hour",
     "title": "Compute instances by the hour",
-    "description": "Compute instances by the hour on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Compute instances by the hour: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "virtual-cpu-hosting",
     "title": "Virtual CPU hosting",
-    "description": "Virtual CPU hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Virtual CPU hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "affordable-vcpu-cloud",
     "title": "Affordable vCPU cloud",
-    "description": "Affordable vCPU cloud on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Affordable vCPU cloud: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "dedicated-cpu-cloud-server",
     "title": "Dedicated CPU cloud server",
-    "description": "Dedicated CPU cloud server on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Dedicated CPU cloud server: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "compute-intensive-workload-hosting",
     "title": "Compute-intensive workload hosting",
-    "description": "Compute-intensive workload hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Compute-intensive workload hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "large-memory-virtual-machines",
     "title": "Large memory virtual machines",
-    "description": "Large memory virtual machines on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Large memory virtual machines: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "cloud-servers-with-dedicated-resources",
     "title": "Cloud servers with dedicated resources",
-    "description": "Cloud servers with dedicated resources on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud servers with dedicated resources: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "compute",
     "topicTitle": "Compute",
     "slug": "cloud-compute-pricing-comparison",
     "title": "Cloud compute pricing comparison",
-    "description": "Cloud compute pricing comparison on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud compute pricing comparison: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "vps-hosting-for-developers",
     "title": "VPS hosting for developers",
-    "description": "VPS hosting for developers on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "VPS hosting for developers: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "cheap-vps-hosting",
     "title": "Cheap VPS hosting",
-    "description": "Cheap VPS hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cheap VPS hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "best-vps-hosting-platforms",
     "title": "Best VPS hosting platforms",
-    "description": "Best VPS hosting platforms on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Best VPS hosting platforms: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "dedicated-server-rental",
     "title": "Dedicated server rental",
-    "description": "Dedicated server rental on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Dedicated server rental: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "bare-metal-cloud",
     "title": "Bare metal cloud",
-    "description": "Bare metal cloud on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Bare metal cloud: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "bare-metal-server-rental",
     "title": "Bare metal server rental",
-    "description": "Bare metal server rental on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Bare metal server rental: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "dedicated-cpu-server-rental",
     "title": "Dedicated CPU server rental",
-    "description": "Dedicated CPU server rental on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Dedicated CPU server rental: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "linux-dedicated-server",
     "title": "Linux dedicated server",
-    "description": "Linux dedicated server on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Linux dedicated server: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "remote-dedicated-server",
     "title": "Remote dedicated server",
-    "description": "Remote dedicated server on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Remote dedicated server: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "managed-bare-metal-hosting",
     "title": "Managed bare metal hosting",
-    "description": "Managed bare metal hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Managed bare metal hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "cloud-server-with-root-access",
     "title": "Cloud server with root access",
-    "description": "Cloud server with root access on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud server with root access: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "vps",
     "topicTitle": "VPS",
     "slug": "virtual-machine-hosting",
     "title": "Virtual machine hosting",
-    "description": "Virtual machine hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Virtual machine hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "gpu-cloud-hosting",
     "title": "GPU cloud hosting",
-    "description": "GPU cloud hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "GPU cloud hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "rent-gpu-servers",
     "title": "Rent GPU servers",
-    "description": "Rent GPU servers on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Rent GPU servers: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "gpu-compute-by-the-hour",
     "title": "GPU compute by the hour",
-    "description": "GPU compute by the hour on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "GPU compute by the hour: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "ai-infrastructure-provider",
     "title": "AI infrastructure provider",
-    "description": "AI infrastructure provider on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI infrastructure provider: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "ai-cloud-computing",
     "title": "AI cloud computing",
-    "description": "AI cloud computing on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI cloud computing: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "ai-inference-hosting",
     "title": "AI inference hosting",
-    "description": "AI inference hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI inference hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "llm-inference-hosting",
     "title": "LLM inference hosting",
-    "description": "LLM inference hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "LLM inference hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "gpu-inference-endpoints",
     "title": "GPU inference endpoints",
-    "description": "GPU inference endpoints on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "GPU inference endpoints: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "affordable-gpu-cloud",
     "title": "Affordable GPU cloud",
-    "description": "Affordable GPU cloud on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Affordable GPU cloud: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "gpu-servers-for-startups",
     "title": "GPU servers for startups",
-    "description": "GPU servers for startups on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "GPU servers for startups: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "gpu-hosting-for-ai-agents",
     "title": "GPU hosting for AI agents",
-    "description": "GPU hosting for AI agents on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "GPU hosting for AI agents: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "machine-learning-compute",
     "title": "Machine learning compute",
-    "description": "Machine learning compute on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Machine learning compute: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "deep-learning-gpu-servers",
     "title": "Deep learning GPU servers",
-    "description": "Deep learning GPU servers on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Deep learning GPU servers: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "ai-model-deployment-platform",
     "title": "AI model deployment platform",
-    "description": "AI model deployment platform on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI model deployment platform: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "private-gpu-cloud",
     "title": "Private GPU cloud",
-    "description": "Private GPU cloud on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Private GPU cloud: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "nvidia-gpu-cloud-alternatives",
     "title": "NVIDIA GPU cloud alternatives",
-    "description": "NVIDIA GPU cloud alternatives on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "NVIDIA GPU cloud alternatives: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "vgpu-cloud-hosting",
     "title": "vGPU cloud hosting",
-    "description": "vGPU cloud hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "vGPU cloud hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "neocloud",
     "topicTitle": "NeoCloud",
     "slug": "ai-neocloud-provider",
     "title": "AI neocloud provider",
-    "description": "AI neocloud provider on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI neocloud provider: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "docker-hosting",
     "title": "Docker hosting",
-    "description": "Docker hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Docker hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "kubernetes-hosting",
     "title": "Kubernetes hosting",
-    "description": "Kubernetes hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Kubernetes hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "cloud-hosting-for-apis",
     "title": "Cloud hosting for APIs",
-    "description": "Cloud hosting for APIs on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud hosting for APIs: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "postgresql-hosting",
     "title": "PostgreSQL hosting",
-    "description": "PostgreSQL hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "PostgreSQL hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "redis-hosting",
     "title": "Redis hosting",
-    "description": "Redis hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Redis hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "cloud-hosting-for-microservices",
     "title": "Cloud hosting for microservices",
-    "description": "Cloud hosting for microservices on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud hosting for microservices: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "ci-cd-build-infrastructure",
     "title": "CI/CD build infrastructure",
-    "description": "CI/CD build infrastructure on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "CI/CD build infrastructure: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "self-hosted-application-hosting",
     "title": "Self-hosted application hosting",
-    "description": "Self-hosted application hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Self-hosted application hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "sandbox-environments-for-developers",
     "title": "Sandbox environments for developers",
-    "description": "Sandbox environments for developers on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Sandbox environments for developers: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "cloud-hosting-for-background-jobs",
     "title": "Cloud hosting for background jobs",
-    "description": "Cloud hosting for background jobs on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud hosting for background jobs: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "websocket-hosting",
     "title": "WebSocket hosting",
-    "description": "WebSocket hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "WebSocket hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "agent-runtime-infrastructure",
     "title": "Agent runtime infrastructure",
-    "description": "Agent runtime infrastructure on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Agent runtime infrastructure: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-hosting-for-developers",
     "topicTitle": "Cloud Hosting for Developers",
     "slug": "ai-agent-deployment-infrastructure",
     "title": "AI agent deployment infrastructure",
-    "description": "AI agent deployment infrastructure on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI agent deployment infrastructure: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cost-effective-cloud",
     "topicTitle": "Cost Effective Cloud",
     "slug": "cheap-cloud-computing",
     "title": "Cheap cloud computing",
-    "description": "Cheap cloud computing on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cheap cloud computing: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cost-effective-cloud",
     "topicTitle": "Cost Effective Cloud",
     "slug": "low-cost-cloud-servers",
     "title": "Low-cost cloud servers",
-    "description": "Low-cost cloud servers on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Low-cost cloud servers: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cost-effective-cloud",
     "topicTitle": "Cost Effective Cloud",
     "slug": "cloud-hosting-cost-comparison",
     "title": "Cloud hosting cost comparison",
-    "description": "Cloud hosting cost comparison on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud hosting cost comparison: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cost-effective-cloud",
     "topicTitle": "Cost Effective Cloud",
     "slug": "reduce-cloud-computing-costs",
     "title": "Reduce cloud computing costs",
-    "description": "Reduce cloud computing costs on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Reduce cloud computing costs: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cost-effective-cloud",
     "topicTitle": "Cost Effective Cloud",
     "slug": "lowest-cost-cloud-computing-companies",
     "title": "Lowest Cost Cloud Computing Companies",
-    "description": "Lowest Cost Cloud Computing Companies on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Lowest Cost Cloud Computing Companies: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "cloud-hosting-for-ai-agents",
     "title": "Cloud hosting for AI agents",
-    "description": "Cloud hosting for AI agents on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud hosting for AI agents: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "ai-agent-infrastructure",
     "title": "AI agent infrastructure",
-    "description": "AI agent infrastructure on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI agent infrastructure: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "cloud-computing-for-bots",
     "title": "Cloud computing for bots",
-    "description": "Cloud computing for bots on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud computing for bots: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "hosting-autonomous-ai-agents",
     "title": "Hosting autonomous AI agents",
-    "description": "Hosting autonomous AI agents on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Hosting autonomous AI agents: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "infrastructure-for-agentic-ai",
     "title": "Infrastructure for agentic AI",
-    "description": "Infrastructure for agentic AI on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Infrastructure for agentic AI: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "ai-agent-runtime-hosting",
     "title": "AI agent runtime hosting",
-    "description": "AI agent runtime hosting on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI agent runtime hosting: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "cloud-servers-for-automation",
     "title": "Cloud servers for automation",
-    "description": "Cloud servers for automation on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud servers for automation: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "hosting-multiple-ai-agents",
     "title": "Hosting multiple AI agents",
-    "description": "Hosting multiple AI agents on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Hosting multiple AI agents: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "background-compute-for-ai-agents",
     "title": "Background compute for AI agents",
-    "description": "Background compute for AI agents on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Background compute for AI agents: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "ai-agent-sandbox-infrastructure",
     "title": "AI agent sandbox infrastructure",
-    "description": "AI agent sandbox infrastructure on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "AI agent sandbox infrastructure: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "scalable-compute-for-ai-workloads",
     "title": "Scalable compute for AI workloads",
-    "description": "Scalable compute for AI workloads on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Scalable compute for AI workloads: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "api-infrastructure-for-ai-agents",
     "title": "API infrastructure for AI agents",
-    "description": "API infrastructure for AI agents on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "API infrastructure for AI agents: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "cloud-computing-for-bots",
     "topicTitle": "Cloud Computing for Bots",
     "slug": "cloud-infrastructure-for-autonomous-systems",
     "title": "Cloud infrastructure for autonomous systems",
-    "description": "Cloud infrastructure for autonomous systems on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Cloud infrastructure for autonomous systems: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "countries",
     "topicTitle": "Countries where Coco Hosts Servers",
     "slug": "united-states",
     "title": "United States",
-    "description": "United States on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "United States: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "countries",
     "topicTitle": "Countries where Coco Hosts Servers",
     "slug": "united-kingdom",
     "title": "United Kingdom",
-    "description": "United Kingdom on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "United Kingdom: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "countries",
     "topicTitle": "Countries where Coco Hosts Servers",
     "slug": "canada",
     "title": "Canada",
-    "description": "Canada on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Canada: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "countries",
     "topicTitle": "Countries where Coco Hosts Servers",
     "slug": "europe",
     "title": "Europe",
-    "description": "Europe on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Europe: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "countries",
     "topicTitle": "Countries where Coco Hosts Servers",
     "slug": "india",
     "title": "India",
-    "description": "India on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "India: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "countries",
     "topicTitle": "Countries where Coco Hosts Servers",
     "slug": "australia",
     "title": "Australia",
-    "description": "Australia on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "Australia: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "countries",
     "topicTitle": "Countries where Coco Hosts Servers",
     "slug": "new-zealand",
     "title": "New Zealand",
-    "description": "New Zealand on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "New Zealand: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   },
   {
     "topic": "countries",
     "topicTitle": "Countries where Coco Hosts Servers",
     "slug": "south-africa",
     "title": "South Africa",
-    "description": "South Africa on Coco: 24 GB RAM, 24 vCPU, and up to 48 replicas for $20 a month in credits, then $0.015 per vCPU hour."
+    "description": "South Africa: compare Coco's 24 GB RAM, 24 vCPU, 48-replica offer, $20 monthly credits, regions, automation, and AI inference."
   }
 ]
