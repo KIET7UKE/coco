@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Banknote, CreditCard, ShieldCheck, CircleCheck, Clock, Info, ArrowLeft, Copy, Check } from 'lucide-react';
+import { Banknote, CreditCard, ShieldCheck, CircleCheck, Clock, Info, ArrowLeft, Copy, Check, Building2, Truck } from 'lucide-react';
 import FunnelLayout from '../../components/funnel/FunnelLayout';
 import CallbackButton from '../../components/funnel/CallbackButton';
 import { Field } from '../../components/funnel/Modal';
-import { getCatalog, getLocation, locationLabel } from '../../data/catalog';
+import { getCatalog, getLocation, locationLabel, shippingAddressLines } from '../../data/catalog';
 import { quote, selectionFromQuery, selectionQuery, RACK_MONTHS } from '../../lib/pricing';
 import { getRegistration } from '../../lib/broadcast';
 import { submitLead } from '../../lib/leads';
+import { orderRecord, saveOrder } from '../../lib/orders';
 import { useFormTracking } from '../../hooks/useFormTracking';
 import { BANK, ENDPOINTS } from '../../config/funnel';
 import { FAQ } from '../../data/funnel';
@@ -39,12 +40,18 @@ function Summary({ model, location, q }) {
       <div className="text-[12px] font-semibold uppercase tracking-widest text-coco-violet">Order summary</div>
       <div className="mt-1 text-[16px] font-bold leading-snug">{q.qty} × {model.name}</div>
       <div className="text-[12.5px] text-[var(--muted)]">
-        {locationLabel(location)} · {q.usedU}U of rack space{q.rackU !== q.usedU ? ` (full ${q.rackU}U rack reserved)` : ''}
+        {locationLabel(location)} · {q.usedU}U of rack space{q.rackU !== q.usedU ? ` (${q.rackU}U reserved)` : ''}
       </div>
       <dl className="mt-4 divide-y divide-[var(--line)] text-[13.5px]">
         <div className="flex justify-between py-2.5"><dt className="text-[var(--muted)]">Servers ({usd(q.unitPrice)} each)</dt><dd className="tabular">{usd(q.serversSubtotal)}</dd></div>
-        <div className="flex justify-between py-2.5"><dt className="text-[var(--muted)]">Volume discount ({Math.round(q.discountRate * 100)}%)</dt><dd className="tabular text-emerald-500">− {usd(q.discount)}</dd></div>
+        {q.discount > 0 && (
+          <div className="flex justify-between py-2.5"><dt className="text-[var(--muted)]">Volume discount ({Math.round(q.discountRate * 100)}%)</dt><dd className="tabular text-emerald-500">− {usd(q.discount)}</dd></div>
+        )}
         <div className="flex justify-between py-2.5"><dt className="text-[var(--muted)]">Rack space, {RACK_MONTHS} months</dt><dd className="tabular">{usd(q.rackTotal)}</dd></div>
+        <div className="flex justify-between py-2.5">
+          <dt className="flex items-center gap-1.5 text-[var(--muted)]"><Truck size={14} className="text-emerald-500" />Shipping to {location.city}</dt>
+          <dd className="font-semibold text-emerald-500">Free</dd>
+        </div>
         <div className="flex items-end justify-between pt-4"><dt className="font-semibold">Total</dt><dd className="text-[26px] font-bold leading-none tracking-tight tabular">{usd(q.total)}</dd></div>
       </dl>
       <div className="mt-4 rounded-2xl bg-[var(--surface-2)] px-4 py-3 text-[12.5px] text-[var(--muted)]">
@@ -84,7 +91,9 @@ function Confirmation({ order, q }) {
       <div className="text-center">
         <CircleCheck size={44} className="mx-auto text-emerald-500" />
         <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Order {order.reference} received</h1>
-        <p className="mt-2 text-[15px] text-[var(--muted)]">We'll email your invoice to {order.customer.email}. Your dashboard is ready now.</p>
+        <p className="mt-2 text-[15px] text-[var(--muted)]">
+          We'll email your invoice to {order.customer.email}. Your {order.quote.qty === 1 ? 'server is' : 'servers are'} already in your dashboard under {order.dataCenter.provider}, {order.dataCenter.city}.
+        </p>
       </div>
 
       <div className="mt-8 rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-6">
@@ -144,10 +153,15 @@ const PAID_COPY = {
   unverified: { title: 'Confirming your payment', icon: Clock, tone: 'text-coco-violet' },
 };
 
-function PaidConfirmation({ reference, sessionId, email: fallbackEmail, retryTo }) {
+function PaidConfirmation({ reference, sessionId, email: fallbackEmail, retryTo, order }) {
   const timeline = FAQ[0].items.slice(2);
   const payment = usePaymentStatus(sessionId);
   const email = payment.email || fallbackEmail;
+
+  useEffect(() => {
+    if (order && (payment.status === 'paid' || payment.status === 'processing')) saveOrder({ ...order, payment: payment.status });
+  }, [order, payment.status]);
+
   if (payment.status === 'checking') {
     return <div className="mx-auto h-64 max-w-2xl animate-pulse rounded-3xl border border-[var(--line)] bg-[var(--surface)]" />;
   }
@@ -210,12 +224,6 @@ export default function CheckoutPage({ funnel = false }) {
     email: lead?.email ?? '',
     phone: lead?.phone ?? '',
     company: '',
-    line1: '',
-    line2: '',
-    city: '',
-    region: '',
-    postal: '',
-    country: lead?.location?.country || '',
   });
   const [method, setMethod] = useState(payment === 'cancelled' ? 'card' : 'wire');
   const [agree, setAgree] = useState(false);
@@ -234,8 +242,13 @@ export default function CheckoutPage({ funnel = false }) {
   }, [order]);
 
   const model = catalog?.find((m) => m.id === selection.model) ?? null;
-  const q = model ? quote(model, selection.pkg, selection.qty) : null;
+  const q = model ? quote(model, selection.pkg) : null;
   const backTo = funnel ? '/live/offer' : '/packages';
+  const paidOrder = useMemo(() => {
+    const m = catalog?.find((x) => x.id === selection.model);
+    if (!m || !paidReference) return null;
+    return orderRecord({ reference: paidReference, method: 'card', location, model: m, pkg: selection.pkg, q: quote(m, selection.pkg) });
+  }, [catalog, selection, paidReference, location]);
   const set = (k) => (e) => {
     setForm({ ...form, [k]: e.target.value });
     if (errors[k]) setErrors({ ...errors, [k]: undefined });
@@ -247,9 +260,6 @@ export default function CheckoutPage({ funnel = false }) {
     if (!form.name.trim()) next.name = 'Required';
     if (!EMAIL.test(form.email.trim())) next.email = 'Enter a valid email';
     if (form.phone.replace(/\D/g, '').length < 7) next.phone = 'Enter a valid phone number';
-    ['line1', 'city', 'postal', 'country'].forEach((k) => {
-      if (!form[k].trim()) next[k] = 'Required';
-    });
     if (!agree) next.agree = 'Please confirm to continue';
     setErrors(next);
     if (Object.keys(next).length) {
@@ -267,8 +277,8 @@ export default function CheckoutPage({ funnel = false }) {
       model: { id: model.id, name: model.name, supplier: model.supplier, supplierPrice: model.supplierPrice },
       quote: q,
       customer: { name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim(), company: form.company.trim() },
-      address: { line1: form.line1, line2: form.line2, city: form.city, region: form.region, postal: form.postal, country: form.country },
-      dataCenter: { id: location.id, provider: location.provider, city: location.city, region: location.region, country: location.countryName },
+      shipping: { cost: 0, address: { name: `${location.provider}, ${location.facility}`, ...location.address } },
+      dataCenter: { id: location.id, provider: location.provider, facility: location.facility, city: location.city, region: location.region, country: location.countryName },
     };
     await submitLead('server-order', payload);
 
@@ -293,6 +303,7 @@ export default function CheckoutPage({ funnel = false }) {
       setBusy(false);
       return;
     }
+    saveOrder(orderRecord({ reference: payload.reference, method, payment: 'awaiting', location, model, pkg: selection.pkg, q }));
     setOrder(payload);
     setBusy(false);
   };
@@ -310,6 +321,7 @@ export default function CheckoutPage({ funnel = false }) {
         sessionId={params.get('session_id')}
         email={lead?.email}
         retryTo={`${funnel ? '/live/checkout' : '/checkout'}?${selectionQuery(selection)}`}
+        order={paidOrder}
       />,
     );
   }
@@ -343,15 +355,22 @@ export default function CheckoutPage({ funnel = false }) {
             </div>
           </Section>
 
-          <Section title="Delivery address" sub={`Servers ship directly to ${location.provider} in ${location.city}, ${location.region}. This address goes on your ownership papers and invoices.`}>
-            <div className="grid gap-3.5 sm:grid-cols-2">
-              <Field className="sm:col-span-2" label="Address" autoComplete="address-line1" value={form.line1} onChange={set('line1')} error={errors.line1} />
-              <Field className="sm:col-span-2" label="Apartment, suite, etc. (optional)" autoComplete="address-line2" value={form.line2} onChange={set('line2')} />
-              <Field label="City" autoComplete="address-level2" value={form.city} onChange={set('city')} error={errors.city} />
-              <Field label="State / province" autoComplete="address-level1" value={form.region} onChange={set('region')} />
-              <Field label="Postal code" autoComplete="postal-code" value={form.postal} onChange={set('postal')} error={errors.postal} />
-              <Field label="Country" autoComplete="country-name" value={form.country} onChange={set('country')} error={errors.country} />
+          <Section title="Shipping address" sub="Your servers ship straight from the supplier to the data center you chose, so there's no address to enter.">
+            <div className="flex items-start gap-3.5 rounded-2xl border border-[var(--line)] bg-[var(--surface-2)] p-4">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-coco-purple/15 text-coco-violet"><Building2 size={18} /></span>
+              <address className="min-w-0 flex-1 text-[14px] not-italic leading-relaxed">
+                {shippingAddressLines(location).map((line, i) => (
+                  <span key={line} className={`block ${i === 0 ? 'font-semibold' : 'text-[var(--muted)]'}`}>{line}</span>
+                ))}
+              </address>
+              <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[12px] font-semibold text-emerald-500">
+                <Truck size={13} /> Free shipping
+              </span>
             </div>
+            <p className="mt-3 flex items-start gap-1.5 text-[12.5px] text-[var(--faint)]">
+              <Info size={13} className="mt-0.5 shrink-0" />
+              Wrong data center? <Link to={backTo} className="font-medium text-coco-violet hover:underline">Change location</Link>
+            </p>
           </Section>
 
           <Section title="Payment method">

@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-import { Tag, Server, Percent, Boxes } from 'lucide-react';
+import { Tag, Server, Truck, Boxes } from 'lucide-react';
 import { Reveal } from '../ui/motion';
 import PackageBuilder from './PackageBuilder';
-import { selectionQuery, RACK_PER_U_MONTH, RACK_MONTHS, FULL_RACK_U, MIN_SERVERS } from '../../lib/pricing';
+import { selectionQuery, RACK_PER_U_MONTH, RACK_MONTHS, HALF_RACK_U, FULL_RACK_U } from '../../lib/pricing';
 import { usd } from '../../data/packages';
 
 const RULES = [
   { icon: Tag, t: 'Supplier price + 10%', d: 'Live Dell pricing for your chosen data center. Our 10% covers sourcing, setup and configuration, so there are no setup fees.' },
-  { icon: Server, t: `${usd(RACK_PER_U_MONTH)} per U a month`, d: `Rack space is 1U per server (2U servers use 2U), paid ${RACK_MONTHS} months up front.` },
-  { icon: Percent, t: '10% off at 5, 15% off at 10', d: 'Volume discounts apply to the server price. Rack space is billed at the standard rate.' },
-  { icon: Boxes, t: `${MIN_SERVERS} servers or a full rack`, d: `Start with ${MIN_SERVERS} servers, choose your own quantity, or reserve a full ${FULL_RACK_U}U rack.` },
+  { icon: Server, t: `${usd(RACK_PER_U_MONTH)} per U a month`, d: `Rack space is paid ${RACK_MONTHS} months up front. Volume discounts of 10% at 5 servers and 15% at 10 apply to the server price.` },
+  { icon: Truck, t: 'Free shipping', d: 'Servers ship free, straight from the supplier to your chosen data center. Nothing is ever delivered to your home or office.' },
+  { icon: Boxes, t: 'From 1 server to a full rack', d: `Choose 1U, 2U, 4U, a half rack (${HALF_RACK_U}U) or a full rack (${FULL_RACK_U}U). We fit as many of your chosen server as the space holds.` },
 ];
 
 export function PricingRules() {

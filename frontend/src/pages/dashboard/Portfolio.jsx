@@ -5,9 +5,10 @@ import { Cpu, Gauge, Users, Server, ArrowRight, CircleDollarSign, CalendarClock,
 import { Card, CardHeader, PageHeader, Stat, Button, Segmented, page } from '../../components/dashboard/ui';
 import { AreaChart, Bars, Ring } from '../../components/dashboard/charts';
 import { ServersTable, CustomersTable } from '../../components/dashboard/tables';
-import { PORTFOLIO, DAILY_REVENUE, MONTHLY_REVENUE, SERVERS, CUSTOMERS, ACTIVITY, PARTNER } from '../../data/dashboard';
+import { PORTFOLIO, DAILY_REVENUE, MONTHLY_REVENUE, CUSTOMERS, ACTIVITY, PARTNER } from '../../data/dashboard';
 import { usd } from '../../data/packages';
 import { Counter } from '../../components/ui/motion';
+import { useOrders, useServers, orderStatus } from '../../lib/orders';
 
 const ACTIVITY_ICON = { pay: CreditCard, alert: TriangleAlert, user: UserRound, server: Server, order: PackageCheck };
 
@@ -20,6 +21,16 @@ export default function Portfolio() {
   const navigate = useNavigate();
   const [range, setRange] = useState('30 days');
   const p = PORTFOLIO;
+  const servers = useServers();
+  const orders = useOrders();
+  const activity = [
+    ...orders.map((o) => ({
+      icon: 'order',
+      text: `Order ${o.reference}: ${o.qty} × ${o.model.name} for ${o.dataCenter.provider}, ${o.dataCenter.city} (${orderStatus(o).toLowerCase()})`,
+      time: new Date(o.placedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    })),
+    ...ACTIVITY,
+  ].slice(0, 6);
   const change = ((p.thisMonthRevenue - p.lastMonthRevenue) / p.lastMonthRevenue) * 100;
   const dayLabels = DAILY_REVENUE.map((_, i) => {
     const d = new Date();
@@ -132,9 +143,9 @@ export default function Portfolio() {
           title="Servers"
           sub="Click a server to see full hardware, utilization and revenue detail"
           icon={Server}
-          action={<Link to="/dashboard/servers" className="text-[13px] font-medium text-coco-lilac hover:text-white">View all {p.activeServers}</Link>}
+          action={<Link to="/dashboard/servers" className="text-[13px] font-medium text-coco-lilac hover:text-white">View all {servers.length}</Link>}
         />
-        <div className="mt-3"><ServersTable servers={SERVERS.slice(0, 3)} /></div>
+        <div className="mt-3"><ServersTable servers={servers.slice(0, 3)} /></div>
       </Card>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
@@ -150,7 +161,7 @@ export default function Portfolio() {
         <Card>
           <CardHeader title="Recent activity" sub="Across your servers" />
           <ul className="mt-3 space-y-1 px-3 pb-4">
-            {ACTIVITY.map((a, i) => {
+            {activity.map((a, i) => {
               const Icon = ACTIVITY_ICON[a.icon];
               return (
                 <motion.li

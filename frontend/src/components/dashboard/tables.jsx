@@ -24,6 +24,7 @@ export function ServersTable({ servers }) {
                   <span className="truncate text-[14px] font-semibold">Server #{s.id} <span className="font-normal text-white/45">· {s.location}</span></span>
                   <span className="shrink-0 text-[14px] font-semibold tabular">{usd(s.revenue)}</span>
                 </span>
+                <span className="mt-0.5 block truncate text-[11.5px] text-white/40">{s.datacenter}</span>
                 <span className="mt-0.5 block truncate font-mono text-[11.5px] text-white/50">
                   {s.cpu} · {s.ram}{s.gpu ? ` · ${s.gpu}` : ''}
                 </span>
@@ -39,7 +40,7 @@ export function ServersTable({ servers }) {
         ))}
       </MobileList>
       <div className="hidden md:block">
-        <Table head={['Server', 'Location', 'CPU', 'RAM', 'GPU', 'Status', 'Utilization', '>Revenue', '']}>
+        <Table head={['Server', 'Data center', 'CPU', 'RAM', 'GPU', 'Status', 'Utilization', '>Revenue', '']}>
           {servers.map((s) => (
             <tr
               key={s.id}
@@ -56,7 +57,10 @@ export function ServersTable({ servers }) {
                   Server #{s.id}
                 </span>
               </td>
-              <td className="px-5 py-3.5 text-white/70">{s.location}</td>
+              <td className="px-5 py-3.5">
+                <span className="block whitespace-nowrap text-white/80">{s.location}</span>
+                <span className="block whitespace-nowrap text-[11.5px] text-white/40">{s.datacenter.split(' · ')[0]}</span>
+              </td>
               <td className="px-5 py-3.5 font-mono text-[12.5px] text-white/70">{s.cpu}</td>
               <td className="px-5 py-3.5 font-mono text-[12.5px] text-white/70">{s.ram}</td>
               <td className="whitespace-nowrap px-5 py-3.5 text-white/70">{s.gpu ?? <span className="text-white/30">—</span>}</td>

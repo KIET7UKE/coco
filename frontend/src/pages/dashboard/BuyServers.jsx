@@ -6,15 +6,38 @@ import { Card, CardHeader, PageHeader, Button, page } from '../../components/das
 import CheckoutModal from '../../components/CheckoutModal';
 import { SERVER_PACKAGES, usd } from '../../data/packages';
 import { ORDERS, ORDER_STEPS } from '../../data/dashboard';
+import { useOrders, orderStatus, orderStep } from '../../lib/orders';
+
+const DEMO_NOTE = (
+  <>
+    Your server is being racked in Ashburn. Burn-in testing starts next, then it goes live and starts earning. Expected online: <span className="font-semibold text-white">Oct 9, 2026</span>.
+  </>
+);
+
+const trackerFor = (o) => ({
+  id: o.reference,
+  package: `${o.qty} × ${o.model.name}`,
+  placed: new Date(o.placedAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+  location: `${o.dataCenter.provider}, ${o.dataCenter.city}`,
+  amount: o.total,
+  step: orderStep(o),
+  status: orderStatus(o),
+  note: (
+    <>
+      {o.payment === 'paid' ? 'Payment received. We are ordering your servers from Dell' : 'As soon as your payment lands we order your servers from Dell'}, and they ship free to{' '}
+      <span className="font-semibold text-white">{o.dataCenter.shipTo.slice(0, 3).join(', ')}</span>.
+    </>
+  ),
+});
 
 function OrderTracker({ order }) {
   return (
-    <Card>
+    <Card className="mb-4">
       <CardHeader
         title={`Order ${order.id} · ${order.package}`}
         sub={`Placed ${order.placed} · ${order.location} · ${usd(order.amount)}`}
         icon={Truck}
-        action={<span className="rounded-full bg-coco-purple/15 px-2.5 py-1 text-[12px] font-medium text-coco-lilac">In progress</span>}
+        action={<span className="rounded-full bg-coco-purple/15 px-2.5 py-1 text-[12px] font-medium text-coco-lilac">{order.status ?? 'In progress'}</span>}
       />
       <div className="px-4 pb-5 pt-7 sm:px-5 sm:pb-6">
         <div className="relative flex justify-between">
@@ -44,9 +67,7 @@ function OrderTracker({ order }) {
             );
           })}
         </div>
-        <p className="mt-6 rounded-xl bg-white/[0.03] px-4 py-3 text-[12.5px] text-white/55">
-          Your server is being racked in {order.location}. Burn-in testing starts next, then it goes live and starts earning. Expected online: <span className="font-semibold text-white">Oct 9, 2026</span>.
-        </p>
+        <p className="mt-6 rounded-xl bg-white/[0.03] px-4 py-3 text-[12.5px] text-white/55">{order.note ?? DEMO_NOTE}</p>
       </div>
     </Card>
   );
@@ -54,6 +75,7 @@ function OrderTracker({ order }) {
 
 export default function BuyServers() {
   const [buying, setBuying] = useState(null);
+  const orders = useOrders();
 
   return (
     <motion.div {...page}>
@@ -62,6 +84,7 @@ export default function BuyServers() {
         sub="Pick a package and pay securely. We procure, rack and manage it, then it shows up in your portfolio."
       />
 
+      {orders.map((o) => <OrderTracker key={o.reference} order={trackerFor(o)} />)}
       {ORDERS.map((o) => <OrderTracker key={o.id} order={o} />)}
 
       <div className="mt-8 mb-4 flex items-center gap-2 text-[15px] font-semibold"><Package size={16} className="text-coco-lilac" /> Available packages</div>

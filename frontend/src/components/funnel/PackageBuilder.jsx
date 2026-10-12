@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView } from 'framer-motion';
-import { ArrowRight, Check, Cpu, HardDrive, MapPin, MemoryStick, Minus, Network, Plus, Info, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Cpu, HardDrive, MapPin, MemoryStick, Network, Info, Sparkles, Truck } from 'lucide-react';
 import ServerArt from './ServerArt';
 import { DEFAULT_LOCATION, LOCATIONS, getCatalog, getLocation, locationLabel } from '../../data/catalog';
-import { PACKAGE_TYPES, MIN_SERVERS, RACK_MONTHS, RACK_PER_U_MONTH, COCO_FEE, MARKUP, quote, serversPerRack } from '../../lib/pricing';
+import {
+  PACKAGE_TYPES, DEFAULT_PACKAGE, RACK_MONTHS, RACK_PER_U_MONTH, COCO_FEE, MARKUP,
+  quote, fitsPackage, smallestPackageFor, packageQuantity, volumeDiscount,
+} from '../../lib/pricing';
 import { usd } from '../../data/packages';
 import { EASE } from '../ui/motion';
 
@@ -83,8 +86,7 @@ export default function PackageBuilder({ ctaLabel = 'Continue to checkout', onCo
   const [locationId, setLocationId] = useState(initial.location || DEFAULT_LOCATION);
   const [catalog, setCatalog] = useState(null);
   const [modelId, setModelId] = useState(initial.model || null);
-  const [pkg, setPkg] = useState(initial.pkg || 'five');
-  const [qty, setQty] = useState(initial.qty || 10);
+  const [pkgChoice, setPkg] = useState(initial.pkg || DEFAULT_PACKAGE);
   const root = useRef(null);
   const inView = useInView(root, { margin: '0px 0px -20% 0px' });
 
@@ -99,10 +101,12 @@ export default function PackageBuilder({ ctaLabel = 'Continue to checkout', onCo
 
   const location = getLocation(locationId);
   const model = catalog?.find((m) => m.id === modelId) ?? catalog?.[0] ?? null;
-  const q = model ? quote(model, pkg, qty) : null;
-  const unlockTen = q && pkg !== 'rack' && q.qty < 10;
+  // A 2U server can't go in a 1U package, so fall back to the smallest package it fits.
+  const pkg = model && !fitsPackage(model, pkgChoice) ? smallestPackageFor(model).id : pkgChoice;
+  const q = model ? quote(model, pkg) : null;
+  const upgrade = q && PACKAGE_TYPES.find((p) => volumeDiscount(packageQuantity(model, p.id)) > q.discountRate);
 
-  const submit = () => model && onContinue?.({ location: location.id, model: model.id, pkg, qty: q.qty });
+  const submit = () => model && onContinue?.({ location: location.id, model: model.id, pkg });
 
   return (
     <div ref={root} className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10">
@@ -156,55 +160,33 @@ export default function PackageBuilder({ ctaLabel = 'Continue to checkout', onCo
         </section>
 
         <section>
-          <StepTitle n={3} title="Choose your package" sub={`Every package starts at ${MIN_SERVERS} servers and includes 2 years of rack space.`} />
-          <div className="mt-5 grid gap-2.5 sm:grid-cols-3">
+          <StepTitle n={3} title="Choose your rack space" sub="Start with a single server or reserve up to a full rack. Every package includes 2 years of rack space." />
+          <div className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
             {PACKAGE_TYPES.map((p) => {
               const active = pkg === p.id;
-              const detail = p.id === 'rack' && model ? `${serversPerRack(model.u)} × ${model.u}U servers` : p.id === 'five' ? `${MIN_SERVERS} servers · 10% off` : '10+ servers · 15% off';
+              const fits = !model || fitsPackage(model, p.id);
+              const count = model ? packageQuantity(model, p.id) : null;
+              const off = count ? volumeDiscount(count) : 0;
               return (
                 <button
                   key={p.id}
                   type="button"
                   onClick={() => setPkg(p.id)}
+                  disabled={!fits}
                   aria-pressed={active}
-                  className={`rounded-xl border px-4 py-3.5 text-left transition ${
-                    active ? 'border-coco-purple bg-coco-purple/10' : 'border-[var(--line)] bg-[var(--surface)] hover:border-coco-purple/40'
+                  className={`rounded-xl border px-4 py-3.5 text-left transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                    active ? 'border-coco-purple bg-coco-purple/10' : 'border-[var(--line)] bg-[var(--surface)] enabled:hover:border-coco-purple/40'
                   }`}
                 >
                   <div className="text-[15px] font-semibold">{p.label}</div>
                   <div className="text-[12px] text-[var(--muted)]">{p.hint}</div>
-                  <div className="mt-2 text-[12px] font-medium text-coco-violet">{detail}</div>
+                  <div className="mt-2 text-[12px] font-medium text-coco-violet">
+                    {!model ? '…' : fits ? `${count} server${count === 1 ? '' : 's'}${off ? ` · ${Math.round(off * 100)}% off` : ''}` : `Needs ${model.u}U+`}
+                  </div>
                 </button>
               );
             })}
           </div>
-          <AnimatePresence initial={false}>
-            {pkg === 'custom' && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                <div className="mt-3 flex items-center justify-between gap-4 rounded-xl border border-[var(--line)] bg-[var(--surface)] px-4 py-3">
-                  <span className="text-[14px] font-medium">Number of servers</span>
-                  <div className="flex items-center gap-1">
-                    <button type="button" aria-label="Fewer servers" onClick={() => setQty((v) => Math.max(MIN_SERVERS, v - 1))} className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--line)] hover:bg-[var(--surface-2)]">
-                      <Minus size={15} />
-                    </button>
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      min={MIN_SERVERS}
-                      value={qty}
-                      onChange={(e) => setQty(Number(e.target.value))}
-                      onBlur={() => setQty((v) => Math.max(MIN_SERVERS, Math.round(v) || MIN_SERVERS))}
-                      aria-label="Number of servers"
-                      className="h-9 w-16 rounded-lg border border-[var(--line)] bg-transparent text-center font-semibold tabular outline-none focus:border-coco-purple"
-                    />
-                    <button type="button" aria-label="More servers" onClick={() => setQty((v) => Math.max(MIN_SERVERS, v) + 1)} className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--line)] hover:bg-[var(--surface-2)]">
-                      <Plus size={15} />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </section>
       </div>
 
@@ -219,9 +201,12 @@ export default function PackageBuilder({ ctaLabel = 'Continue to checkout', onCo
           {q && (
             <>
               <div className="mt-4 divide-y divide-[var(--line)] text-[13.5px]">
-                <Row label={`${q.qty} × servers`} sub={`${usd(q.unitPrice)} each`} value={usd(q.serversSubtotal)} />
-                <Row label={`Volume discount (${Math.round(q.discountRate * 100)}%)`} sub="Applied to servers" value={`− ${usd(q.discount)}`} accent="text-emerald-500" />
+                <Row label={`${q.qty} × server${q.qty === 1 ? '' : 's'}`} sub={`${usd(q.unitPrice)} each`} value={usd(q.serversSubtotal)} />
+                {q.discount > 0 && (
+                  <Row label={`Volume discount (${Math.round(q.discountRate * 100)}%)`} sub="Applied to servers" value={`− ${usd(q.discount)}`} accent="text-emerald-500" />
+                )}
                 <Row label="Rack space, 2 years" sub={`${q.rackU}U × $${RACK_PER_U_MONTH}/month × ${RACK_MONTHS} months`} value={usd(q.rackTotal)} />
+                <Row label="Shipping" sub={`Delivered to ${location.provider}`} value="Free" accent="text-emerald-500" />
                 <div className="flex items-end justify-between gap-4 pt-4">
                   <span className="font-semibold">Total due today</span>
                   <motion.span key={q.total} initial={{ opacity: 0.4, y: 4 }} animate={{ opacity: 1, y: 0 }} className="text-[28px] font-bold leading-none tracking-tight tabular">
@@ -230,19 +215,21 @@ export default function PackageBuilder({ ctaLabel = 'Continue to checkout', onCo
                 </div>
               </div>
 
-              {unlockTen && (
+              {upgrade && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setPkg('custom');
-                    setQty(10);
-                  }}
+                  onClick={() => setPkg(upgrade.id)}
                   className="mt-4 flex w-full items-center gap-2 rounded-xl bg-coco-purple/10 px-3.5 py-2.5 text-left text-[12.5px] font-medium text-coco-violet hover:bg-coco-purple/15"
                 >
                   <Sparkles size={14} className="shrink-0" />
-                  Add {10 - q.qty} more servers to unlock 15% off
+                  Choose {upgrade.label.toLowerCase()} ({packageQuantity(model, upgrade.id)} servers) to unlock {Math.round(volumeDiscount(packageQuantity(model, upgrade.id)) * 100)}% off
                 </button>
               )}
+
+              <div className="mt-4 flex items-center gap-2 text-[12.5px] text-[var(--muted)]">
+                <Truck size={14} className="shrink-0 text-emerald-500" />
+                Free shipping straight to the data center
+              </div>
 
               <div className="mt-5 rounded-2xl bg-[var(--surface-2)] p-4 text-[13px]">
                 <div className="text-[11.5px] font-semibold uppercase tracking-widest text-[var(--faint)]">Estimated earnings at maturity</div>
@@ -282,7 +269,7 @@ export default function PackageBuilder({ ctaLabel = 'Continue to checkout', onCo
         >
           <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="text-[11.5px] text-[var(--muted)]">{q.qty} servers · {location.city}, {location.region}</div>
+              <div className="text-[11.5px] text-[var(--muted)]">{q.qty} server{q.qty === 1 ? '' : 's'} · {location.city}, {location.region} · free shipping</div>
               <div className="text-[18px] font-bold tabular">{usd(q.total)}</div>
             </div>
             <button type="button" onClick={submit} className="flex items-center gap-1.5 rounded-xl bg-coco-purple px-4 py-3 text-[14px] font-semibold text-white">

@@ -6,6 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 import { Logo } from '../components/Logo';
 import Navbar from '../components/site/Navbar';
 import PartnerDemo from '../components/investors/PartnerDemo';
+import Partners from '../components/investors/Partners';
 import { Manifesto, Bento, HowItWorks, Faq, InvestorCta } from '../components/investors/Sections';
 import HardwareToSoftware from '../components/investors/HardwareToSoftware';
 import LoadBalancing from '../components/investors/LoadBalancing';
@@ -107,6 +108,7 @@ export default function InvestorsPage() {
       <main>
         <Hero light={light} onBuy={onBuy} />
         <Manifesto />
+        <Partners />
         <HardwareToSoftware />
         <LoadBalancing />
         <Bento />
