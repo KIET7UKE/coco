@@ -154,6 +154,17 @@ function sampleCatalog(location) {
   }));
 }
 
+const toNumber = (v) => (typeof v === 'string' ? Number(v.replace(/[^0-9.]/g, '')) : Number(v));
+
+// Pricing maths needs numeric price, rack units and vCPU; anything else would render as NaN.
+function normalizeModel(m) {
+  const supplierPrice = toNumber(m?.supplierPrice);
+  const u = toNumber(m?.u);
+  const vcpu = toNumber(m?.vcpu);
+  if (!m?.id || !(supplierPrice > 0) || !(u > 0) || !(vcpu > 0)) return null;
+  return { ...m, supplierPrice, u, vcpu, sample: false };
+}
+
 const cache = new Map();
 
 export async function getCatalog(locationId) {
@@ -166,7 +177,8 @@ export async function getCatalog(locationId) {
       const res = await fetch(`${ENDPOINTS.catalog}?${query}`);
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length) items = data.map((m) => ({ ...m, sample: false }));
+        const live = Array.isArray(data) ? data.map(normalizeModel).filter(Boolean) : [];
+        if (live.length) items = live;
       }
     } catch {
       /* fall back to sample catalog */
