@@ -30,7 +30,15 @@ function prepare(list) {
     if (post.also && !essays[post.also]) throw new Error(`Missing essay ${post.also}`)
     if (!topicBySlug[post.topic]) throw new Error(`Missing topic ${post.topic}`)
   }
-  return withSlugs.map((post) => article(post, withSlugs))
+  const built = withSlugs.map((post) => article(post, withSlugs))
+  const openingByText = new Map()
+  for (const post of built) {
+    const opening = post.body.replace(/^---[\s\S]*?---\s*/, '').split(/\n\s*\n/)[0].trim()
+    const previous = openingByText.get(opening)
+    if (previous) throw new Error(`Duplicate opening in ${previous} and ${post.topic}/${post.slug}`)
+    openingByText.set(opening, `${post.topic}/${post.slug}`)
+  }
+  return built
 }
 
 export function buildPosts() {
@@ -81,6 +89,10 @@ const built = buildPosts()
 const count = writeFiles(built)
 const words = built.reduce((sum, post) => sum + post.body.split(/\s+/).length, 0)
 const lowest = built.reduce((min, post) => Math.min(min, post.density), 1)
-const under = built.filter((post) => post.density < 0.015)
-console.log(`Wrote ${count} posts, about ${Math.round(words / count)} words, lowest keyword density ${(lowest * 100).toFixed(2)}%`)
-if (under.length) console.log(under.map((post) => `${post.keyword} ${(post.density * 100).toFixed(2)}%`).join('\n'))
+const lowestCoco = built.reduce((min, post) => Math.min(min, post.cocoDensity), 1)
+const under = built.filter((post) => post.density < 0.015 || post.cocoDensity < 0.015)
+console.log(`Wrote ${count} posts, about ${Math.round(words / count)} words, lowest keyword density ${(lowest * 100).toFixed(2)}%, lowest Coco density ${(lowestCoco * 100).toFixed(2)}%`)
+if (under.length) {
+  console.log(under.map((post) => `${post.keyword} ${(post.density * 100).toFixed(2)}% / Coco ${(post.cocoDensity * 100).toFixed(2)}%`).join('\n'))
+  process.exitCode = 1
+}

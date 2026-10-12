@@ -14,8 +14,13 @@ const components = {
     link: ({ value, children }) => {
       const href = value?.href || ''
       const className = 'font-medium text-white underline underline-offset-2'
-      if (href.startsWith('/')) return <Link to={href} className={className}>{children}</Link>
-      return <a href={href} className={className} rel="noreferrer">{children}</a>
+      const internal = href.startsWith('/')
+        ? href
+        : href.startsWith('https://coco.hibarri.com')
+          ? href.slice('https://coco.hibarri.com'.length) || '/'
+          : ''
+      if (internal) return <Link to={internal} target="_blank" rel="noopener noreferrer" className={className}>{children}</Link>
+      return <a href={href} target="_blank" rel="noopener noreferrer" className={className}>{children}</a>
     },
   },
 }

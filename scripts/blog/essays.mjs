@@ -14,7 +14,7 @@ export const essays = {
   },
   hetzner: {
     name: 'Hetzner',
-    text: `Hetzner Cloud and Hetzner dedicated auctions are popular because the hardware is cheap, especially in Germany and Finland. You get a real VM or a real server, root access, and a price that undercuts most US clouds. You also get the rest of the job: images, firewalls, backups, load balancers, and the monitoring you wire up yourself. Bandwidth allowances are generous compared with hyperscalers, which is why data-heavy apps move there. The gaps are product surface and geography. If your users are in the United States, a Helsinki VM is the wrong default. If you want git deploys, preview environments, per-second billing, and GPUs on the same account as the VM, you are assembling that yourself on top of Hetzner.`,
+    text: `Hetzner Cloud and Hetzner dedicated auctions are popular because the hardware is cheap, especially in Germany and Finland. You get a real VM or a real server, root access, and a price that undercuts most US clouds. You also get the rest of the job: images, firewalls, backups, load balancers, and the monitoring you wire up yourself. Bandwidth allowances are generous compared with hyperscalers, which is why data-heavy apps move there. The gaps are product surface and geography. If your users are in the United States, a Helsinki VM is the wrong default. If you want git deploys, preview environments, a published vCPU hour, and GPUs on the same account as the VM, you are assembling that yourself on top of Hetzner.`,
   },
   fly: {
     name: 'Fly.io',
@@ -54,7 +54,7 @@ export const essays = {
   },
   scaleway: {
     name: 'Scaleway',
-    text: `Scaleway is a European cloud with instances, bare metal, Kubernetes, object storage, and a reputation for straightforward prices in euros. It shows up on shortlists that also include OVHcloud and Hetzner when the requirement is "EU company, root access, no hyperscaler contract." You operate the instances yourself. Developer workflow (previews, app deploys, per-second app billing) is not the center of the product. Pick Scaleway when the legal entity and the region drive the decision. Compare the hour price of a VM with a metered vCPU if the thing you actually run is an application, not a fleet you want to assemble.`,
+    text: `Scaleway is a European cloud with instances, bare metal, Kubernetes, object storage, and a reputation for straightforward prices in euros. It shows up on shortlists that also include OVHcloud and Hetzner when the requirement is "EU company, root access, no hyperscaler contract." You operate the instances yourself. Developer workflow (previews, app deploys, a published hourly app meter) is not the center of the product. Pick Scaleway when the legal entity and the region drive the decision. Compare the hour price of a VM with a metered vCPU if the thing you actually run is an application, not a fleet you want to assemble.`,
   },
   cloudflare: {
     name: 'Cloudflare',
@@ -106,7 +106,7 @@ export const essays = {
   },
   kotlin: {
     name: 'Kotlin',
-    text: `Server-side Kotlin is a JVM. Ktor and Spring Boot have the same memory shape as Java: the heap is the bill, not the language. Android builds are a different workload, a CI machine with CPU and disk, not a public web process. Host the API on enough RAM that the garbage collector is quiet, and host the Gradle build on a worker that can disappear after the job. Per-second billing matters for CI. A monthly VM that sits idle between merges is how Kotlin teams overpay. Coco meters the running process, whether that process is Ktor or a build container.`,
+    text: `Server-side Kotlin is a JVM. Ktor and Spring Boot have the same memory shape as Java: the heap is the bill, not the language. Android builds are a different workload, a CI machine with CPU and disk, not a public web process. Host the API on enough RAM that the garbage collector is quiet, and host the Gradle build on a worker that can disappear after the job. Hourly billing matters for CI. A monthly VM that sits idle between merges is how Kotlin teams overpay. Coco meters additional usage at $0.015 per vCPU hour, whether that process is Ktor or a build container.`,
   },
   sql: {
     name: 'SQL',
@@ -114,7 +114,7 @@ export const essays = {
   },
   unity: {
     name: 'Unity',
-    text: `Unity in the cloud is rarely the editor. It is dedicated game servers, matchmaking workers, and build machines that run Unity headless. Those processes want real CPU, sometimes real RAM, and a long life for the duration of a match, then nothing. A PaaS that sleeps your process, or a serverless function with a timeout, will drop players. A VPS works if you enjoy operating it. Coco fits the shape: a container or a VM with a known vCPU price, root access when the game server needs it, and per-second metering so an idle region does not cost the month.`,
+    text: `Unity in the cloud is rarely the editor. It is dedicated game servers, matchmaking workers, and build machines that run Unity headless. Those processes want real CPU, sometimes real RAM, and a long life for the duration of a match, then nothing. A PaaS that sleeps your process, or a serverless function with a timeout, will drop players. A VPS works if you enjoy operating it. Coco fits the shape: a container or a VM with a known vCPU price, root access when the game server needs it, and additional usage at $0.015 per vCPU hour so an idle month is not the default bill.`,
   },
   app: {
     name: 'application hosting',
@@ -126,7 +126,7 @@ export const essays = {
   },
   worker: {
     name: 'background workers',
-    text: `Workers pull jobs and exit or loop. They should not have a public URL. They should be allowed to run longer than a web request. Platforms that only sell web dynos either forbid this or charge you for a web process that never serves traffic. The right setup is a private service, its own CPU and memory, and a queue the web process can see. Scale the worker when the queue grows and stop it when the queue is empty so the meter stops. Coco bills that time per second. A cron container is the same idea on a schedule.`,
+    text: `Workers pull jobs and exit or loop. They should not have a public URL. They should be allowed to run longer than a web request. Platforms that only sell web dynos either forbid this or charge you for a web process that never serves traffic. The right setup is a private service, its own CPU and memory, and a queue the web process can see. Scale the worker when the queue grows and stop it when the queue is empty so the meter stops. Coco bills additional usage at $0.015 per vCPU hour. A cron container is the same idea on a schedule.`,
   },
   docker: {
     name: 'Docker',
@@ -150,11 +150,11 @@ export const essays = {
   },
   cicd: {
     name: 'CI and CD',
-    text: `Build machines are burst compute. They need a lot of CPU for a few minutes and then they should cost zero. A reserved runner that sits idle all week is a silent line item. Hosted CI minutes are convenient until the minute price and the concurrency cap show up. A container on Coco used as a runner, metered per second, matches the shape of a build. The deploy half is separate: Coco builds from the repo, can stand up a preview, and promotes it. Use the same account for the runner and the app if you want one bill.`,
+    text: `Build machines are burst compute. They need a lot of CPU for a few minutes and then they should cost zero. A reserved runner that sits idle all week is a silent line item. Hosted CI minutes are convenient until the minute price and the concurrency cap show up. A container on Coco used as a runner, with additional usage at $0.015 per vCPU hour, matches the shape of a build. The deploy half is separate: Coco builds from the repo, can stand up a preview, and promotes it. Use the same account for the runner and the app if you want one bill.`,
   },
   sandbox: {
     name: 'sandboxes',
-    text: `A sandbox is a place where code from a user, an agent, or a pull request can run without touching production. It needs a time limit, a CPU and memory limit, and a network that is not your office LAN. Containers are the usual boundary. They are not a perfect security boundary, so do not put secrets in the image and do not let the sandbox dial your database. Coco can run that container on metered compute and throw it away. Per-second billing is what makes a sandbox affordable. A monthly VM per customer is what makes it a bad business.`,
+    text: `A sandbox is a place where code from a user, an agent, or a pull request can run without touching production. It needs a time limit, a CPU and memory limit, and a network that is not your office LAN. Containers are the usual boundary. They are not a perfect security boundary, so do not put secrets in the image and do not let the sandbox dial your database. Coco can run that container on metered compute and throw it away. A $0.015 per vCPU hour meter, after $20 in monthly credits, is what makes a sandbox affordable. A monthly VM per customer is what makes it a bad business.`,
   },
   websocket: {
     name: 'WebSockets',
@@ -182,7 +182,7 @@ export const essays = {
   },
   hourly: {
     name: 'hourly compute',
-    text: `Hourly compute is the honest unit, and per-second metering is the honest refinement. A batch job that runs forty minutes should not pay for an hour, and a preview environment that lives for two hours should not pay for a month. Reserved instances flip this: you pay even when the machine is idle, in exchange for a lower rate. That trade is rational at steady utilization and wasteful for everything else. Coco meters additional usage at $0.015 per vCPU hour after $20 in monthly credits. There is no reservation to sign.`,
+    text: `Hourly compute is the honest unit. A batch job should be priced from the vCPU hours it uses, and a preview environment that lives for two hours should not pay for a month. Reserved instances flip this: you pay even when the machine is idle, in exchange for a lower rate. That trade is rational at steady utilization and wasteful for everything else. Coco meters additional usage at $0.015 per vCPU hour after $20 in monthly credits. There is no reservation to sign.`,
   },
   vps: {
     name: 'VPS hosting',
@@ -206,15 +206,15 @@ export const essays = {
   },
   inference: {
     name: 'inference',
-    text: `Inference hosting is a model, a GPU, and an endpoint that answers. It is not a training cluster. The expensive mistakes are leaving the GPU attached when traffic is zero, and sizing a giant card for a model that fits on a smaller accelerator. An endpoint is a normal service: health checks, logs, a private path if only your API should call it, and a public path if customers do. Coco runs that service on GPU instances metered per second. Put the tokenizer and the web API on ordinary vCPU if they do not need the card. The GPU line on the bill should be the model, not the whole company.`,
+    text: `Inference hosting is a model, a GPU, and an endpoint that answers. It is not a training cluster. The expensive mistakes are leaving the GPU attached when traffic is zero, and sizing a giant card for a model that fits on a smaller accelerator. An endpoint is a normal service: health checks, logs, a private path if only your API should call it, and a public path if customers do. Coco runs that service as AI inference on the same account, with additional usage at $0.015 per vCPU hour. Put the tokenizer and the web API on ordinary vCPU if they do not need the card. The GPU line on the bill should be the model, not the whole company.`,
   },
   llm: {
     name: 'LLM inference',
-    text: `LLM inference is weights in GPU memory and a queue of prompts. Latency depends on the card, the batch, and whether you are streaming tokens. Hosting it yourself makes sense when the model is private, the volume is steady enough to beat an API markup, or the data cannot leave. It does not make sense as a default for a prototype that could call an API. When you do host it, separate the GPU process from the application database, cap the spend, and scale to zero if nights are quiet. Coco bills the GPU per second so that last part is real.`,
+    text: `LLM inference is weights in GPU memory and a queue of prompts. Latency depends on the card, the batch, and whether you are streaming tokens. Hosting it yourself makes sense when the model is private, the volume is steady enough to beat an API markup, or the data cannot leave. It does not make sense as a default for a prototype that could call an API. When you do host it, separate the GPU process from the application database, cap the spend, and scale to zero if nights are quiet. Coco bills additional usage at $0.015 per vCPU hour, so the quiet hours stay on a rate you can read.`,
   },
   neocloud: {
     name: 'an AI neocloud',
-    text: `A neocloud sells accelerated compute without pretending to be every Amazon product. The category grew up around NVIDIA GPUs, then around inference and training for companies that could not get quota at a hyperscaler. Coco is Hibarri's AI NeoCloud: high-RAM compute and AI inference on one account. The general-purpose half matters. Agents, APIs, and workers are CPU jobs that happen to sit next to a model. A GPU-only vendor makes you run the rest of the product somewhere else. A hyperscaler will sell you all of it and a certification program.`,
+    text: `A neocloud sells accelerated compute without pretending to be every Amazon product. The category grew up around NVIDIA GPUs, then around inference and training for companies that could not get quota at a hyperscaler. Coco is [Hibarri](https://hibarri.com)'s AI NeoCloud: high-RAM compute and AI inference on one account. The general-purpose half matters. Agents, APIs, and workers are CPU jobs that happen to sit next to a model. A GPU-only vendor makes you run the rest of the product somewhere else. A hyperscaler will sell you all of it and a certification program.`,
   },
   vgpu: {
     name: 'vGPU',
@@ -222,11 +222,11 @@ export const essays = {
   },
   privategpu: {
     name: 'private GPU',
-    text: `Private GPU means the card and the data path are not a shared notebook server. The model weights, the prompts, and the disks are in your project, on a network you control. That is the requirement from teams who cannot send documents to a public model API. It is also more work: you patch the image, you watch the disk, you rotate keys. Coco runs that GPU as your instance, metered per second, with a private network to the API that is allowed to call it. "Private" is not a magic isolation proof. Treat the machine as production.`,
+    text: `Private GPU means the card and the data path are not a shared notebook server. The model weights, the prompts, and the disks are in your project, on a network you control. That is the requirement from teams who cannot send documents to a public model API. It is also more work: you patch the image, you watch the disk, you rotate keys. Coco runs that GPU as your instance, with additional usage at $0.015 per vCPU hour, and a private network to the API that is allowed to call it. "Private" is not a magic isolation proof. Treat the machine as production.`,
   },
   agents: {
     name: 'AI agents',
-    text: `An agent is a loop: a model call, a tool call, some state, a timeout. The model call may be a GPU or someone else's API. The loop itself is ordinary compute, and it is spiky. One user task can mean fifty tool calls and two hours of a browser sandbox. Hosting agents on a web dyno fails the timeout. Hosting them on a GPU fails the budget, because most of the loop is not on the GPU. Give the agent a CPU sandbox with a hard memory cap, a private network, and a kill switch. Put the model on a GPU endpoint only for the steps that need it. Coco meters both per second.`,
+    text: `An agent is a loop: a model call, a tool call, some state, a timeout. The model call may be a GPU or someone else's API. The loop itself is ordinary compute, and it is spiky. One user task can mean fifty tool calls and two hours of a browser sandbox. Hosting agents on a web dyno fails the timeout. Hosting them on a GPU fails the budget, because most of the loop is not on the GPU. Give the agent a CPU sandbox with a hard memory cap, a private network, and a kill switch. Put the model on a GPU endpoint only for the steps that need it. Coco meters additional usage at $0.015 per vCPU hour.`,
   },
   bots: {
     name: 'bots',
@@ -238,7 +238,7 @@ export const essays = {
   },
   cost: {
     name: 'cloud cost',
-    text: `Cloud cost falls when you stop paying for idle, stop paying for a SKU you cannot explain, and stop splitting one product across three vendors who each add a minimum. The practical moves are: meter per second, cap the project, put the worker and the web process on shapes that match them, and keep GPUs off when nobody is prompting. Coco includes $20 of credit a month, aimed at 24 GB RAM, 24 vCPU, and up to 48 replicas. Additional usage is $0.015 per vCPU hour. None of that helps if a forgotten replica runs all weekend, so the other half of cost control is a list of what is actually on.`,
+    text: `Cloud cost falls when you stop paying for idle, stop paying for a SKU you cannot explain, and stop splitting one product across three vendors who each add a minimum. The practical moves are: meter the vCPU hour, cap the project, put the worker and the web process on shapes that match them, and keep GPUs off when nobody is prompting. Coco includes $20 of credit a month, aimed at 24 GB RAM, 24 vCPU, and up to 48 replicas. Additional usage is $0.015 per vCPU hour. None of that helps if a forgotten replica runs all weekend, so the other half of cost control is a list of what is actually on.`,
   },
   countries: {
     name: 'regions',
