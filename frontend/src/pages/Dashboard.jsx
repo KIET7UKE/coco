@@ -9,6 +9,7 @@ import ThemeToggle from '../components/ui/ThemeToggle';
 import { useTheme } from '../hooks/useTheme';
 import { PARTNER, PORTFOLIO } from '../data/dashboard';
 import { usd } from '../data/packages';
+import { useServers } from '../lib/orders';
 import Portfolio from './dashboard/Portfolio';
 import Servers from './dashboard/Servers';
 import ServerDetail from './dashboard/ServerDetail';
@@ -20,7 +21,7 @@ import BuyServers from './dashboard/BuyServers';
 
 const NAV = [
   { to: '/dashboard', label: 'My Portfolio', icon: LayoutDashboard, end: true },
-  { to: '/dashboard/servers', label: 'Servers', icon: Server, count: PORTFOLIO.activeServers },
+  { to: '/dashboard/servers', label: 'Servers', icon: Server, count: 'servers' },
   { to: '/dashboard/customers', label: 'Customers', icon: Users, count: PORTFOLIO.activeCustomers },
   { to: '/dashboard/payments', label: 'Payments', icon: CreditCard },
   { to: '/dashboard/payouts', label: 'Payouts', icon: Wallet },
@@ -29,6 +30,7 @@ const NAV = [
 ];
 
 function Sidebar({ onNavigate }) {
+  const serverCount = useServers().length;
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-2.5 px-5">
@@ -60,7 +62,9 @@ function Sidebar({ onNavigate }) {
                 {isActive && <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r bg-coco-violet shadow-[0_0_10px_#b54dff]" />}
                 <item.icon size={17} className={`relative ${isActive ? 'text-coco-lilac' : ''}`} />
                 <span className="relative flex-1">{item.label}</span>
-                {item.count && <span className="relative rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-white/50 tabular">{item.count}</span>}
+                {item.count && (
+                  <span className="relative rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-white/50 tabular">{item.count === 'servers' ? serverCount : item.count}</span>
+                )}
                 {item.highlight && <span className="relative h-1.5 w-1.5 rounded-full bg-coco-violet" />}
               </span>
             )}

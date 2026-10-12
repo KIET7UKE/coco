@@ -203,7 +203,7 @@ function WhitePaper({ lead, msUntil, onContinue }) {
 const LEARN = [
   { icon: BrainCircuit, t: 'Why superintelligence needs compute', d: 'How AI demand is turning raw processing power into one of the most valuable resources on earth.' },
   { icon: Server, t: 'Data centers and servers, explained', d: 'What a server actually is, where it lives, and how it earns from developers renting its capacity.' },
-  { icon: Landmark, t: 'Your share of the cloud landlord economy', d: 'How owning servers compares with owning property, and how to get started from 5 servers.' },
+  { icon: Landmark, t: 'Your share of the cloud landlord economy', d: 'How owning servers compares with owning property, and how to get started from a single server.' },
 ];
 
 export default function JoinPage() {

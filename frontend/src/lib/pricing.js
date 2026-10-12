@@ -1,17 +1,26 @@
 export const MARKUP = 0.1;
 export const RACK_PER_U_MONTH = 115;
 export const RACK_MONTHS = 24;
+export const HALF_RACK_U = 21;
 export const FULL_RACK_U = 42;
-export const MIN_SERVERS = 5;
+export const MIN_SERVERS = 1;
 export const VCPU_HOUR_RATE = 0.012;
 export const HOURS_PER_MONTH = 720;
 export const COCO_FEE = 0.2;
 
+// Packages are sold by rack space; the server count is however many of the chosen model fit.
 export const PACKAGE_TYPES = [
-  { id: 'five', label: '5 servers', hint: 'Minimum package' },
-  { id: 'rack', label: 'Full rack', hint: '42U of rack space' },
-  { id: 'custom', label: 'Custom', hint: '5 servers or more' },
+  { id: '1u', label: '1U', u: 1, hint: 'Start with one server' },
+  { id: '2u', label: '2U', u: 2, hint: '2U of rack space' },
+  { id: '4u', label: '4U', u: 4, hint: '4U of rack space' },
+  { id: 'half', label: 'Half rack', u: HALF_RACK_U, hint: `${HALF_RACK_U}U of rack space` },
+  { id: 'rack', label: 'Full rack', u: FULL_RACK_U, hint: `${FULL_RACK_U}U of rack space` },
 ];
+export const DEFAULT_PACKAGE = PACKAGE_TYPES[0].id;
+
+export const getPackage = (id) => PACKAGE_TYPES.find((p) => p.id === id) ?? PACKAGE_TYPES[0];
+export const fitsPackage = (model, packageType) => model.u <= getPackage(packageType).u;
+export const smallestPackageFor = (model) => PACKAGE_TYPES.find((p) => p.u >= model.u) ?? PACKAGE_TYPES[PACKAGE_TYPES.length - 1];
 
 export function volumeDiscount(quantity) {
   if (quantity >= 10) return 0.15;
@@ -19,39 +28,33 @@ export function volumeDiscount(quantity) {
   return 0;
 }
 
-export const serversPerRack = (u) => Math.max(1, Math.floor(FULL_RACK_U / u));
-
-export function packageQuantity(model, packageType, quantity) {
-  if (packageType === 'rack') return serversPerRack(model.u);
-  if (packageType === 'custom') return Math.max(MIN_SERVERS, Math.round(quantity) || MIN_SERVERS);
-  return MIN_SERVERS;
-}
+export const packageQuantity = (model, packageType) => Math.max(MIN_SERVERS, Math.floor(getPackage(packageType).u / model.u));
 
 const cents = (n) => Math.round(n * 100) / 100;
 
-export const selectionQuery = (s) => new URLSearchParams({ location: s.location, model: s.model, pkg: s.pkg, qty: String(s.qty) }).toString();
+export const selectionQuery = (s) => new URLSearchParams({ location: s.location, model: s.model, pkg: s.pkg }).toString();
 
 export function selectionFromQuery(params) {
-  const pkg = PACKAGE_TYPES.some((p) => p.id === params.get('pkg')) ? params.get('pkg') : 'five';
+  const pkg = PACKAGE_TYPES.some((p) => p.id === params.get('pkg')) ? params.get('pkg') : DEFAULT_PACKAGE;
   return {
     location: params.get('location') || '',
     model: params.get('model') || '',
     pkg,
-    qty: Number(params.get('qty')) || MIN_SERVERS,
   };
 }
 
-export function quote(model, packageType, quantity) {
-  const qty = packageQuantity(model, packageType, quantity);
+export function quote(model, packageType) {
+  const qty = packageQuantity(model, packageType);
   const unitPrice = cents(model.supplierPrice * (1 + MARKUP));
   const serversSubtotal = cents(unitPrice * qty);
   const discountRate = volumeDiscount(qty);
   const discount = cents(serversSubtotal * discountRate);
   const usedU = model.u * qty;
-  const rackU = packageType === 'rack' ? FULL_RACK_U : usedU;
+  const rackU = Math.max(getPackage(packageType).u, usedU);
   const rackMonthly = rackU * RACK_PER_U_MONTH;
   const rackTotal = rackMonthly * RACK_MONTHS;
-  const total = cents(serversSubtotal - discount + rackTotal);
+  const shipping = 0;
+  const total = cents(serversSubtotal - discount + rackTotal + shipping);
   const grossMonthly = cents(model.vcpu * qty * VCPU_HOUR_RATE * HOURS_PER_MONTH);
   const fee = cents(grossMonthly * COCO_FEE);
   const netMonthly = cents(grossMonthly - fee);
@@ -66,6 +69,7 @@ export function quote(model, packageType, quantity) {
     rackU,
     rackMonthly,
     rackTotal,
+    shipping,
     total,
     grossMonthly,
     fee,

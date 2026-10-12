@@ -10,7 +10,8 @@ import { useTheme } from '../../hooks/useTheme';
 import { Card, CardHeader, Badge, Meter, Button, page } from '../../components/dashboard/ui';
 import { Bars, Ring, Sparkline } from '../../components/dashboard/charts';
 import { CustomersTable } from '../../components/dashboard/tables';
-import { SERVERS, CUSTOMERS } from '../../data/dashboard';
+import { CUSTOMERS } from '../../data/dashboard';
+import { useServers } from '../../lib/orders';
 import { usd } from '../../data/packages';
 
 const fmtGb = (gb) => (gb >= 1024 ? `${(gb / 1024).toFixed(gb % 1024 ? 2 : 1)} TB` : `${gb} GB`);
@@ -114,7 +115,7 @@ function DisconnectDialog({ server, onClose, onConfirm }) {
 
 export default function ServerDetail() {
   const { id } = useParams();
-  const s = SERVERS.find((x) => x.id === id);
+  const s = useServers().find((x) => x.id === id);
   const [confirming, setConfirming] = useState(false);
   const [disconnected, setDisconnected] = useState(false);
 
@@ -204,7 +205,7 @@ export default function ServerDetail() {
         <div className="border-t border-white/[0.06] px-5 py-4">
           <div className="mb-2 flex items-center justify-between text-[12px] text-white/45">
             <span>CPU load · last 24 hours</span>
-            <span>peak {Math.max(...s.load)}%</span>
+            <span>peak {Math.max(0, ...s.load)}%</span>
           </div>
           <Sparkline data={s.load.length ? s.load : [0, 0]} height={56} />
         </div>
@@ -238,7 +239,7 @@ export default function ServerDetail() {
               ['Storage', s.storage],
               ['Network', s.network],
               ['GPU', s.gpuModel ?? 'None'],
-              ['Serial', `CC-${s.location.slice(0, 3).toUpperCase()}-${s.id}-${(Number(s.id) * 7919).toString(16).toUpperCase()}`],
+              ['Serial', s.serial ?? `CC-${s.location.slice(0, 3).toUpperCase()}-${s.id}-${(Number(s.id) * 7919).toString(16).toUpperCase()}`],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-4 py-2.5">
                 <dt className="text-white/45">{k}</dt>
@@ -253,6 +254,12 @@ export default function ServerDetail() {
           <div className="mt-4 rounded-xl bg-white/[0.03] p-4">
             <div className="flex items-center gap-2 text-[14px] font-semibold"><MapPin size={14} className="text-white/50" />{s.location}</div>
             <div className="mt-1 text-[12.5px] text-white/50">{facility[0]} · {facility[1]}</div>
+            {s.shipTo && (
+              <address className="mt-3 border-t border-white/[0.06] pt-3 text-[12.5px] not-italic leading-relaxed text-white/50">
+                <span className="mb-0.5 block text-[11px] font-semibold uppercase tracking-wider text-white/35">Shipping to · free</span>
+                {s.shipTo.map((line) => <span key={line} className="block">{line}</span>)}
+              </address>
+            )}
           </div>
           <div className="mt-4 text-[12px] font-semibold uppercase tracking-wider text-white/40">Data-center costs / month</div>
           <dl className="mt-2 divide-y divide-white/[0.05] text-[13px]">

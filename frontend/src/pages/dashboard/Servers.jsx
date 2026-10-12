@@ -4,24 +4,31 @@ import { motion } from 'framer-motion';
 import { Search, Server, Activity, Wrench, Loader } from 'lucide-react';
 import { Card, PageHeader, Stat, Button, Segmented, page } from '../../components/dashboard/ui';
 import { ServersTable } from '../../components/dashboard/tables';
-import { SERVERS } from '../../data/dashboard';
+import { useServers } from '../../lib/orders';
 import { usd } from '../../data/packages';
 
 export default function Servers() {
   const navigate = useNavigate();
+  const servers = useServers();
   const [location, setLocation] = useState('All');
   const [q, setQ] = useState('');
+  const locations = useMemo(() => ['All', ...new Set(servers.map((s) => s.location))], [servers]);
 
   const list = useMemo(
     () =>
-      SERVERS.filter((s) => (location === 'All' || s.location === location) && `server #${s.id} ${s.location} ${s.cpu} ${s.ram} ${s.gpu ?? ''}`.toLowerCase().includes(q.toLowerCase())),
-    [location, q],
+      servers.filter(
+        (s) =>
+          (location === 'All' || s.location === location) &&
+          `server #${s.id} ${s.location} ${s.datacenter} ${s.cpu} ${s.ram} ${s.gpu ?? ''}`.toLowerCase().includes(q.toLowerCase()),
+      ),
+    [servers, location, q],
   );
 
-  const count = (status) => SERVERS.filter((s) => s.status === status).length;
-  const totalRevenue = SERVERS.reduce((a, s) => a + s.revenue, 0);
-  const online = SERVERS.filter((s) => s.status === 'Online');
-  const avgUtil = online.reduce((a, s) => a + s.utilization, 0) / online.length;
+  const count = (status) => servers.filter((s) => s.status === status).length;
+  const onOrder = servers.filter((s) => s.order).length;
+  const totalRevenue = servers.reduce((a, s) => a + s.revenue, 0);
+  const online = servers.filter((s) => s.status === 'Online');
+  const avgUtil = online.length ? online.reduce((a, s) => a + s.utilization, 0) / online.length : 0;
 
   return (
     <motion.div {...page}>
@@ -33,7 +40,12 @@ export default function Servers() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat label="Online" value={count('Online')} sub={`Avg. utilization ${avgUtil.toFixed(1)}%`} icon={Activity} />
         <Stat label="Maintenance" value={count('Maintenance')} sub="Workloads drained safely" icon={Wrench} />
-        <Stat label="Provisioning" value={count('Provisioning')} sub="Burn-in complete" icon={Loader} />
+        <Stat
+          label="Provisioning"
+          value={count('Provisioning') + onOrder}
+          sub={onOrder ? `${onOrder} newly ordered` : 'Burn-in complete'}
+          icon={Loader}
+        />
         <Stat label="Revenue this month" value={usd(totalRevenue)} sub="All servers combined" icon={Server} accent />
       </div>
 
@@ -43,7 +55,7 @@ export default function Servers() {
             <Search size={15} className="text-white/40" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search servers…" className="flex-1 bg-transparent text-[13px] outline-none placeholder:text-white/35" />
           </label>
-          <Segmented id="loc" options={['All', 'Dallas', 'Miami', 'Ashburn']} value={location} onChange={setLocation} />
+          <Segmented id="loc" options={locations} value={location} onChange={setLocation} />
         </div>
         <ServersTable servers={list} />
         {list.length === 0 && <div className="py-12 text-center text-[13px] text-white/40">No servers match your filters.</div>}

@@ -4,19 +4,78 @@ const DEDICATED = 'Dedicated Datacenters';
 const US = { country: 'US', countryName: 'United States', supplier: 'Dell Technologies US', factor: 1, unavailable: [] };
 
 // Partner data centers. `factor` adjusts the sample supplier price per country.
+// `address` is the facility's receiving address: servers ship there, never to the buyer.
 export const LOCATIONS = [
-  { id: 'lax', city: 'Los Angeles', region: 'CA', provider: DEDICATED, ...US },
-  { id: 'sea', city: 'Seattle', region: 'WA', provider: DEDICATED, ...US },
-  { id: 'dfw', city: 'Dallas', region: 'TX', provider: DEDICATED, ...US },
-  { id: 'chi', city: 'Chicago', region: 'IL', provider: DEDICATED, ...US },
-  { id: 'fnt', city: 'Flint', region: 'MI', provider: 'Sectorlink Data Center', ...US },
-  { id: 'atl', city: 'Atlanta', region: 'GA', provider: DEDICATED, ...US },
-  { id: 'nyc', city: 'New York', region: 'NY', provider: DEDICATED, ...US },
+  {
+    id: 'lax',
+    city: 'Los Angeles',
+    region: 'CA',
+    provider: DEDICATED,
+    facility: 'CoreSite LA2',
+    address: { line1: '900 N Alameda St', city: 'Los Angeles', region: 'CA', postal: '90012', country: 'US' },
+    ...US,
+  },
+  {
+    id: 'sea',
+    city: 'Seattle',
+    region: 'WA',
+    provider: DEDICATED,
+    facility: 'Evocative SEA1',
+    address: { line1: '140 4th Ave N', line2: 'Suite 200', city: 'Seattle', region: 'WA', postal: '98109', country: 'US' },
+    ...US,
+  },
+  {
+    id: 'dfw',
+    city: 'Dallas',
+    region: 'TX',
+    provider: DEDICATED,
+    facility: 'Evocative DAL6',
+    address: { line1: '1221 Coit Rd', city: 'Plano', region: 'TX', postal: '75075', country: 'US' },
+    ...US,
+  },
+  {
+    id: 'chi',
+    city: 'Chicago',
+    region: 'IL',
+    provider: DEDICATED,
+    facility: 'Netrality 717 S Wells',
+    address: { line1: '717 S Wells St', city: 'Chicago', region: 'IL', postal: '60607', country: 'US' },
+    ...US,
+  },
+  {
+    id: 'fnt',
+    city: 'Flint',
+    region: 'MI',
+    provider: 'Sectorlink Data Center',
+    facility: 'Sectorlink Flint',
+    address: { line1: '512 Buckham Alley', city: 'Flint', region: 'MI', postal: '48502', country: 'US' },
+    ...US,
+  },
+  {
+    id: 'atl',
+    city: 'Atlanta',
+    region: 'GA',
+    provider: DEDICATED,
+    facility: 'Evocative ATL1',
+    address: { line1: '250 Williams St NW', line2: 'Suite E-100', city: 'Atlanta', region: 'GA', postal: '30303', country: 'US' },
+    ...US,
+  },
+  {
+    id: 'nyc',
+    city: 'New York',
+    region: 'NY',
+    provider: DEDICATED,
+    facility: 'Evocative EWR1',
+    address: { line1: '1 Enterprise Ave N', city: 'Secaucus', region: 'NJ', postal: '07094', country: 'US' },
+    ...US,
+  },
   {
     id: 'mtl',
     city: 'Montreal',
     region: 'QC',
     provider: DEDICATED,
+    facility: 'Vantage QC4',
+    address: { line1: '2800 Route Transcanadienne', city: 'Pointe-Claire', region: 'QC', postal: 'H9R 1B1', country: 'CA' },
     country: 'CA',
     countryName: 'Canada',
     supplier: 'Dell Technologies Canada',
@@ -30,6 +89,13 @@ export const DEFAULT_LOCATION = LOCATIONS[0].id;
 export const getLocation = (id) => LOCATIONS.find((l) => l.id === id) ?? LOCATIONS[0];
 
 export const locationLabel = (l) => `${l.city}, ${l.region} @ ${l.provider}`;
+
+export const shippingAddressLines = (l) => [
+  `${l.provider}, ${l.facility}`,
+  [l.address.line1, l.address.line2].filter(Boolean).join(', '),
+  `${l.address.city}, ${l.address.region} ${l.address.postal}`,
+  l.countryName,
+];
 
 // Sample Smart Selection configurations. Replace with supplier API data
 // (VITE_CATALOG_ENDPOINT); prices are USD supplier prices before CoCo's markup.

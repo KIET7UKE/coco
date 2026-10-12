@@ -45,7 +45,7 @@ export async function POST(request) {
     return json({ error: 'invalid_json' }, 400);
   }
 
-  const { reference, selection = {}, customer = {}, address = {} } = body ?? {};
+  const { reference, selection = {}, customer = {} } = body ?? {};
   const email = clip(customer.email).toLowerCase();
   if (!REFERENCE.test(reference ?? '')) return json({ error: 'invalid_reference' }, 400);
   if (!EMAIL.test(email)) return json({ error: 'invalid_email' }, 400);
@@ -56,7 +56,10 @@ export async function POST(request) {
   const catalog = await getCatalog(location.id);
   const model = catalog.find((m) => m.id === selection.model);
   if (!model) return json({ error: 'model_unavailable' }, 400);
-  const q = quote(model, selection.pkg, Number(selection.qty));
+  const q = quote(model, selection.pkg);
+  // Servers always ship to the chosen data center, never to an address the buyer typed in.
+  const shipTo = location.address;
+  const shipToName = `${location.provider}, ${location.facility}`;
 
   const serversCents = toCents(q.serversSubtotal - q.discount);
   const rackCents = toCents(q.rackTotal);
@@ -64,7 +67,7 @@ export async function POST(request) {
 
   const origin = process.env.SITE_URL || new URL(request.url).origin;
   const returnPath = RETURN_PATHS.includes(body.returnPath) ? body.returnPath : '/checkout';
-  const query = selectionQuery({ location: location.id, model: model.id, pkg: selection.pkg, qty: q.qty });
+  const query = selectionQuery({ location: location.id, model: model.id, pkg: selection.pkg });
   const back = (status) => `${origin}${returnPath}?${query}&payment=${status}&ref=${reference}`;
 
   const metadata = {
@@ -80,7 +83,8 @@ export async function POST(request) {
     name: clip(customer.name),
     phone: clip(customer.phone, 40),
     company: clip(customer.company),
-    address: clip([address.line1, address.line2, address.city, address.region, address.postal, address.country].filter(Boolean).join(', '), 500),
+    shipTo: clip([shipToName, shipTo.line1, shipTo.line2, shipTo.city, shipTo.region, shipTo.postal, shipTo.country].filter(Boolean).join(', '), 500),
+    shipping: 'free',
   };
 
   try {
@@ -97,7 +101,10 @@ export async function POST(request) {
               unit_amount: serversCents,
               product_data: {
                 name: `${q.qty} × ${model.name}`,
-                description: q.discountRate ? `Includes ${Math.round(q.discountRate * 100)}% volume discount` : undefined,
+                description: [
+                  q.discountRate ? `Includes ${Math.round(q.discountRate * 100)}% volume discount` : '',
+                  `Free shipping to ${location.facility}, ${shipTo.city}`,
+                ].filter(Boolean).join('. '),
               },
             },
           },
@@ -114,7 +121,13 @@ export async function POST(request) {
           },
         ],
         metadata,
-        payment_intent_data: { metadata },
+        payment_intent_data: {
+          metadata,
+          shipping: {
+            name: shipToName,
+            address: { line1: shipTo.line1, line2: shipTo.line2, city: shipTo.city, state: shipTo.region, postal_code: shipTo.postal, country: shipTo.country },
+          },
+        },
         success_url: `${back('success')}&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: back('cancelled'),
       },
