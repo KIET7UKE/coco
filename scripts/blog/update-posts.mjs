@@ -55,6 +55,7 @@ for (const topic of topics) {
       patch: {
         id,
         set: {
+          title: meta.title,
           excerpt: meta.description,
           body: blocks,
           topic: { _type: 'reference', _ref: topicIds[topic.slug] },

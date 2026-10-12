@@ -22,10 +22,10 @@ const m = { shape: 'memory' }
 const c = { shape: 'cpu' }
 
 export const posts = [
-  p('competitors', 'Render Competitor: Coco Cloud Computing', 'render', 'Teams search for a Render competitor when the web service, the worker, and a GPU no longer fit one instance catalog.', { bullets: ['Map each Render service to a Coco service from the same repo or image.', 'Keep managed Postgres where it is until you want it on the private network.', 'Put background workers on a private service so they never get a public URL.', 'Turn previews off when the pull request closes so the meter stops.'] }),
+  p('competitors', 'Render Competitor - Coco Cloud Computing', 'render', 'Teams search for a Render competitor when the web service, the worker, and a GPU no longer fit one instance catalog.', { bullets: ['Map each Render service to a Coco service from the same repo or image.', 'Keep managed Postgres where it is until you want it on the private network.', 'Put background workers on a private service so they never get a public URL.', 'Turn previews off when the pull request closes so the meter stops.'] }),
   p('competitors', 'Railway Competitor', 'railway', 'Railway is the fastest way to attach a repo to a bill. A Railway competitor has to keep that speed and make the bill readable as cores and memory.'),
   p('competitors', 'Heroku Competitor', 'heroku', 'A Heroku competitor is what you look for when dynos and add-ons cost more than the CPU time the app used.'),
-  p('competitors', 'Hetzner Competitor', 'hetzner', 'People also spell it Hertzner. The search is for a Hetzner competitor that keeps the low hardware price and adds deploys, per-second billing, and a US footprint.'),
+  p('competitors', 'Hetzner Competitor', 'hetzner', 'People also spell it Hertzner. The search is for a Hetzner competitor that keeps the low hardware price and adds a readable vCPU hour, deploys, and a footprint that includes the United States.'),
   p('competitors', 'Fly.io Competitor', 'fly', 'A Fly.io competitor matters when you liked Machines and private networking and got tired of debugging why a machine was still billed.'),
   p('competitors', 'DigitalOcean Competitor', 'digitalocean', 'A DigitalOcean competitor is for teams that outgrew "one Droplet, one price" and do not want to assemble Kubernetes to get a worker.'),
   p('competitors', 'Vultr Alternatives', 'vultr', 'Vultr alternatives come up when the city list was the feature and the missing feature is a deploy pipeline.'),
@@ -78,7 +78,7 @@ export const posts = [
   p('cloud-computing', 'Full-stack application hosting', 'app', 'Full-stack means the UI build and the API in one project, with different CPU shapes if they need them.'),
   p('cloud-computing', 'Production application hosting', 'app', 'Production is health checks, a spending cap, logs, and a rollback. A demo URL is not production.'),
   p('cloud-computing', 'Cloud hosting for startups', 'startup', 'Startup hosting fails when the first invoice requires a finance person. Keep the price computable.'),
-  p('cloud-computing', 'Affordable application hosting', 'affordable', 'Affordable application hosting is per-second metering plus a platform that does not eat the savings in toil.'),
+  p('cloud-computing', 'Affordable application hosting', 'affordable', 'Affordable application hosting is a published vCPU hour plus a platform that does not eat the savings in toil.'),
 
   p('pricing', 'Pricing for vCPU', 'vcpu', 'vCPU pricing is only comparable if you know whether the core is dedicated, shared, or a burst credit.'),
   p('pricing', 'Pricing for RAM', 'ram', 'RAM pricing should be a gigabyte-hour. Bundles that double CPU when you needed memory are how you overpay.', m),
@@ -94,7 +94,7 @@ export const posts = [
   p('compute', 'High RAM cloud server', 'ram', 'A high-RAM server is a wide memory ratio: many gigabytes per core, for caches and heaps that do not want more CPUs.', m),
   p('compute', 'High memory cloud instances', 'ram', 'High-memory instances are the catalog name for the same idea. Size the gigabytes from the working set, then add a little fragmentation.', m),
   p('compute', 'High CPU cloud servers', 'dedicated', 'High-CPU servers suit builds, encoding, and request fan-out. They are the wrong shape for Postgres.', c),
-  p('compute', 'Compute instances by the hour', 'hourly', 'By the hour is the rate card. Per second is how the hour should be cut when the job finishes early.'),
+  p('compute', 'Compute instances by the hour', 'hourly', 'By the hour is the rate card. A reserved month is the wrong unit when the job is not running all month.'),
   p('compute', 'Virtual CPU hosting', 'vcpu', 'Virtual CPU hosting is a scheduler product. Read the fair-use line before you read the hero price.'),
   p('compute', 'Affordable vCPU cloud', 'affordable', 'An affordable vCPU is a dedicated-enough core at a published rate, not the coupon price on a shared host.'),
   p('compute', 'Dedicated CPU cloud server', 'dedicated', 'Dedicated CPU is the scheduler promise: your core stays yours for the time you rent it.', c),
@@ -118,7 +118,7 @@ export const posts = [
 
   p('neocloud', 'GPU cloud hosting', 'gpu', 'GPU cloud hosting is an accelerator plus the CPU beside it, billed for the time the job is resident.', g),
   p('neocloud', 'Rent GPU servers', 'gpu', 'Rent the server when you need the whole box. Rent the card by the second when you need the model.', g),
-  p('neocloud', 'GPU compute by the hour', 'gpu', 'The hourly GPU rate is the comparison. The per-second meter is how you stop paying at the end of the batch.', g),
+  p('neocloud', 'GPU compute by the hour', 'gpu', 'The hourly rate is the comparison. Coco meters additional usage at $0.015 per vCPU hour after the monthly credit.', g),
   p('neocloud', 'AI infrastructure provider', 'neocloud', 'An AI infrastructure provider has to run the GPU and the ordinary services that call it.', g),
   p('neocloud', 'AI cloud computing', 'neocloud', 'AI cloud computing is inference, training jobs, and the API in one account so the data does not cross three bills.', g),
   p('neocloud', 'AI inference hosting', 'inference', 'Inference hosting is an endpoint with a GPU behind it and a hard stop when traffic stops.', g),
