@@ -38,9 +38,7 @@ export const TESTIMONIALS = [
 
 // [status, text] — status: 'good' ✅, 'bad' ❌, 'neutral' 🟠
 export const COMPARISON = [
-  [['bad', 'Buying property takes months'], ['good', 'Ownership is immediate, setup takes 7–14 days']],
-  [['bad', 'Large investments, small returns'], ['good', 'Smaller investments, bigger returns']],
-  [['bad', 'Location value can drop rapidly'], ['good', 'Servers are movable and sell internationally']],
+  [['bad', 'Buying takes months'], ['good', 'Ownership is immediate, setup takes 7–14 days']],
   [['bad', 'Bad tenants can skip a month of payment'], ['good', 'Prepayments are mandatory and industry standard']],
   [['bad', 'Late payments and short payments are stressful'], ['good', "Use is limited to the user's prepayment size"]],
   [['bad', 'Evictions are slow, painful and expensive'], ['good', 'No eviction needed, immediate service suspension']],
@@ -49,35 +47,59 @@ export const COMPARISON = [
   [['bad', 'Building expansion approvals take years'], ['good', 'No waiting period or approvals needed to expand']],
   [['bad', 'Property is illiquid and slow to sell'], ['good', 'Server sales take 1–2 weeks']],
   [['bad', 'Compliance and maintenance is ongoing'], ['good', 'Data centers manage compliance and maintenance']],
-  [['neutral', 'Takes 2–3 months to get a tenant'], ['neutral', 'Takes 2–3 months to get multiple users']],
-  [['good', 'Appreciation is possible in certain areas'], ['bad', 'Depreciation']],
-  [['good', 'Contract based income'], ['good', 'Contract based income on bare metal servers']],
+  [['bad', 'Takes 2–3 months to get a tenant'], ['good', 'Takes 2–3 months to get 10-50 users']],
+  [['good', 'Long term appreciation'], ['bad', 'Depreciates over 7 years']],
+  [['good', 'Contract based income'], ['good', 'Guaranteed demand']],
   [['bad', 'Capital gains tax when selling'], ['good', 'No capital gains tax']],
+  [['bad', 'Location value can drop rapidly'], ['good', 'International demand is not affected by area']],
 ];
 
 export const FAQ = [
   {
+    q: 'What does it cost and what is the ROI?',
+    type: 'returns',
+    items: [
+      'Smaller servers start at about $18,000 per server including setup, coding, cloud linking and 2 years of data center tenancy. These rent out for about $0.012 per vCPU hour with about 64 vCPU of capacity, meaning $1.10 per hour earned and $792 per month x 4 overcapacity = $3,168 per month.',
+      'Larger servers sell for about $150,000 and rent out at the same rate per vCPU hour plus additional $0.75 per vGPU hour for Nvidia GPUs. Their capacity is often around 256 vCPU plus 48 vGPU and they can earn upwards of $28,131.84 per month ((256vCPU x $0.012 per hour x 24 hours x 30 days)x(48vGPU x $0.75 per hour x 24 hours x 30 days))=$28,131.84.',
+    ],
+    figures: [
+      ['10 small servers', '$31,680', 'per month on average'],
+      ['10 large servers', '$281,318.40', 'per month on average'],
+    ],
+    note: 'These are gross estimates before the 20% Coco management fee, and represent yields of a server that has reached network maturity after 10–12 months in the network.',
+  },
+  {
     q: 'How long does it take to get my servers?',
     type: 'timeline',
     items: [
-      ['Buy servers + 2 years of rack space', '5 minutes'],
-      ['Get your dashboard', 'Immediately'],
-      ['We have the physical servers shipped to your selected data center', '24–72 hours'],
-      ['We virtually configure the servers once in the data center and download its software', '24 hours'],
-      ['We link the physical servers to the CoCo cloud', '24 hours'],
-      ['Your dashboard activates and measures usage of the physical servers', '24 hours'],
+      ['Buying servers + 2 years of data center rack space', '5 minutes'],
+      ['Getting your owner dashboard', 'Immediately'],
+      ['Servers shipped to your selected data center', '24–72 hours'],
+      ['Server configuration once arrived at the data center', '24 hours'],
+      ['Linking the server to coco cloud', '24 hours'],
+      ['Receiving allocations for cloud computing user consumption', '24 hours'],
     ],
   },
   {
     q: 'How do my servers earn cash?',
     type: 'steps',
     items: [
-      "Your servers' capacity is made available on the CoCo cloud.",
+      "Your servers' capacity is made available on the Coco cloud.",
       'When developers use the cloud, load gets distributed to your servers.',
-      'Usage is metered through the cloud meter billing program.',
-      'CoCo collects this cash from the user plus our 20% fee.',
+      'Usage is metered through what is called a hypervisor, linked to the cloud meter billing program.',
+      'Coco collects this payments from the user plus our 20% fee and then pays owners their aggregate earnings for usage.',
       'Your earnings continue accumulating as usage increases.',
       'The balance is dispatched to your bank account on the 28th of each month.',
+    ],
+  },
+  {
+    q: 'Do I have to buy the servers from Coco or use its data center partners?',
+    type: 'list',
+    items: [
+      'No, you can bring your own servers. As long as we can install the operating system and hypervisor with no other software running on them, the servers can link to the cloud',
+      'You can self-host the servers as long as you have a minimum of 100GBps network, proper HVAC cooling and power supply. Data centers are just convenient and save equipment & rack costs.',
+      'Server configurations are highly technical, and we have developed the know-how of which configurations yield the most. We are approved Lenovo partners and get bulk discounts for high volume purchases.',
+      'Coco primarily sources servers and data centers since most server owners prefer the convenience of having the setup and running done for them, while they prefer to be passive investors.',
     ],
   },
   {
@@ -97,8 +119,8 @@ export const FAQ = [
     q: 'How long does it take to start earning?',
     type: 'list',
     items: [
-      'It can take anywhere from 1–3 months to start seeing a return on the server, while it may only reach full capacity after 12–24 months.',
-      'It depends a lot on market demand, but we will always sell at 2–3 times total server capacity since we can redistribute load across the cloud to maximize earnings for owners.',
+      'Allocations start immediately on day 1-3 at the dollar-cent level. It can take anywhere from 1–3 months to start seeing a larger return on the server, while it may only reach full capacity after 10–18 months.',
+      'It depends a lot on market demand, but we will always sell at 2–4 times total server capacity since we can redistribute load across the cloud to maximize earnings for owners.',
     ],
   },
   {
@@ -106,24 +128,11 @@ export const FAQ = [
     type: 'list',
     items: [
       'Due to the high volume of owners and cloud users in our network, the system relies on a standardized price calculation and cannot make any exceptions, since metering and money are directly tied together.',
-      'CoCo collects prepayments from end users and only allows them to use resources within their budget allocation.',
+      'Coco collects prepayments from end users and only allows them to use resources within their budget allocation.',
       'The system allocates resources proportionally to usage to cloud partners.',
       "Your data center can report to you privately on your server's energy consumption to verify.",
       'You may also rent the server out as a bare metal option, meaning you have a single tenant renting on a 12-month contract.',
     ],
-  },
-  {
-    q: 'Costs and returns?',
-    type: 'returns',
-    items: [
-      'Smaller servers start at about $18,000 per server including setup, coding, cloud linking and 2 years of data center tenancy. These rent out for about $0.012 per vCPU hour with about 60 vCPU of capacity, meaning $0.72 per hour earned and $518 per month.',
-      'Larger servers sell for about $150,000 and rent out at the same rate per vCPU hour. Their capacity is often around 1,200 vCPU and they can earn upwards of $10,360 per month.',
-    ],
-    figures: [
-      ['10 small servers', '$5,180', 'per month on average'],
-      ['10 large servers', '$103,600', 'per month on average'],
-    ],
-    note: 'These are gross estimates before the 20% CoCo fee, and represent yields of a server that has reached network maturity after 10–12 months in the network.',
   },
   {
     q: 'Depreciation?',
