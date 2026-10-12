@@ -53,6 +53,7 @@ const MENUS = [
       { title: 'Cloud Partners', desc: 'Own servers and earn from every vCPU sold', href: '/investors' },
       { title: 'Server packages', desc: 'Pick a data center and price your servers', href: '/packages' },
       { title: 'Affiliate program', desc: 'Get paid for each developer you refer', href: '/#partners' },
+      { title: 'Blog', desc: 'Comparisons, pricing, and hosting guides', href: '/blog' },
       { title: 'About', desc: 'The team and mission behind CoCo', href: '/#cta' },
     ],
   },
