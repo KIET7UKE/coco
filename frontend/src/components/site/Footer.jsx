@@ -5,7 +5,7 @@ const COLUMNS = [
   { title: 'Product', links: [['Features', '/#features'], ['GPU Cloud', '/#features'], ['Pricing', '/#pricing'], ['Templates', '/#features'], ['Changelog', '/#featured']] },
   { title: 'Developers', links: [['Documentation', '/#features'], ['API reference', '/#features'], ['CLI', '/#features'], ['Status', '/#stats'], ['Community', '/#testimonials']] },
   { title: 'Partners', links: [['Cloud Partners', '/investors'], ['Partner dashboard', '/dashboard'], ['Server packages', '/packages'], ['Free broadcast', '/live'], ['Affiliate program', '/#partners']] },
-  { title: 'Company', links: [['About', '/#cta'], ['Careers', '/#cta'], ['Blog', '/#featured'], ['Contact', 'mailto:hello@hibarri.com']] },
+  { title: 'Company', links: [['About', '/#cta'], ['Careers', '/#cta'], ['Blog', '/blog'], ['Contact', 'mailto:hello@hibarri.com']] },
   { title: 'Legal', links: [['Privacy policy', '#'], ['Terms of service', '#'], ['DPA', '#'], ['Acceptable use', '#'], ['SLA', '#']] },
 ];
 
