@@ -114,14 +114,14 @@ export default function InvestorsPage() {
         <Manifesto />
         <Partners />
         <HardwareToSoftware />
-        <LoadBalancing />
+        <RealEstateVsServers ctaTo="#packages" />
+        <Faq />
         <Bento />
         <HowItWorks />
-        <RealEstateVsServers ctaTo="#packages" />
+        <LoadBalancing />
         <Whitepaper />
         <Testimonials />
         <ServerPackages className="pb-28 sm:pb-36" />
-        <Faq />
         <InvestorCta />
       </main>
       <InvestorFooter />
