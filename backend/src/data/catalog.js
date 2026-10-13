@@ -1,5 +1,5 @@
 const DEDICATED = 'Dedicated Datacenters';
-const US = { country: 'US', countryName: 'United States', supplier: 'Dell Technologies US', factor: 1, unavailable: [] };
+const US = { country: 'US', countryName: 'United States', supplier: 'Lenovo US', factor: 1, unavailable: [] };
 
 export const LOCATIONS = [
   {
@@ -146,6 +146,45 @@ export const MODELS = [
     storage: '4× 1.92 TB NVMe',
     network: '2× 25 GbE',
     basePrice: 21800,
+  },
+  {
+    id: 'sr650',
+    name: 'Lenovo ThinkSystem SR650 V4 (86 cores)',
+    rackSpace: '1U',
+    u: 1,
+    cpu: '1 x Intel Xeon 6714P 8C 165W 4.0GHz Processor',
+    vcpu: 128,
+    ram: '1 x 64GB TruDDR5 6400MHz (2Rx4) RDIMM',
+    power: 'ThinkSystem 1300W 230V/115V Platinum CRPS Hot-Swap Power Supply v2.4',
+    monthlyYield: 'Yielding $1,113 per month on average',
+    basePrice: 9990,
+  },
+  {
+    id: 'sr650x4',
+    name: 'Lenovo ThinkSystem SR650 V4',
+    rackSpace: '1U',
+    u: 1,
+    cpu: '1 x Intel Xeon 6714P 8C 165W 4.0GHz Processor',
+    vcpu: 128,
+    ram: '256GB via 4 x 64GB TruDDR5 6400MHz (2Rx4) RDIMM',
+    power: 'ThinkSystem 1300W 230V/115V Platinum CRPS Hot-Swap Power Supply v2.4',
+    monthlyYield: 'Yielding $4,452 per month on average',
+    basePrice: 22970,
+  },
+  {
+    id: 'sr650ai',
+    name: 'Lenovo ThinkSystem SR650 V4 for AI',
+    rackSpace: '1U',
+    u: 1,
+    cpu: '2× Intel Xeon 6530P 32C 225W 2.3GHz Processors',
+    gpu: 'NVIDIA RTX PRO 6000 Blackwell Server Edition 96GB PCIe Gen5 Passive GPU',
+    vcpu: 128,
+    vgpu: 48,
+    ram: '512GB via 16 x 32GB TruDDR5 6400MHz (1Rx4) RDIMM',
+    storage: '3.84TB NVMe PCIe 5.0 x4 HS SSD',
+    power: '2× 3200W 230V Titanium CRPS Premium Hot-Swap Power Supply',
+    monthlyYield: 'Yielding $16,232 per month on average',
+    basePrice: 102950,
   },
 ];
 
