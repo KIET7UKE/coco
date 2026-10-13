@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+
 /** Line illustrations for the large cards in the navbar dropdowns. */
 
 export function PlatformArt() {
@@ -40,6 +42,8 @@ export function PlatformArt() {
   );
 }
 
+const DOCS_LINES = ['npm i -g @coco/cli', 'coco login', 'coco up --gpu l40s'];
+
 export function DocsArt() {
   return (
     <div className="w-full h-full flex items-end">
@@ -49,10 +53,28 @@ export function DocsArt() {
           <span className="h-2 w-2 rounded-full bg-white/15" />
           <span className="h-2 w-2 rounded-full bg-white/15" />
         </div>
-        <div><span className="text-coco-violet">$</span> npm i -g @coco/cli</div>
-        <div><span className="text-coco-violet">$</span> coco login</div>
-        <div><span className="text-coco-violet">$</span> coco up --gpu l40s</div>
-        <div className="text-emerald-300/80">✓ live at api.acme.coco.app</div>
+        {DOCS_LINES.map((line, i) => (
+          <div key={line} className="overflow-hidden whitespace-nowrap">
+            <span className="text-coco-violet">$</span>{' '}
+            <motion.span
+              className="inline-block overflow-hidden align-bottom"
+              initial={{ width: 0 }}
+              animate={{ width: 'auto' }}
+              transition={{ delay: 0.15 + i * 0.45, duration: 0.4, ease: 'linear' }}
+            >
+              {line}
+            </motion.span>
+          </div>
+        ))}
+        <motion.div
+          className="text-emerald-300/80"
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 + DOCS_LINES.length * 0.45, duration: 0.3 }}
+        >
+          ✓ live at api.acme.coco.app
+          <span className="ml-1 inline-block h-3 w-1.5 translate-y-0.5 bg-white/60 animate-pulse" />
+        </motion.div>
       </div>
     </div>
   );
@@ -69,22 +91,59 @@ export function EnterpriseArt() {
           <path key={`v${i}`} d={`M${i * 28} 20 V170`} />
         ))}
       </g>
-      <path d="M20 140 C 80 140, 90 70, 150 70 S 230 40, 290 30" stroke="#9e00ff" strokeWidth="2" />
-      <path d="M20 140 C 80 140, 90 70, 150 70 S 230 40, 290 30" stroke="#b54dff" strokeWidth="6" strokeOpacity="0.15" />
+      {[
+        { stroke: '#9e00ff', width: 2, opacity: 1 },
+        { stroke: '#b54dff', width: 6, opacity: 0.15 },
+      ].map((line) => (
+        <motion.path
+          key={line.width}
+          d="M20 140 C 80 140, 90 70, 150 70 S 230 40, 290 30"
+          stroke={line.stroke}
+          strokeWidth={line.width}
+          strokeOpacity={line.opacity}
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.1, ease: 'easeInOut' }}
+        />
+      ))}
       {[
         [60, 126],
         [150, 70],
         [244, 38],
       ].map(([x, y], i) => (
-        <g key={i}>
-          <circle cx={x} cy={y} r="9" fill="#9e00ff" fillOpacity="0.2" />
+        <motion.g
+          key={i}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.25 + i * 0.3, duration: 0.35, ease: 'backOut' }}
+          style={{ transformOrigin: `${x}px ${y}px` }}
+        >
+          <circle cx={x} cy={y} r="9" fill="#9e00ff" fillOpacity="0.2">
+            <animate attributeName="r" values="7;12;7" dur="2.4s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
+            <animate attributeName="fill-opacity" values="0.35;0.05;0.35" dur="2.4s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
+          </circle>
           <circle cx={x} cy={y} r="4" fill="#d9a6ff" />
-        </g>
+        </motion.g>
       ))}
-      <g transform="translate(222 92)">
-        <path d="M18 0 L34 6 V20 C34 30 27 37 18 40 C9 37 2 30 2 20 V6 Z" fill="#17161f" stroke="#ffffff" strokeOpacity="0.4" />
-        <path d="M11 20 L16 25 L26 14" stroke="#d9a6ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </g>
+      <motion.g
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.45, ease: 'easeOut' }}
+      >
+        <g transform="translate(222 92)">
+          <path d="M18 0 L34 6 V20 C34 30 27 37 18 40 C9 37 2 30 2 20 V6 Z" fill="#17161f" stroke="#ffffff" strokeOpacity="0.4" />
+          <motion.path
+            d="M11 20 L16 25 L26 14"
+            stroke="#d9a6ff"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ delay: 0.9, duration: 0.4, ease: 'easeOut' }}
+          />
+        </g>
+      </motion.g>
     </svg>
   );
 }
