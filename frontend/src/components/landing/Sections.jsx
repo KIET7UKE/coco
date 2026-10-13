@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, Check, Cpu, Microchip, Server, HardDrive, Quote } from 'lucide-react';
 import { Reveal, LiveCounter, Counter } from '../ui/motion';
+import { PartnerLogo } from '../investors/Partners';
+import { PARTNERS } from '../../data/partners';
 
 const QUOTES = [
   {
@@ -27,6 +29,31 @@ const QUOTES = [
     stat: '4.2× faster pipelines',
   },
 ];
+
+export function Brands() {
+  return (
+    <section id="brands" className="relative mx-auto max-w-[1240px] scroll-mt-20 px-5 lg:px-8 pt-20 sm:pt-28">
+      <Reveal className="mx-auto max-w-2xl text-center">
+        <div className="text-[13px] font-semibold uppercase tracking-[0.2em] text-coco-lilac">Partners</div>
+        <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
+          Brands we <span className="text-purple-glow">work with</span>
+        </h2>
+        <p className="mt-4 text-[16px] sm:text-[17px] leading-relaxed text-white/55">
+          Enterprise hardware from the names behind the world's clouds, racked in carrier-grade data centers across North America.
+        </p>
+      </Reveal>
+      <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {PARTNERS.map((p, i) => (
+          <Reveal as="li" key={p.name} delay={i * 0.05}>
+            <div className="group grid h-24 sm:h-28 place-items-center rounded-2xl border border-white/[0.07] bg-white/[0.02] px-5 transition-colors hover:border-coco-violet/40 hover:bg-white/[0.04]">
+              <PartnerLogo partner={p} className="bg-white/45 group-hover:bg-white" />
+            </div>
+          </Reveal>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 export function Testimonials() {
   return (

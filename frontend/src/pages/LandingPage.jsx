@@ -6,7 +6,7 @@ import Footer from '../components/site/Footer';
 import NightSky from '../components/landing/NightSky';
 import HeroDemo from '../components/landing/HeroDemo';
 import Features from '../components/landing/Features';
-import { Testimonials, Stats, Pricing, PartnerBand, FinalCta, Featured } from '../components/landing/Sections';
+import { Brands, Testimonials, Stats, Pricing, PartnerBand, FinalCta, Featured } from '../components/landing/Sections';
 import { EASE } from '../components/ui/motion';
 import { useTheme } from '../hooks/useTheme';
 
@@ -89,6 +89,7 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <Hero />
+        <Brands />
         <Features />
         <Testimonials />
         <Stats />
