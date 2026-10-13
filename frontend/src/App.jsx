@@ -12,8 +12,6 @@ const OfferPage = lazy(() => import('./pages/live/OfferPage'));
 const CheckoutPage = lazy(() => import('./pages/live/CheckoutPage'));
 const CmsPage = lazy(() => import('./pages/CmsPage'));
 const BlogIndex = lazy(() => import('./pages/BlogIndex'));
-const BlogTopic = lazy(() => import('./pages/BlogTopic'));
-const BlogPost = lazy(() => import('./pages/BlogPost'));
 
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -53,8 +51,6 @@ export default function App() {
           <Route path="/live/checkout" element={<CheckoutPage funnel />} />
           <Route path="/page/:slug" element={<CmsPage />} />
           <Route path="/blog" element={<BlogIndex />} />
-          <Route path="/:topic" element={<BlogTopic />} />
-          <Route path="/:topic/:slug" element={<BlogPost />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
       </Suspense>
