@@ -1,0 +1,92 @@
+import { getStripe } from '../config/stripe.js';
+import { fulfillOrder } from '../services/provisionService.js';
+import { Order } from '../models/Order.js';
+
+const HANDLED = new Set([
+  'checkout.session.completed',
+  'checkout.session.async_payment_succeeded',
+  'checkout.session.async_payment_failed',
+  'checkout.session.expired',
+]);
+
+// Paid orders are also forwarded to Hibarri Superadmin > Coco > Forms, as the old Vercel function did.
+async function forwardToLeads(data, form) {
+  const endpoint = process.env.LEADS_ENDPOINT;
+  if (!endpoint || !/^https?:\/\//.test(endpoint)) return;
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ form, data, submittedAt: new Date().toISOString() }),
+    });
+  } catch (err) {
+    console.error('[StripeWebhook] Could not forward to leads:', err?.message);
+  }
+}
+
+export async function handleStripeWebhook(req, res) {
+  const stripe = getStripe();
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!stripe || !secret) {
+    console.error('[StripeWebhook] Stripe or webhook secret not configured');
+    return res.status(503).json({ error: 'not_configured' });
+  }
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'], secret);
+  } catch (err) {
+    console.warn('[StripeWebhook] Signature check failed:', err.message);
+    return res.status(400).json({ error: 'invalid_signature' });
+  }
+
+  const session = event.data.object;
+  // The Stripe account is shared with other Hibarri projects, so their events arrive here too.
+  if (!HANDLED.has(event.type) || session?.metadata?.app !== 'coco') {
+    return res.json({ received: true, ignored: true });
+  }
+
+  const reference = session.client_reference_id || session.metadata?.reference;
+  const isPaid =
+    (event.type === 'checkout.session.completed' && session.payment_status === 'paid') ||
+    event.type === 'checkout.session.async_payment_succeeded';
+
+  try {
+    if (isPaid) {
+      const result = await fulfillOrder(reference, {
+        sessionId: session.id,
+        paymentIntentId: session.payment_intent,
+        amountTotal: session.amount_total,
+        currency: session.currency,
+        source: 'stripe_webhook',
+      });
+      await forwardToLeads(
+        {
+          reference,
+          sessionId: session.id,
+          paymentIntent: session.payment_intent,
+          amount: session.amount_total / 100,
+          currency: session.currency,
+          email: session.customer_details?.email ?? session.customer_email,
+          status: result?.order?.paymentStatus ?? 'unknown',
+          ...session.metadata,
+          paidAt: new Date(event.created * 1000).toISOString(),
+        },
+        'server-order-paid'
+      );
+    } else if (event.type === 'checkout.session.completed') {
+      await Order.updateOne({ reference, paymentStatus: 'awaiting' }, { $set: { paymentStatus: 'processing' } });
+    } else if (event.type === 'checkout.session.async_payment_failed') {
+      await Order.updateOne({ reference, paymentStatus: { $ne: 'paid' } }, { $set: { paymentStatus: 'failed' } });
+      await forwardToLeads({ reference, sessionId: session.id, ...session.metadata }, 'server-order-payment-failed');
+    } else if (event.type === 'checkout.session.expired') {
+      await Order.updateOne({ reference, paymentStatus: 'awaiting' }, { $set: { paymentStatus: 'cancelled' } });
+    }
+  } catch (err) {
+    console.error(`[StripeWebhook] Failed to process ${event.type} for ${reference}:`, err);
+    // A non-2xx makes Stripe retry with backoff, so a paid order is never silently dropped.
+    return res.status(500).json({ error: 'processing_failed' });
+  }
+
+  return res.json({ received: true });
+}

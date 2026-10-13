@@ -97,8 +97,9 @@ export const shippingAddressLines = (l) => [
   l.countryName,
 ];
 
-// Sample Smart Selection configurations. Replace with supplier API data
-// (VITE_CATALOG_ENDPOINT); prices are USD supplier prices before CoCo's markup.
+// Sample Smart Selection configurations; prices are USD supplier prices before CoCo's markup.
+// The backend charges from its own copy (backend/src/data/catalog.js), so keep the two identical,
+// and only set VITE_CATALOG_ENDPOINT once the backend prices from the same source.
 const MODELS = [
   {
     id: 'r660',

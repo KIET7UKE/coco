@@ -236,7 +236,7 @@ export function Faq() {
           <Eyebrow>FAQ</Eyebrow>
           <h2 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight leading-[1.05]">Everything you need to know</h2>
           <p className="mt-5 text-[17px] text-[var(--muted)]">Still unsure? Explore the partner dashboard with sample data, no commitment needed.</p>
-          <Link to="/dashboard" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-coco-purple px-5 py-3 font-semibold text-white hover:bg-[#ad1fff] transition">
+          <Link to="/investors#demo" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-coco-purple px-5 py-3 font-semibold text-white hover:bg-[#ad1fff] transition">
             Open demo dashboard <ArrowRight size={16} />
           </Link>
         </div>
