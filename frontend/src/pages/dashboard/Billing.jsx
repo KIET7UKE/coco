@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion';
-import { Gauge, FileText, CircleCheck, Building, CreditCard, Download, Sparkles } from 'lucide-react';
-import { Card, CardHeader, PageHeader, Stat, Badge, Button, Table, page } from '../../components/dashboard/ui';
-import { Ring } from '../../components/dashboard/charts';
+import { CircleCheck, Building, CreditCard, FileText, Sparkles, CalendarClock } from 'lucide-react';
+import { Card, CardHeader, PageHeader, Stat, Table, EmptyState, page } from '../../components/dashboard/ui';
 import { MobileList } from '../../components/dashboard/tables';
-import { BILLING } from '../../data/dashboard';
+import { useAccountData } from '../../context/AccountDataContext';
+import { orderLabel, fmtDate } from '../../lib/orders';
 import { usd } from '../../data/packages';
+
+const RACK_PREPAID_MONTHS = 24;
 
 const SERVICES = [
   'Customer acquisition & marketing',
@@ -14,112 +16,92 @@ const SERVICES = [
   'Data-center relations & remote hands',
 ];
 
+function prepaidUntil(order) {
+  const from = order?.paidAt || order?.createdAt;
+  if (!from) return null;
+  const d = new Date(from);
+  d.setMonth(d.getMonth() + RACK_PREPAID_MONTHS);
+  return d.toISOString();
+}
+
 export default function Billing() {
-  const { cycle, costs, card } = BILLING;
-  const due = costs.filter((c) => c.status === 'Due').reduce((a, c) => a + c.amount, 0);
+  const { servers, orders } = useAccountData();
+  const paid = orders.filter((o) => o.paymentStatus === 'paid');
+  const byRef = new Map(orders.map((o) => [o.reference, o]));
+  const rows = servers.map((s) => ({ server: s, until: prepaidUntil(byRef.get(s.order)) }));
+  const nextExpiry = rows.map((r) => r.until).filter(Boolean).sort()[0];
 
   return (
     <motion.div {...page}>
-      <PageHeader
-        title="Billing"
-        sub="Customer invoicing CoCo runs for you, and the costs of running your servers."
-        actions={<Button variant="ghost"><Download size={15} /> Tax documents</Button>}
-      />
+      <PageHeader title="Billing" sub="What you've paid for your servers and how long your rack space is covered." />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <span className="text-[15px] font-semibold">Current billing cycle</span>
-            <Gauge size={16} className="text-white/30" />
+        <Stat label="Hardware & rack space paid" value={usd(paid.reduce((a, o) => a + o.quote.total, 0))} sub={`${paid.length} paid ${paid.length === 1 ? 'order' : 'orders'}`} icon={FileText} accent />
+        <Stat label="Rack space prepaid until" value={nextExpiry ? fmtDate(nextExpiry) : '—'} sub={nextExpiry ? 'Earliest across your servers' : 'Starts when an order is paid'} icon={CalendarClock} />
+        <Card className="p-5">
+          <div className="flex items-center gap-2 text-[15px] font-semibold"><Sparkles size={16} className="text-coco-lilac" /> Handled by CoCo</div>
+          <div className="mt-3 space-y-2">
+            {SERVICES.map((s) => (
+              <div key={s} className="flex items-center gap-2.5 text-[12.5px] text-white/70">
+                <CircleCheck size={14} className="shrink-0 text-emerald-400" /> {s}
+              </div>
+            ))}
           </div>
-          <div className="mt-5 flex items-center gap-5">
-            <Ring value={cycle.metered} size={120} stroke={10} label={`${cycle.metered}%`} sub="metered" />
-            <div className="space-y-3 text-[13px]">
-              <div><div className="text-white/45">Cycle</div><div className="font-semibold">{cycle.start} – {cycle.end}</div></div>
-              <div><div className="text-white/45">Days left</div><div className="font-semibold">{cycle.daysLeft} days</div></div>
-            </div>
-          </div>
-          <p className="mt-5 text-[12.5px] leading-relaxed text-white/45">
-            Usage is metered per second on every server. Customer invoices go out automatically on {cycle.end}.
-          </p>
         </Card>
-
-        <div className="grid grid-cols-2 gap-4 lg:col-span-2">
-          <Stat label="Invoices issued for you" value={BILLING.invoicesIssued} sub="Last cycle, in your name" icon={FileText} accent />
-          <Stat label="Collected on time" value={`${BILLING.collectedRate}%`} sub="CoCo chases the rest" icon={CircleCheck} />
-          <Card className="col-span-2 p-5">
-            <div className="flex items-center gap-2 text-[15px] font-semibold"><Sparkles size={16} className="text-coco-lilac" /> Handled by CoCo</div>
-            <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
-              {SERVICES.map((s) => (
-                <div key={s} className="flex items-center gap-2.5 text-[13px] text-white/70">
-                  <CircleCheck size={15} className="shrink-0 text-emerald-400" /> {s}
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader
-            title="Server costs"
-            sub="Data-center and hardware invoices, deducted from your payout"
-            icon={Building}
-            action={due > 0 && <span className="rounded-full bg-amber-400/10 px-2.5 py-1 text-[12px] text-amber-300">{usd(due)} due</span>}
-          />
-          <div className="mt-3">
-            <MobileList>
-              {costs.map((c) => (
-                <li key={c.id} className="px-4 py-3.5">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="text-[13.5px] font-medium leading-snug">{c.item}</span>
-                    <span className="shrink-0 text-[14px] font-semibold tabular">{usd(c.amount)}</span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between gap-3 text-[11.5px] text-white/40">
-                    <span className="truncate font-mono">{c.id} · {c.date}</span>
-                    <Badge>{c.status}</Badge>
-                  </div>
-                </li>
-              ))}
-            </MobileList>
-            <div className="hidden md:block">
-            <Table head={['Invoice', 'Date', 'Item', 'Status', '>Amount']}>
-              {costs.map((c) => (
-                <tr key={c.id} className="transition-colors hover:bg-white/[0.025]">
-                  <td className="px-5 py-3.5 font-mono text-[12px] text-white/60">{c.id}</td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-white/60">{c.date}</td>
-                  <td className="px-5 py-3.5">{c.item}</td>
-                  <td className="px-5 py-3.5"><Badge>{c.status}</Badge></td>
-                  <td className="px-5 py-3.5 text-right font-semibold tabular">{usd(c.amount)}</td>
-                </tr>
-              ))}
-            </Table>
+          <CardHeader title="Rack space" sub={`Colocation, power and remote hands are prepaid for ${RACK_PREPAID_MONTHS} months with every order`} icon={Building} />
+          {rows.length === 0 ? (
+            <EmptyState title="No servers yet">Each server you own and its prepaid rack space are listed here.</EmptyState>
+          ) : (
+            <div className="mt-3">
+              <MobileList>
+                {rows.map(({ server: s, until }) => (
+                  <li key={s.id} className="flex items-center justify-between gap-3 px-4 py-3.5">
+                    <span className="min-w-0">
+                      <span className="block truncate text-[13.5px] font-medium">Server #{s.id}</span>
+                      <span className="block truncate text-[11.5px] text-white/40">{s.datacenter}</span>
+                    </span>
+                    <span className="shrink-0 text-right text-[12.5px] text-white/60">Until {fmtDate(until)}</span>
+                  </li>
+                ))}
+              </MobileList>
+              <div className="hidden md:block">
+                <Table head={['Server', 'Data center', 'Order', '>Prepaid until']}>
+                  {rows.map(({ server: s, until }) => (
+                    <tr key={s.id} className="transition-colors hover:bg-white/[0.025]">
+                      <td className="px-5 py-3.5 font-medium">Server #{s.id}</td>
+                      <td className="px-5 py-3.5 text-white/60">{s.datacenter}</td>
+                      <td className="px-5 py-3.5 font-mono text-[12px] text-white/50">{s.order}</td>
+                      <td className="px-5 py-3.5 text-right font-medium tabular">{fmtDate(until)}</td>
+                    </tr>
+                  ))}
+                </Table>
+              </div>
             </div>
-          </div>
+          )}
         </Card>
 
         <Card className="p-6">
-          <div className="flex items-center gap-2 text-[15px] font-semibold"><CreditCard size={16} className="text-coco-lilac" /> Payment method</div>
-          <p className="mt-1 text-[12.5px] text-white/45">Used for server purchases and any costs your payout doesn't cover.</p>
-          <motion.div
-            whileHover={{ rotateX: 6, rotateY: -8 }}
-            style={{ transformPerspective: 800 }}
-            className="on-accent relative mt-5 aspect-[1.6] overflow-hidden rounded-2xl bg-gradient-to-br from-[#5b00a3] via-[#2a0a4a] to-black p-5 shadow-[0_20px_50px_-20px_rgba(158,0,255,0.7)]"
-          >
-            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-            <div className="relative flex h-full flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <span className="text-[12px] font-semibold tracking-widest text-white/70">COCO PARTNER</span>
-                <span className="text-[15px] font-bold italic">{card.brand.toUpperCase()}</span>
-              </div>
-              <div>
-                <div className="font-mono text-[16px] tracking-[0.2em]">•••• •••• •••• {card.last4}</div>
-                <div className="mt-2 flex justify-between text-[11px] text-white/60"><span>ANJE KRUGER</span><span>EXP {card.exp}</span></div>
-              </div>
-            </div>
-          </motion.div>
-          <Button variant="ghost" className="mt-5 w-full">Replace card</Button>
+          <div className="flex items-center gap-2 text-[15px] font-semibold"><CreditCard size={16} className="text-coco-lilac" /> Purchases</div>
+          <p className="mt-1 text-[12.5px] text-white/45">Card payments are processed by Stripe. CoCo never stores your card details.</p>
+          {paid.length === 0 ? (
+            <p className="mt-6 text-[13px] text-white/40">No paid orders yet.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-white/[0.05] text-[13px]">
+              {paid.map((o) => (
+                <li key={o.reference} className="flex justify-between gap-3 py-2.5">
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">{orderLabel(o)}</span>
+                    <span className="block text-[11.5px] text-white/40">{o.reference} · {fmtDate(o.paidAt || o.createdAt)}</span>
+                  </span>
+                  <span className="shrink-0 font-semibold tabular">{usd(o.quote.total)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </Card>
       </div>
     </motion.div>

@@ -73,8 +73,14 @@ const BADGE = {
   Migrating: 'bg-amber-400/10 text-amber-300 ring-amber-400/20',
   Provisioning: 'bg-sky-400/10 text-sky-300 ring-sky-400/20',
   Ordered: 'bg-sky-400/10 text-sky-300 ring-sky-400/20',
+  Procuring: 'bg-sky-400/10 text-sky-300 ring-sky-400/20',
+  Shipping: 'bg-sky-400/10 text-sky-300 ring-sky-400/20',
+  Racking: 'bg-sky-400/10 text-sky-300 ring-sky-400/20',
   'Awaiting payment': 'bg-amber-400/10 text-amber-300 ring-amber-400/20',
   'Payment processing': 'bg-amber-400/10 text-amber-300 ring-amber-400/20',
+  'Payment under review': 'bg-amber-400/10 text-amber-300 ring-amber-400/20',
+  'Payment failed': 'bg-rose-400/10 text-rose-300 ring-rose-400/20',
+  Cancelled: 'bg-white/[0.06] text-white/60 ring-white/10',
   Trial: 'bg-sky-400/10 text-sky-300 ring-sky-400/20',
   Scheduled: 'bg-coco-purple/15 text-coco-lilac ring-coco-purple/30',
   Failed: 'bg-rose-400/10 text-rose-300 ring-rose-400/20',
@@ -101,6 +107,21 @@ export function Meter({ value, className = '', tone }) {
         animate={{ width: `${Math.min(value, 100)}%` }}
         transition={{ duration: 0.9, ease: EASE }}
       />
+    </div>
+  );
+}
+
+export function EmptyState({ icon: Icon, title, children, action }) {
+  return (
+    <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
+      {Icon && (
+        <span className="mb-1 grid h-11 w-11 place-items-center rounded-xl bg-coco-purple/10 text-coco-lilac">
+          <Icon size={19} />
+        </span>
+      )}
+      <div className="text-[14.5px] font-semibold">{title}</div>
+      {children && <div className="max-w-md text-[13px] leading-relaxed text-white/45">{children}</div>}
+      {action && <div className="mt-3">{action}</div>}
     </div>
   );
 }

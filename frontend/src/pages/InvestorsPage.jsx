@@ -58,8 +58,11 @@ function Hero({ light, onBuy }) {
                 <ArrowDownRight size={17} />
               </span>
             </a>
-            <Link to="/dashboard" className="rounded-xl bg-black/40 px-5 py-3.5 text-[15px] font-semibold text-white backdrop-blur hover:bg-black/60 transition">
+            <Link to="/investors#demo" className="rounded-xl bg-black/40 px-5 py-3.5 text-[15px] font-semibold text-white backdrop-blur hover:bg-black/60 transition">
               See the dashboard
+            </Link>
+            <Link to="/investors/login" className="rounded-xl border border-white/20 bg-white/10 px-5 py-3.5 text-[15px] font-semibold text-white backdrop-blur hover:bg-white/20 transition">
+              Partner Portal
             </Link>
           </motion.div>
 
@@ -68,7 +71,8 @@ function Hero({ light, onBuy }) {
             animate={{ opacity: 1, y: 0, rotateX: 0 }}
             transition={{ duration: 1.2, delay: 0.35, ease: EASE }}
             style={{ transformPerspective: 1400 }}
-            className="mx-auto mt-16 max-w-[980px] text-left"
+            id="demo"
+            className="mx-auto mt-16 max-w-[980px] scroll-mt-24 text-left"
           >
             <PartnerDemo light={light} onBuy={onBuy} />
           </motion.div>

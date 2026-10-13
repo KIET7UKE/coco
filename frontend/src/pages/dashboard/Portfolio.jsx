@@ -1,89 +1,102 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Cpu, Gauge, Users, Server, ArrowRight, CircleDollarSign, CalendarClock, CreditCard, TriangleAlert, UserRound, PackageCheck, Download } from 'lucide-react';
-import { Card, CardHeader, PageHeader, Stat, Button, Segmented, page } from '../../components/dashboard/ui';
-import { AreaChart, Bars, Ring } from '../../components/dashboard/charts';
-import { ServersTable, CustomersTable } from '../../components/dashboard/tables';
-import { PORTFOLIO, DAILY_REVENUE, MONTHLY_REVENUE, CUSTOMERS, ACTIVITY, PARTNER } from '../../data/dashboard';
+import { Cpu, Gauge, Users, Server, ArrowRight, CircleDollarSign, Wallet, TriangleAlert, Info, PackageCheck, ShoppingCart, BarChart3 } from 'lucide-react';
+import { Card, CardHeader, PageHeader, Stat, Button, Badge, EmptyState, page } from '../../components/dashboard/ui';
+import { Bars, Ring } from '../../components/dashboard/charts';
+import { ServersTable } from '../../components/dashboard/tables';
 import { usd } from '../../data/packages';
 import { Counter } from '../../components/ui/motion';
-import { useOrders, useServers, orderStatus } from '../../lib/orders';
+import { useAccountData, useDashboardPath } from '../../context/AccountDataContext';
+import { orderStatus, orderLabel, fmtDate } from '../../lib/orders';
 
-const ACTIVITY_ICON = { pay: CreditCard, alert: TriangleAlert, user: UserRound, server: Server, order: PackageCheck };
+const ACTIVITY_ICON = { order: PackageCheck, info: Info, warning: TriangleAlert, critical: TriangleAlert };
 
 function greeting() {
   const h = new Date().getHours();
   return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
 }
 
-export default function Portfolio() {
-  const navigate = useNavigate();
-  const [range, setRange] = useState('30 days');
-  const p = PORTFOLIO;
-  const servers = useServers();
-  const orders = useOrders();
-  const activity = [
+function buildActivity(orders, servers) {
+  const items = [
     ...orders.map((o) => ({
       icon: 'order',
-      text: `Order ${o.reference}: ${o.qty} × ${o.model.name} for ${o.dataCenter.provider}, ${o.dataCenter.city} (${orderStatus(o).toLowerCase()})`,
-      time: new Date(o.placedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      text: `Order ${o.reference}: ${orderLabel(o)} for ${o.dataCenter.provider}, ${o.dataCenter.city} (${orderStatus(o).toLowerCase()})`,
+      at: new Date(o.paidAt || o.createdAt),
     })),
-    ...ACTIVITY,
-  ].slice(0, 6);
-  const change = ((p.thisMonthRevenue - p.lastMonthRevenue) / p.lastMonthRevenue) * 100;
-  const dayLabels = DAILY_REVENUE.map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (DAILY_REVENUE.length - 1 - i));
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  });
+    ...servers.flatMap((s) =>
+      s.alerts.map((a) => ({ icon: a.level, text: `Server #${s.id}: ${a.title}`, at: new Date(a.at) }))
+    ),
+  ];
+  return items.sort((a, b) => b.at - a.at).slice(0, 6);
+}
+
+export default function Portfolio() {
+  const navigate = useNavigate();
+  const path = useDashboardPath();
+  const { servers, orders, portfolio, loading, user } = useAccountData();
+  const p = portfolio ?? {};
+  const firstName = user?.name?.split(' ')[0] ?? '';
+  const activity = buildActivity(orders, servers);
+  const hasRevenue = (p.monthlyRevenue ?? []).some((m) => m.v > 0);
+  const change = p.lastMonthRevenue ? ((p.thisMonthRevenue - p.lastMonthRevenue) / p.lastMonthRevenue) * 100 : null;
+
+  if (loading && !portfolio) {
+    return <div className="h-96 animate-pulse rounded-2xl border border-white/[0.07] bg-[#0e0d13]" />;
+  }
 
   return (
     <motion.div {...page}>
       <PageHeader
-        title={`${greeting()}, ${PARTNER.name.split(' ')[0]}`}
-        sub="Here's how your servers are performing across the CoCo network."
-        actions={
-          <>
-            <Button variant="ghost"><Download size={15} /> Export</Button>
-            <Button onClick={() => navigate('/dashboard/buy')}>Buy server</Button>
-          </>
-        }
+        title={`${greeting()}, ${firstName}`}
+        sub={servers.length ? "Here's how your servers are performing across the CoCo network." : 'Welcome to CoCo. Your servers and earnings will show up here.'}
+        actions={<Button onClick={() => navigate(path('/buy'))}>Buy server</Button>}
       />
+
+      {servers.length === 0 && orders.length === 0 && (
+        <Card className="mb-4">
+          <EmptyState
+            icon={ShoppingCart}
+            title="You don't own any servers yet"
+            action={<Button onClick={() => navigate(path('/buy'))}>Buy your first server</Button>}
+          >
+            Pick a server and a data center. We order it from Dell, ship it free to the data center you chose, rack it and get it earning. It appears here as soon as you pay.
+          </EmptyState>
+        </Card>
+      )}
 
       <div className="grid gap-4 xl:grid-cols-3">
         <Card className="xl:col-span-2">
-          <CardHeader
-            title="My Portfolio"
-            sub="Revenue earned from compute sold on your servers"
-            action={<Segmented id="range" options={['7 days', '30 days', '6 months']} value={range} onChange={setRange} />}
-          />
+          <CardHeader title="My Portfolio" sub="Revenue earned from compute sold on your servers" />
           <div className="grid grid-cols-2 gap-4 px-4 pt-5 sm:gap-6 sm:px-5">
             <div>
               <div className="text-[12.5px] text-white/50">This Month's Revenue</div>
               <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5">
                 <span className="text-[26px] font-bold tracking-tight sm:text-4xl">
-                  <Counter value={p.thisMonthRevenue} format={(n) => usd(n)} />
+                  <Counter value={p.thisMonthRevenue ?? 0} format={(n) => usd(n)} />
                 </span>
-                <span className={`text-[13px] font-semibold ${change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {change >= 0 ? '↑' : '↓'} {Math.abs(change).toFixed(1)}%
-                </span>
+                {change !== null && (
+                  <span className={`text-[13px] font-semibold ${change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {change >= 0 ? '↑' : '↓'} {Math.abs(change).toFixed(1)}%
+                  </span>
+                )}
               </div>
-              <div className="mt-0.5 text-[12px] text-white/35">Month to date · 6 days remaining</div>
+              <div className="mt-0.5 text-[12px] text-white/35">Month to date</div>
             </div>
             <div className="border-l border-white/[0.06] pl-4 sm:pl-6">
-              <div className="text-[12.5px] text-white/50">Last Month's Revenue</div>
+              <div className="text-[12.5px] text-white/50">Revenue to date</div>
               <div className="mt-1 text-[26px] font-bold tracking-tight text-white/80 sm:text-4xl">
-                <Counter value={p.lastMonthRevenue} format={(n) => usd(n)} />
+                <Counter value={p.revenueToDate ?? 0} format={(n) => usd(n)} />
               </div>
-              <div className="mt-0.5 text-[12px] text-white/35">September 2026 · paid out</div>
+              <div className="mt-0.5 text-[12px] text-white/35">{usd(p.totalInvested ?? 0)} invested</div>
             </div>
           </div>
           <div className="px-3 pb-3 pt-4">
-            {range === '6 months' ? (
-              <div className="px-2 pb-2 pt-6"><Bars data={MONTHLY_REVENUE} height={200} format={usd} /></div>
+            {hasRevenue ? (
+              <div className="px-2 pb-2 pt-6"><Bars data={p.monthlyRevenue} height={200} format={usd} /></div>
             ) : (
-              <AreaChart data={range === '7 days' ? DAILY_REVENUE.slice(-7) : DAILY_REVENUE} labels={range === '7 days' ? dayLabels.slice(-7) : dayLabels} format={usd} height={220} />
+              <EmptyState icon={BarChart3} title="No revenue yet">
+                Revenue starts once a server is racked, passes burn-in and goes online. Monthly earnings will chart here.
+              </EmptyState>
             )}
           </div>
         </Card>
@@ -95,15 +108,15 @@ export default function Portfolio() {
               <Gauge size={16} className="text-white/30" />
             </div>
             <div className="mt-4 flex items-center gap-5">
-              <Ring value={p.utilization} size={124} stroke={11} label={`${p.utilization}%`} sub="sold" />
+              <Ring value={p.utilization ?? 0} size={124} stroke={11} label={`${p.utilization ?? 0}%`} sub="sold" />
               <div className="flex-1 space-y-3 text-[13px]">
                 <div>
                   <div className="text-white/45">Compute Sold</div>
-                  <div className="text-lg font-bold tabular">{p.computeSold} vCPU</div>
+                  <div className="text-lg font-bold tabular">{p.computeSold ?? 0} vCPU</div>
                 </div>
                 <div>
-                  <div className="text-white/45">Available Compute</div>
-                  <div className="text-lg font-bold tabular">{p.availableCompute} vCPU</div>
+                  <div className="text-white/45">Online Compute</div>
+                  <div className="text-lg font-bold tabular">{p.availableCompute ?? 0} vCPU</div>
                 </div>
               </div>
             </div>
@@ -114,17 +127,9 @@ export default function Portfolio() {
               <span className="text-[15px] font-semibold">Pending Payout</span>
               <CircleDollarSign size={16} className="text-white/30" />
             </div>
-            <div className="relative mt-2 text-4xl font-bold tracking-tight tabular">{usd(p.pendingPayout)}</div>
-            <div className="relative mt-4 flex items-center justify-between text-[12.5px]">
-              <span className="flex items-center gap-1.5 text-white/50"><CalendarClock size={14} /> Next Payout</span>
-              <span className="font-semibold">{p.nextPayoutDays} Days</span>
-            </div>
-            <div className="relative mt-2 flex gap-1">
-              {Array.from({ length: 30 }).map((_, i) => (
-                <span key={i} className={`h-1.5 flex-1 rounded-full ${i < 23 ? 'bg-coco-violet' : 'bg-white/10'}`} />
-              ))}
-            </div>
-            <Link to="/dashboard/payouts" className="relative mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-coco-lilac hover:text-white">
+            <div className="relative mt-2 text-4xl font-bold tracking-tight tabular">{usd(p.pendingPayout ?? 0)}</div>
+            <div className="relative mt-3 text-[12.5px] text-white/50">This month's revenue after CoCo's {Math.round((p.cocoFeeRate ?? 0.2) * 100)}% fee.</div>
+            <Link to={path('/payouts')} className="relative mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-coco-lilac hover:text-white">
               View payout breakdown <ArrowRight size={14} />
             </Link>
           </Card>
@@ -132,56 +137,84 @@ export default function Portfolio() {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Available Compute" value={`${p.availableCompute} vCPU`} sub="Across all servers" icon={Cpu} />
-        <Stat label="Compute Sold" value={`${p.computeSold} vCPU`} sub={`${p.availableCompute - p.computeSold} vCPU free to sell`} icon={Cpu} />
-        <Stat label="Active Customers" value={<Counter value={p.activeCustomers} />} sub="+12 this month" icon={Users} />
-        <Stat label="Active Servers" value={<Counter value={p.activeServers} />} sub="Dallas · Miami · Ashburn" icon={Server} />
+        <Stat label="Online Compute" value={`${p.availableCompute ?? 0} vCPU`} sub="Across online servers" icon={Cpu} />
+        <Stat label="Compute Sold" value={`${p.computeSold ?? 0} vCPU`} sub={`${(p.availableCompute ?? 0) - (p.computeSold ?? 0)} vCPU free to sell`} icon={Cpu} />
+        <Stat label="Active Customers" value={<Counter value={p.activeCustomers ?? 0} />} sub="Running workloads now" icon={Users} />
+        <Stat
+          label="Servers"
+          value={<Counter value={p.totalServers ?? 0} />}
+          sub={p.totalServers ? `${p.activeServers} online${p.pendingServers ? ` · ${p.pendingServers} on the way` : ''}` : 'None yet'}
+          icon={Server}
+        />
       </div>
 
-      <Card className="mt-4">
-        <CardHeader
-          title="Servers"
-          sub="Click a server to see full hardware, utilization and revenue detail"
-          icon={Server}
-          action={<Link to="/dashboard/servers" className="text-[13px] font-medium text-coco-lilac hover:text-white">View all {servers.length}</Link>}
-        />
-        <div className="mt-3"><ServersTable servers={servers.slice(0, 3)} /></div>
-      </Card>
+      {servers.length > 0 && (
+        <Card className="mt-4">
+          <CardHeader
+            title="Servers"
+            sub="Click a server to see hardware, data center, status and revenue"
+            icon={Server}
+            action={<Link to={path('/servers')} className="text-[13px] font-medium text-coco-lilac hover:text-white">View all {servers.length}</Link>}
+          />
+          <div className="mt-3"><ServersTable servers={servers.slice(0, 3)} /></div>
+        </Card>
+      )}
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <Card className="xl:col-span-2">
           <CardHeader
-            title="Customers"
-            sub="Top customers by revenue this month"
-            icon={Users}
-            action={<Link to="/dashboard/customers" className="text-[13px] font-medium text-coco-lilac hover:text-white">View all {p.activeCustomers}</Link>}
+            title="Orders"
+            sub="Your server purchases and their payment status"
+            icon={Wallet}
+            action={orders.length > 0 && <Link to={path('/payments')} className="text-[13px] font-medium text-coco-lilac hover:text-white">View all {orders.length}</Link>}
           />
-          <div className="mt-3"><CustomersTable customers={CUSTOMERS.slice(0, 3)} /></div>
+          {orders.length ? (
+            <ul className="mt-3 divide-y divide-white/[0.05] border-t border-white/[0.06]">
+              {orders.slice(0, 4).map((o) => (
+                <li key={o.reference} className="flex items-center justify-between gap-3 px-4 py-3.5 sm:px-5">
+                  <div className="min-w-0">
+                    <div className="truncate text-[13.5px] font-semibold">{orderLabel(o)}</div>
+                    <div className="truncate text-[12px] text-white/45">{o.reference} · {o.dataCenter.facility}, {o.dataCenter.city} · {fmtDate(o.createdAt)}</div>
+                  </div>
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    <span className="text-[13.5px] font-semibold tabular">{usd(o.quote.total)}</span>
+                    <Badge>{orderStatus(o)}</Badge>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState title="No orders yet">Orders you place show here with their payment status.</EmptyState>
+          )}
         </Card>
         <Card>
-          <CardHeader title="Recent activity" sub="Across your servers" />
-          <ul className="mt-3 space-y-1 px-3 pb-4">
-            {activity.map((a, i) => {
-              const Icon = ACTIVITY_ICON[a.icon];
-              return (
-                <motion.li
-                  key={a.text}
-                  initial={{ opacity: 0, x: 8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.15 + i * 0.06 }}
-                  className="flex gap-3 rounded-xl px-2 py-2.5 hover:bg-white/[0.02]"
-                >
-                  <span className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg ${a.icon === 'alert' ? 'bg-amber-400/10 text-amber-300' : 'bg-white/[0.05] text-white/60'}`}>
-                    <Icon size={14} />
-                  </span>
-                  <div className="min-w-0">
-                    <div className="text-[13px] leading-snug text-white/80">{a.text}</div>
-                    <div className="mt-0.5 text-[11.5px] text-white/35">{a.time}</div>
-                  </div>
-                </motion.li>
-              );
-            })}
-          </ul>
+          <CardHeader title="Recent activity" sub="Across your orders and servers" />
+          {activity.length ? (
+            <ul className="mt-3 space-y-1 px-3 pb-4">
+              {activity.map((a, i) => {
+                const Icon = ACTIVITY_ICON[a.icon] ?? Info;
+                return (
+                  <motion.li
+                    key={`${a.text}-${i}`}
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.15 + i * 0.06 }}
+                    className="flex gap-3 rounded-xl px-2 py-2.5 hover:bg-white/[0.02]"
+                  >
+                    <span className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg ${a.icon === 'warning' || a.icon === 'critical' ? 'bg-amber-400/10 text-amber-300' : 'bg-white/[0.05] text-white/60'}`}>
+                      <Icon size={14} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-[13px] leading-snug text-white/80">{a.text}</div>
+                      <div className="mt-0.5 text-[11.5px] text-white/35">{a.at.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                    </div>
+                  </motion.li>
+                );
+              })}
+            </ul>
+          ) : (
+            <EmptyState title="Nothing yet">Order updates and server alerts will appear here.</EmptyState>
+          )}
         </Card>
       </div>
     </motion.div>

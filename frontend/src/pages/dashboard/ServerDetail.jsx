@@ -7,12 +7,13 @@ import {
   Building, Users, CircleCheck, LifeBuoy, CalendarDays, Hash, Clock, Unplug,
 } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
-import { Card, CardHeader, Badge, Meter, Button, page } from '../../components/dashboard/ui';
+import { Card, CardHeader, Badge, Button, page } from '../../components/dashboard/ui';
 import { Bars, Ring, Sparkline } from '../../components/dashboard/charts';
-import { CustomersTable } from '../../components/dashboard/tables';
-import { CUSTOMERS } from '../../data/dashboard';
-import { useServers } from '../../lib/orders';
+import { useAccountData, useDashboardPath } from '../../context/AccountDataContext';
+import { api } from '../../lib/api';
 import { usd } from '../../data/packages';
+
+const SUPPORT_EMAIL = 'coco@hibarri.com';
 
 const fmtGb = (gb) => (gb >= 1024 ? `${(gb / 1024).toFixed(gb % 1024 ? 2 : 1)} TB` : `${gb} GB`);
 
@@ -61,7 +62,7 @@ const ALERT_STYLE = {
   info: { icon: Info, cls: 'border-sky-400/25 bg-sky-400/[0.06] text-sky-300' },
 };
 
-function DisconnectDialog({ server, onClose, onConfirm }) {
+function DisconnectDialog({ server, onClose, onConfirm, busy, error }) {
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -91,7 +92,7 @@ function DisconnectDialog({ server, onClose, onConfirm }) {
         <ul className="mt-5 space-y-2.5 text-[13.5px] text-white/75">
           {[
             'No cancellation fee.',
-            "You're still paid out for this month's outstanding earnings on the 28th.",
+            "You're still paid out for this month's outstanding earnings.",
             `You can visit, collect or deal with ${server.datacenter.split(' · ')[0]} directly at any time.`,
             'Sell it yourself, back to us, or into the CoCo owners network.',
           ].map((t) => (
@@ -101,10 +102,11 @@ function DisconnectDialog({ server, onClose, onConfirm }) {
             </li>
           ))}
         </ul>
+        {error && <p role="alert" className="mt-5 rounded-xl bg-rose-400/10 px-3.5 py-2.5 text-[13px] text-rose-300">{error}</p>}
         <div className="mt-7 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button variant="ghost" onClick={onClose}>Keep connected</Button>
-          <button onClick={onConfirm} className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500 px-4 py-2.5 text-[13.5px] font-semibold text-white transition hover:bg-rose-600">
-            <Unplug size={15} /> Disconnect server
+          <button onClick={onConfirm} disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500 px-4 py-2.5 text-[13.5px] font-semibold text-white transition hover:bg-rose-600 disabled:opacity-60">
+            <Unplug size={15} /> {busy ? 'Sending…' : 'Disconnect server'}
           </button>
         </div>
       </motion.div>
@@ -115,27 +117,64 @@ function DisconnectDialog({ server, onClose, onConfirm }) {
 
 export default function ServerDetail() {
   const { id } = useParams();
-  const s = useServers().find((x) => x.id === id);
+  const { servers, loading, replaceServer, demo } = useAccountData();
+  const path = useDashboardPath();
+  const s = servers.find((x) => x.id === id);
   const [confirming, setConfirming] = useState(false);
-  const [disconnected, setDisconnected] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
   if (!s) {
+    if (loading) return <div className="h-96 animate-pulse rounded-2xl border border-white/[0.07] bg-[#0e0d13]" />;
     return (
       <div className="py-24 text-center">
         <p className="text-white/50">Server #{id} wasn't found.</p>
-        <Link to="/dashboard/servers" className="mt-4 inline-block text-coco-lilac">Back to servers</Link>
+        <Link to={path('/servers')} className="mt-4 inline-block text-coco-lilac">Back to servers</Link>
       </div>
     );
   }
 
-  const customers = CUSTOMERS.filter((c) => c.server === s.id);
-  const dcTotal = Object.values(s.dcCosts).reduce((a, b) => a + b, 0);
-  const roi = (s.revenueToDate / s.purchasePrice) * 100;
+  const disconnected = s.disconnectRequested;
+  const requestDisconnect = async () => {
+    if (demo) {
+      const now = new Date();
+      replaceServer({
+        ...s,
+        disconnectRequested: true,
+        alerts: [
+          {
+            level: 'warning',
+            title: 'Disconnect requested',
+            detail: 'You asked to disconnect this server. Our team will move workloads off it and confirm next steps by email.',
+            time: now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+            at: now.toISOString(),
+          },
+          ...s.alerts,
+        ],
+      });
+      setConfirming(false);
+      return;
+    }
+    setBusy(true);
+    setError('');
+    try {
+      const data = await api(`/api/servers/${encodeURIComponent(s.id)}/disconnect-request`, { method: 'POST' });
+      replaceServer(data.server);
+      setConfirming(false);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const roi = s.purchasePrice ? (s.revenueToDate / s.purchasePrice) * 100 : 0;
   const facility = s.datacenter.split(' · ');
+  const supportHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`Support for server ${s.serial}`)}`;
 
   return (
     <motion.div {...page}>
-      <Link to="/dashboard/servers" className="inline-flex items-center gap-1.5 text-[13px] text-white/50 hover:text-white">
+      <Link to={path('/servers')} className="inline-flex items-center gap-1.5 text-[13px] text-white/50 hover:text-white">
         <ArrowLeft size={15} /> All servers
       </Link>
 
@@ -148,11 +187,13 @@ export default function ServerDetail() {
           <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-white/50">
             <span className="flex items-center gap-1.5"><MapPin size={14} />{s.datacenter}</span>
             <span className="flex items-center gap-1.5"><Cpu size={14} />{s.cpu} · {s.ram}{s.gpu ? ` · ${s.gpu}` : ''}</span>
-            <span className="flex items-center gap-1.5"><Activity size={14} />{s.uptime}% uptime</span>
+            {s.status === 'Online' && s.uptime > 0 && <span className="flex items-center gap-1.5"><Activity size={14} />{s.uptime}% uptime</span>}
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="ghost"><LifeBuoy size={15} /> Request support</Button>
+          <a href={supportHref} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-[13.5px] font-semibold text-white/80 transition hover:bg-white/[0.07] hover:text-white">
+            <LifeBuoy size={15} /> Request support
+          </a>
           {!disconnected && (
             <Button variant="ghost" onClick={() => setConfirming(true)} className="hover:!border-rose-400/40 hover:!text-rose-300">
               <Unplug size={15} /> Disconnect
@@ -164,17 +205,19 @@ export default function ServerDetail() {
       {disconnected && (
         <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-400/25 bg-amber-400/[0.06] px-4 py-3 text-[13.5px] text-amber-300">
           <Unplug size={16} className="mt-0.5 shrink-0" />
-          Disconnect requested. Workloads are being moved off this server and your outstanding earnings will be paid on the 28th.
+          Disconnect requested. Our team will move workloads off this server and confirm next steps by email.
         </div>
       )}
       {confirming && (
         <DisconnectDialog
           server={s}
-          onClose={() => setConfirming(false)}
-          onConfirm={() => {
+          busy={busy}
+          error={error}
+          onClose={() => {
             setConfirming(false);
-            setDisconnected(true);
+            setError('');
           }}
+          onConfirm={requestDisconnect}
         />
       )}
 
@@ -182,7 +225,12 @@ export default function ServerDetail() {
         <KPI label="Purchase Price" value={usd(s.purchasePrice)} sub={`Bought ${s.purchasedOn}`} icon={CalendarDays} />
         <KPI label="Revenue to Date" value={usd(s.revenueToDate)} sub={`${roi.toFixed(0)}% of purchase price recovered`} icon={Activity} accent />
         <KPI label="Revenue Generated" value={usd(s.revenue)} sub="This month" icon={Activity} />
-        <KPI label="Uptime" value={`${s.uptime}%`} sub={`${s.uptimeDays} days in service`} icon={Clock} />
+        <KPI
+          label="Uptime"
+          value={s.status === 'Online' && s.uptime > 0 ? `${s.uptime}%` : '—'}
+          sub={s.uptimeDays ? `${s.uptimeDays} ${s.uptimeDays === 1 ? 'day' : 'days'} in service` : s.status === 'Online' ? 'Went online today' : 'Not in service yet'}
+          icon={Clock}
+        />
         <KPI label="Current Customers" value={s.customers} sub="Workloads running now" icon={Users} />
       </div>
 
@@ -261,22 +309,10 @@ export default function ServerDetail() {
               </address>
             )}
           </div>
-          <div className="mt-4 text-[12px] font-semibold uppercase tracking-wider text-white/40">Data-center costs / month</div>
-          <dl className="mt-2 divide-y divide-white/[0.05] text-[13px]">
-            {[
-              ['Colocation', s.dcCosts.colocation],
-              ['Power', s.dcCosts.power],
-              ['Cross-connect', s.dcCosts.crossConnect],
-              ['Remote hands', s.dcCosts.remoteHands],
-            ].map(([k, v]) => (
-              <div key={k} className="flex justify-between py-2.5">
-                <dt className="text-white/45">{k}</dt>
-                <dd className="font-medium tabular">{usd(v)}</dd>
-              </div>
-            ))}
-            <div className="flex justify-between py-2.5">
-              <dt className="font-semibold">Total</dt>
-              <dd className="font-bold tabular text-coco-lilac">{usd(dcTotal)}</dd>
+          <dl className="mt-4 text-[13px]">
+            <div className="flex justify-between gap-3 py-2.5">
+              <dt className="text-white/45">Rack space, power & remote hands</dt>
+              <dd className="font-medium">Prepaid 24 months</dd>
             </div>
           </dl>
         </Card>
@@ -294,10 +330,10 @@ export default function ServerDetail() {
                 <div className="text-[12px] text-white/45">CPU, memory, disks, fans and PSUs reporting normally.</div>
               </div>
             )}
-            {s.alerts.map((a) => {
-              const st = ALERT_STYLE[a.level];
+            {s.alerts.map((a, i) => {
+              const st = ALERT_STYLE[a.level] ?? ALERT_STYLE.info;
               return (
-                <div key={a.title} className={`rounded-xl border p-3.5 ${st.cls}`}>
+                <div key={`${a.title}-${i}`} className={`rounded-xl border p-3.5 ${st.cls}`}>
                   <div className="flex items-start gap-2.5">
                     <st.icon size={16} className="mt-0.5 shrink-0" />
                     <div className="min-w-0">
@@ -314,16 +350,16 @@ export default function ServerDetail() {
       </div>
 
       <Card className="mt-4">
-        <CardHeader title="Current customers" sub={`${s.customers} customers running workloads on Server #${s.id}`} icon={Users} />
-        <div className="mt-3">
-          {customers.length ? (
-            <CustomersTable customers={customers} />
-          ) : (
-            <div className="px-5 pb-8 pt-4 text-[13px] text-white/40">No customer workloads are on this server right now.</div>
-          )}
+        <CardHeader title="Current customers" sub={`${s.customers} ${s.customers === 1 ? 'customer' : 'customers'} running workloads on Server #${s.id}`} icon={Users} />
+        <div className="px-5 pb-6 pt-4 text-[13px] text-white/45">
+          {s.customers
+            ? 'CoCo places, bills and supports these customers for you. Their identities are kept private.'
+            : s.status === 'Online'
+              ? 'No customer workloads are on this server right now.'
+              : 'Customers are placed on this server once it goes online.'}
         </div>
       </Card>
-      <div className="mt-3 flex items-center gap-1.5 text-[11.5px] text-white/30"><Hash size={12} /> Showing your largest customers on this server. Smaller workloads are grouped in totals.</div>
+      <div className="mt-3 flex items-center gap-1.5 text-[11.5px] text-white/30"><Hash size={12} /> Serial {s.serial} · Order {s.order}</div>
     </motion.div>
   );
 }
