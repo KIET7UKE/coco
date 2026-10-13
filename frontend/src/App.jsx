@@ -62,8 +62,6 @@ export default function App() {
           <Route path="/live/checkout" element={<RequireAuth><CheckoutPage funnel /></RequireAuth>} />
           <Route path="/page/:slug" element={<CmsPage />} />
           <Route path="/blog" element={<BlogIndex />} />
-          <Route path="/:topic" element={<BlogTopic />} />
-          <Route path="/:topic/:slug" element={<BlogPost />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
       </Suspense>
