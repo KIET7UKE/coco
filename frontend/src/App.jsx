@@ -14,8 +14,6 @@ const OfferPage = lazy(() => import('./pages/live/OfferPage'));
 const CheckoutPage = lazy(() => import('./pages/live/CheckoutPage'));
 const CmsPage = lazy(() => import('./pages/CmsPage'));
 const BlogIndex = lazy(() => import('./pages/BlogIndex'));
-const BlogTopic = lazy(() => import('./pages/BlogTopic'));
-const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
 
 function ScrollManager() {
