@@ -83,10 +83,20 @@ function MenuPanel({ menu }) {
         )}
         {feature.jobs && (
           <div className="mt-5 space-y-2">
-            {feature.jobs.map((job) => (
-              <div key={job} className="rounded-lg bg-white/[0.04] px-3.5 py-2.5 text-[13px] text-white/70 hover:bg-white/[0.07] hover:text-white transition-colors">
+            {feature.jobs.map((job, i) => (
+              <motion.div
+                key={job}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.12 + i * 0.08, duration: 0.4, ease: EASE }}
+                className="flex items-center gap-2.5 rounded-lg bg-white/[0.04] px-3.5 py-2.5 text-[13px] text-white/70 hover:bg-white/[0.07] hover:text-white transition-colors"
+              >
+                <span className="relative flex h-1.5 w-1.5 shrink-0">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-coco-violet opacity-60" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-coco-violet" />
+                </span>
                 {job}
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
@@ -104,16 +114,16 @@ function MenuPanel({ menu }) {
   );
 }
 
-function NavLink({ href, className, children, onClick }) {
+function NavLink({ href, className, style, children, onClick }) {
   if (href.startsWith('/#') || href.startsWith('#')) {
     return (
-      <a href={href} className={className} onClick={onClick}>
+      <a href={href} className={className} style={style} onClick={onClick}>
         {children}
       </a>
     );
   }
   return (
-    <Link to={href} className={className} onClick={onClick}>
+    <Link to={href} className={className} style={style} onClick={onClick}>
       {children}
     </Link>
   );
