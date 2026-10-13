@@ -9,20 +9,25 @@ import { getCatalog, getLocation, locationLabel, shippingAddressLines } from '..
 import { quote, selectionFromQuery, selectionQuery, RACK_MONTHS } from '../../lib/pricing';
 import { getRegistration } from '../../lib/broadcast';
 import { submitLead } from '../../lib/leads';
-import { orderRecord, saveOrder } from '../../lib/orders';
+import { api } from '../../lib/api';
 import { useFormTracking } from '../../hooks/useFormTracking';
 import { BANK, ENDPOINTS } from '../../config/funnel';
 import { FAQ } from '../../data/funnel';
 import { usd } from '../../data/packages';
+import { useAuth } from '../../context/AuthContext';
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const CARD_ERRORS = {
+const ORDER_ERRORS = {
   not_configured: 'Card payments are being connected. Choose wire transfer for now, or request a call back and we will send a secure payment link.',
   amount_too_large: 'This order is above the card payment limit. Please choose wire transfer, or request a call back.',
   model_unavailable: 'That server just became unavailable in this data center. Please choose your package again.',
-  unknown: 'We could not start the card payment. Please try again, choose wire transfer, or request a call back.',
+  invalid_package: 'That package is no longer available. Please choose your package again.',
+  unauthorized: 'Your session has expired. Please sign in again to place your order.',
+  network_error: 'We could not reach our servers. Check your connection and try again.',
 };
-const newReference = () => `CC-${Date.now().toString(36).slice(-5).toUpperCase()}${Math.floor(Math.random() * 90 + 10)}`;
+const UNKNOWN_ERROR = {
+  card: 'We could not start the card payment. Please try again, choose wire transfer, or request a call back.',
+  wire: 'We could not place your order. Please try again or request a call back.',
+};
 
 function Section({ title, sub, children }) {
   return (
@@ -92,7 +97,7 @@ function Confirmation({ order, q }) {
         <CircleCheck size={44} className="mx-auto text-emerald-500" />
         <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Order {order.reference} received</h1>
         <p className="mt-2 text-[15px] text-[var(--muted)]">
-          We'll email your invoice to {order.customer.email}. Your {order.quote.qty === 1 ? 'server is' : 'servers are'} already in your dashboard under {order.dataCenter.provider}, {order.dataCenter.city}.
+          We'll email your invoice to {order.customer.email}. Your order is saved in your dashboard, and your {order.quote.qty === 1 ? 'server appears' : 'servers appear'} there under {order.dataCenter.provider}, {order.dataCenter.city} as soon as your transfer arrives.
         </p>
       </div>
 
@@ -135,8 +140,7 @@ function usePaymentStatus(sessionId) {
   useEffect(() => {
     if (!sessionId) return undefined;
     let alive = true;
-    fetch(`${ENDPOINTS.checkout}?session_id=${encodeURIComponent(sessionId)}`)
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+    api(`${ENDPOINTS.checkout}?session_id=${encodeURIComponent(sessionId)}`)
       .then((data) => alive && setResult(data))
       .catch(() => alive && setResult({ status: 'unverified' }));
     return () => {
@@ -153,14 +157,10 @@ const PAID_COPY = {
   unverified: { title: 'Confirming your payment', icon: Clock, tone: 'text-coco-violet' },
 };
 
-function PaidConfirmation({ reference, sessionId, email: fallbackEmail, retryTo, order }) {
+function PaidConfirmation({ reference, sessionId, email: fallbackEmail, retryTo }) {
   const timeline = FAQ[0].items.slice(2);
   const payment = usePaymentStatus(sessionId);
   const email = payment.email || fallbackEmail;
-
-  useEffect(() => {
-    if (order && (payment.status === 'paid' || payment.status === 'processing')) saveOrder({ ...order, payment: payment.status });
-  }, [order, payment.status]);
 
   if (payment.status === 'checking') {
     return <div className="mx-auto h-64 max-w-2xl animate-pulse rounded-3xl border border-[var(--line)] bg-[var(--surface)]" />;
@@ -218,12 +218,12 @@ export default function CheckoutPage({ funnel = false }) {
   const location = getLocation(selection.location);
   const [catalog, setCatalog] = useState(null);
   const lead = getRegistration()?.lead;
+  const { user } = useAuth();
 
   const [form, setForm] = useState({
-    name: lead?.name ?? '',
-    email: lead?.email ?? '',
-    phone: lead?.phone ?? '',
-    company: '',
+    name: user?.name || lead?.name || '',
+    phone: user?.phone || lead?.phone || '',
+    company: user?.company || '',
   });
   const [method, setMethod] = useState(payment === 'cancelled' ? 'card' : 'wire');
   const [agree, setAgree] = useState(false);
@@ -244,11 +244,6 @@ export default function CheckoutPage({ funnel = false }) {
   const model = catalog?.find((m) => m.id === selection.model) ?? null;
   const q = model ? quote(model, selection.pkg) : null;
   const backTo = funnel ? '/live/offer' : '/packages';
-  const paidOrder = useMemo(() => {
-    const m = catalog?.find((x) => x.id === selection.model);
-    if (!m || !paidReference) return null;
-    return orderRecord({ reference: paidReference, method: 'card', location, model: m, pkg: selection.pkg, q: quote(m, selection.pkg) });
-  }, [catalog, selection, paidReference, location]);
   const set = (k) => (e) => {
     setForm({ ...form, [k]: e.target.value });
     if (errors[k]) setErrors({ ...errors, [k]: undefined });
@@ -258,7 +253,6 @@ export default function CheckoutPage({ funnel = false }) {
     e.preventDefault();
     const next = {};
     if (!form.name.trim()) next.name = 'Required';
-    if (!EMAIL.test(form.email.trim())) next.email = 'Enter a valid email';
     if (form.phone.replace(/\D/g, '').length < 7) next.phone = 'Enter a valid phone number';
     if (!agree) next.agree = 'Please confirm to continue';
     setErrors(next);
@@ -270,41 +264,34 @@ export default function CheckoutPage({ funnel = false }) {
     tracking.submitted();
     setBusy(true);
     setNotice('');
-    const payload = {
-      reference: newReference(),
+    const customer = { name: form.name.trim(), phone: form.phone.trim(), company: form.company.trim() };
+    const leadFor = (reference) => ({
+      reference,
       method,
       selection,
       model: { id: model.id, name: model.name, supplier: model.supplier, supplierPrice: model.supplierPrice },
       quote: q,
-      customer: { name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim(), company: form.company.trim() },
+      customer: { ...customer, email: user.email },
       shipping: { cost: 0, address: { name: `${location.provider}, ${location.facility}`, ...location.address } },
       dataCenter: { id: location.id, provider: location.provider, facility: location.facility, city: location.city, region: location.region, country: location.countryName },
-    };
-    await submitLead('server-order', payload);
+    });
 
-    if (method === 'card') {
-      let error = 'unknown';
-      try {
-        const res = await fetch(ENDPOINTS.checkout, {
+    try {
+      if (method === 'card') {
+        const data = await api(ENDPOINTS.checkout, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...payload, returnPath: funnel ? '/live/checkout' : '/checkout' }),
+          body: { selection, customer, returnPath: funnel ? '/live/checkout' : '/checkout' },
         });
-        const data = await res.json().catch(() => ({}));
-        if (data.url) {
-          window.location.assign(data.url);
-          return;
-        }
-        error = data.error ?? error;
-      } catch {
-        /* network failure */
+        submitLead('server-order', leadFor(data.reference));
+        window.location.assign(data.url);
+        return;
       }
-      setNotice(CARD_ERRORS[error] ?? CARD_ERRORS.unknown);
-      setBusy(false);
-      return;
+      const data = await api('/api/checkout/wire', { method: 'POST', body: { selection, customer } });
+      submitLead('server-order', leadFor(data.order.reference));
+      setOrder(data.order);
+    } catch (err) {
+      setNotice(ORDER_ERRORS[err.code] ?? UNKNOWN_ERROR[method]);
     }
-    saveOrder(orderRecord({ reference: payload.reference, method, payment: 'awaiting', location, model, pkg: selection.pkg, q }));
-    setOrder(payload);
     setBusy(false);
   };
 
@@ -319,9 +306,8 @@ export default function CheckoutPage({ funnel = false }) {
       <PaidConfirmation
         reference={paidReference}
         sessionId={params.get('session_id')}
-        email={lead?.email}
+        email={user?.email}
         retryTo={`${funnel ? '/live/checkout' : '/checkout'}?${selectionQuery(selection)}`}
-        order={paidOrder}
       />,
     );
   }
@@ -350,7 +336,7 @@ export default function CheckoutPage({ funnel = false }) {
             <div className="grid gap-3.5 sm:grid-cols-2">
               <Field label="Full name" autoComplete="name" value={form.name} onChange={set('name')} error={errors.name} />
               <Field label="Company (optional)" autoComplete="organization" value={form.company} onChange={set('company')} />
-              <Field label="Email" type="email" autoComplete="email" value={form.email} onChange={set('email')} error={errors.email} />
+              <Field label="Email (your account)" type="email" autoComplete="email" value={user?.email ?? ''} readOnly disabled />
               <Field label="Phone" type="tel" autoComplete="tel" value={form.phone} onChange={set('phone')} error={errors.phone} />
             </div>
           </Section>

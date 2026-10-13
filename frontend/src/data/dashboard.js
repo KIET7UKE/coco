@@ -1,3 +1,4 @@
+// Sample data for the marketing demo (PartnerDemo). The real dashboard reads from the API.
 function seeded(seed) {
   let s = seed;
   return () => {
@@ -13,26 +14,6 @@ function series(length, base, spread, seed, trend = 0) {
   );
 }
 
-export const PARTNER = {
-  name: 'Timo Garcia',
-  company: 'Enginericorp',
-  email: 'timo@enginericorp.com',
-  initials: 'TC',
-};
-
-export const PORTFOLIO = {
-  thisMonthRevenue: 7120,
-  lastMonthRevenue: 8092,
-  availableCompute: 384,
-  computeSold: 312,
-  utilization: 81.3,
-  activeCustomers: 146,
-  activeServers: 8,
-  pendingPayout: 4218,
-  nextPayoutDays: 7,
-};
-
-export const DAILY_REVENUE = series(30, 238, 90, 7, 0.6);
 export const MONTHLY_REVENUE = [
   { m: 'May', v: 5210 },
   { m: 'Jun', v: 5980 },
@@ -347,71 +328,4 @@ export const CUSTOMERS = [
   { id: 'c-h', name: 'Customer H', product: '8 vCPU / 32GB', usage: 57, revenue: 395, server: '004', since: 'Jun 2026', status: 'Active' },
   { id: 'c-i', name: 'Customer I', product: '4 vCPU / 16GB', usage: 0, revenue: 0, server: '007', since: 'Aug 2026', status: 'Migrating' },
   { id: 'c-j', name: 'Customer J', product: '2 vCPU / 4GB', usage: 31, revenue: 38, server: '008', since: 'Oct 2026', status: 'Trial' },
-];
-
-export const PAYMENTS = [
-  { id: 'py_3QX81', date: 'Oct 05, 2026', customer: 'Customer F', description: 'Compute · 32 vCPU / 128GB · Sep usage', amount: 1240, status: 'Succeeded', method: 'Visa •• 4242' },
-  { id: 'py_3QX7Z', date: 'Oct 05, 2026', customer: 'Customer C', description: 'GPU · L40S hours · Sep usage', amount: 820, status: 'Succeeded', method: 'ACH •• 6789' },
-  { id: 'py_3QX7Y', date: 'Oct 04, 2026', customer: 'Customer G', description: 'GPU · L40S hours · Sep usage', amount: 760, status: 'Succeeded', method: 'Mastercard •• 5100' },
-  { id: 'py_3QX7W', date: 'Oct 04, 2026', customer: 'Customer D', description: 'Compute · 16 vCPU / 64GB · Sep usage', amount: 690, status: 'Succeeded', method: 'Visa •• 1881' },
-  { id: 'py_3QX7V', date: 'Oct 03, 2026', customer: 'Customer A', description: 'Compute · 8 vCPU / 32GB · Sep usage', amount: 420, status: 'Succeeded', method: 'Amex •• 0005' },
-  { id: 'py_3QX7T', date: 'Oct 03, 2026', customer: 'Customer H', description: 'Compute · 8 vCPU / 32GB · Sep usage', amount: 395, status: 'Pending', method: 'ACH •• 1123' },
-  { id: 'py_3QX7S', date: 'Oct 02, 2026', customer: 'Customer B', description: 'Compute · 4 vCPU / 16GB · Sep usage', amount: 180, status: 'Succeeded', method: 'Visa •• 7720' },
-  { id: 'py_3QX7R', date: 'Oct 02, 2026', customer: 'Customer E', description: 'Compute · 2 vCPU / 8GB · Sep usage', amount: 74, status: 'Failed', method: 'Visa •• 3184' },
-  { id: 'py_3QX7Q', date: 'Oct 01, 2026', customer: 'Customer I', description: 'Credit · maintenance downtime', amount: -46, status: 'Refunded', method: 'Visa •• 9001' },
-  { id: 'py_3QX7P', date: 'Oct 01, 2026', customer: 'Customer J', description: 'Compute · 2 vCPU / 4GB · trial conversion', amount: 38, status: 'Succeeded', method: 'Mastercard •• 4444' },
-];
-
-export const PAYOUTS = {
-  upcoming: { amount: 4218, date: 'Oct 13, 2026', period: 'Sep 01 – Sep 30, 2026' },
-  breakdown: [
-    { label: 'Gross compute revenue', value: 8092 },
-    { label: 'CoCo marketing & management fee (20%)', value: -1618 },
-    { label: 'Data-center costs', value: -1474 },
-    { label: 'Payment processing', value: -235 },
-    { label: 'Hardware reserve (2%)', value: -142 },
-  ],
-  history: [
-    { id: 'po_0921', date: 'Sep 13, 2026', period: 'Aug 2026', amount: 3962, status: 'Paid' },
-    { id: 'po_0820', date: 'Aug 13, 2026', period: 'Jul 2026', amount: 3511, status: 'Paid' },
-    { id: 'po_0719', date: 'Jul 13, 2026', period: 'Jun 2026', amount: 3086, status: 'Paid' },
-    { id: 'po_0618', date: 'Jun 13, 2026', period: 'May 2026', amount: 2604, status: 'Paid' },
-    { id: 'po_0517', date: 'May 13, 2026', period: 'Apr 2026', amount: 1870, status: 'Paid' },
-  ],
-  bank: { name: 'First National Bank', last4: '4821', schedule: 'Monthly, on the 13th' },
-};
-
-export const BILLING = {
-  cycle: { start: 'Oct 01', end: 'Oct 31', daysLeft: 25, metered: 61.4 },
-  invoicesIssued: 146,
-  collectedRate: 98.2,
-  costs: [
-    { id: 'inv_DC-1009', date: 'Oct 01, 2026', item: 'Dallas DFW-2 colocation & power', amount: 1495, status: 'Paid' },
-    { id: 'inv_DC-1008', date: 'Oct 01, 2026', item: 'Miami MIA-1 colocation & power', amount: 1335, status: 'Paid' },
-    { id: 'inv_DC-1007', date: 'Oct 01, 2026', item: 'Ashburn IAD-3 colocation & power', amount: 949, status: 'Paid' },
-    { id: 'inv_HW-0412', date: 'Sep 30, 2026', item: 'Remote hands · DIMM swap Server #007', amount: 85, status: 'Due' },
-    { id: 'inv_DC-0906', date: 'Sep 01, 2026', item: 'Data-center costs · all sites', amount: 3610, status: 'Paid' },
-  ],
-  card: { brand: 'Visa', last4: '4242', exp: '08/29' },
-};
-
-export const ORDERS = [
-  {
-    id: 'CO-1042',
-    package: 'Core 64',
-    placed: 'Sep 29, 2026',
-    location: 'Ashburn',
-    amount: 12400,
-    step: 2,
-  },
-];
-
-export const ORDER_STEPS = ['Paid', 'Procured', 'Racked', 'Burn-in', 'Online'];
-
-export const ACTIVITY = [
-  { icon: 'pay', text: 'Customer F paid $1,240 for September usage', time: '2h ago' },
-  { icon: 'alert', text: 'Server #007 drained for DIMM replacement', time: '5h ago' },
-  { icon: 'user', text: '3 new customers placed on Server #001', time: 'Yesterday' },
-  { icon: 'server', text: 'Server #008 passed burn-in and went live', time: '3d ago' },
-  { icon: 'order', text: 'Order CO-1042 (Core 64) procured from supplier', time: '4d ago' },
 ];

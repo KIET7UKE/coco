@@ -1,43 +1,47 @@
-import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { Check, Cpu, MemoryStick, HardDrive, Network, Microchip, MapPin, Truck, ShieldCheck, Package } from 'lucide-react';
-import { Card, CardHeader, PageHeader, Button, page } from '../../components/dashboard/ui';
-import CheckoutModal from '../../components/CheckoutModal';
-import { SERVER_PACKAGES, usd } from '../../data/packages';
-import { ORDERS, ORDER_STEPS } from '../../data/dashboard';
-import { useOrders, orderStatus, orderStep } from '../../lib/orders';
+import { useNavigate } from 'react-router-dom';
+import { Check, Truck, ShieldCheck, Package } from 'lucide-react';
+import { Card, CardHeader, PageHeader, page } from '../../components/dashboard/ui';
+import PackageBuilder from '../../components/funnel/PackageBuilder';
+import { useAccountData } from '../../context/AccountDataContext';
+import { useTheme } from '../../hooks/useTheme';
+import { orderStatus, orderLabel, orderStep, fmtDate, ORDER_STEPS } from '../../lib/orders';
+import { selectionQuery } from '../../lib/pricing';
+import { usd } from '../../data/packages';
 
-const DEMO_NOTE = (
-  <>
-    Your server is being racked in Ashburn. Burn-in testing starts next, then it goes live and starts earning. Expected online: <span className="font-semibold text-white">Oct 9, 2026</span>.
-  </>
-);
+const SHOW = ['awaiting', 'processing', 'review', 'paid'];
 
-const trackerFor = (o) => ({
-  id: o.reference,
-  package: `${o.qty} × ${o.model.name}`,
-  placed: new Date(o.placedAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-  location: `${o.dataCenter.provider}, ${o.dataCenter.city}`,
-  amount: o.total,
-  step: orderStep(o),
-  status: orderStatus(o),
-  note: (
-    <>
-      {o.payment === 'paid' ? 'Payment received. We are ordering your servers from Dell' : 'As soon as your payment lands we order your servers from Dell'}, and they ship free to{' '}
-      <span className="font-semibold text-white">{o.dataCenter.shipTo.slice(0, 3).join(', ')}</span>.
-    </>
-  ),
-});
+function shipToText(dc) {
+  const s = dc.shipTo ?? {};
+  return [s.line1, s.city || dc.city, s.region || dc.region].filter(Boolean).join(', ') || `${dc.facility}, ${dc.city}`;
+}
 
-function OrderTracker({ order }) {
+function trackerNote(order, step) {
+  const dc = order.dataCenter;
+  const where = <span className="font-semibold text-white">{dc.provider} {dc.facility}</span>;
+  if (order.paymentStatus === 'review') return <>We're confirming your payment. Our team will be in touch shortly if anything is needed.</>;
+  if (order.paymentStatus !== 'paid') {
+    return order.paymentMethod === 'wire'
+      ? <>Waiting for your wire transfer with reference <span className="font-mono font-semibold text-white">{order.reference}</span>. Once it lands we order your servers and they ship to {where}.</>
+      : <>Your card payment is still being confirmed. This page updates on its own.</>;
+  }
+  if (step >= ORDER_STEPS.length) return <>All servers are online at {where} and earning. See them under Servers.</>;
+  if (step >= 3) return <>Your servers are racked at {where} and in burn-in testing. They go live as soon as it passes.</>;
+  if (step >= 2) return <>Your servers are on the way to {where} ({shipToText(dc)}) to be racked.</>;
+  return <>Payment received. We're ordering your servers from Dell, then they ship free to {where} ({shipToText(dc)}).</>;
+}
+
+function OrderTracker({ order, servers }) {
+  const step = orderStep(order, servers);
+  const progress = Math.min(step, ORDER_STEPS.length - 1) / (ORDER_STEPS.length - 1);
+  const dc = order.dataCenter;
   return (
     <Card className="mb-4">
       <CardHeader
-        title={`Order ${order.id} · ${order.package}`}
-        sub={`Placed ${order.placed} · ${order.location} · ${usd(order.amount)}`}
+        title={`Order ${order.reference} · ${orderLabel(order)}`}
+        sub={`Placed ${fmtDate(order.createdAt)} · ${dc.provider} ${dc.facility}, ${dc.city} · ${usd(order.quote.total)}`}
         icon={Truck}
-        action={<span className="rounded-full bg-coco-purple/15 px-2.5 py-1 text-[12px] font-medium text-coco-lilac">{order.status ?? 'In progress'}</span>}
+        action={<span className="rounded-full bg-coco-purple/15 px-2.5 py-1 text-[12px] font-medium text-coco-lilac">{order.paymentStatus === 'paid' ? (step >= ORDER_STEPS.length ? 'Online' : 'In progress') : orderStatus(order)}</span>}
       />
       <div className="px-4 pb-5 pt-7 sm:px-5 sm:pb-6">
         <div className="relative flex justify-between">
@@ -45,13 +49,13 @@ function OrderTracker({ order }) {
             <motion.div
               className="h-full bg-gradient-to-r from-coco-purple to-coco-violet"
               initial={{ width: 0 }}
-              animate={{ width: `${(order.step / (ORDER_STEPS.length - 1)) * 100}%` }}
+              animate={{ width: `${progress * 100}%` }}
               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
             />
           </div>
           {ORDER_STEPS.map((s, i) => {
-            const done = i < order.step;
-            const current = i === order.step;
+            const done = i < step;
+            const current = i === step;
             return (
               <div key={s} className="relative flex w-12 flex-col items-center gap-2 text-center sm:w-16">
                 <span
@@ -67,73 +71,39 @@ function OrderTracker({ order }) {
             );
           })}
         </div>
-        <p className="mt-6 rounded-xl bg-white/[0.03] px-4 py-3 text-[12.5px] text-white/55">{order.note ?? DEMO_NOTE}</p>
+        <p className="mt-6 rounded-xl bg-white/[0.03] px-4 py-3 text-[12.5px] text-white/55">{trackerNote(order, step)}</p>
       </div>
     </Card>
   );
 }
 
 export default function BuyServers() {
-  const [buying, setBuying] = useState(null);
-  const orders = useOrders();
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  const { orders, servers } = useAccountData();
+  const active = orders.filter((o) => {
+    if (!SHOW.includes(o.paymentStatus)) return false;
+    return o.paymentStatus !== 'paid' || orderStep(o, servers) < ORDER_STEPS.length;
+  });
 
   return (
     <motion.div {...page}>
       <PageHeader
         title="Buy Servers"
-        sub="Pick a package and pay securely. We procure, rack and manage it, then it shows up in your portfolio."
+        sub="Pick a data center and package and pay securely. We procure, rack and manage it, then it shows up in your portfolio."
       />
 
-      {orders.map((o) => <OrderTracker key={o.reference} order={trackerFor(o)} />)}
-      {ORDERS.map((o) => <OrderTracker key={o.id} order={o} />)}
+      {active.map((o) => <OrderTracker key={o.reference} order={o} servers={servers} />)}
 
-      <div className="mt-8 mb-4 flex items-center gap-2 text-[15px] font-semibold"><Package size={16} className="text-coco-lilac" /> Available packages</div>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {SERVER_PACKAGES.map((p, i) => (
-          <motion.div key={p.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 * i }}>
-            <Card className={`relative flex h-full flex-col overflow-hidden p-5 ${p.featured ? 'border-coco-purple/40' : ''}`}>
-              {p.featured && (
-                <>
-                  <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-coco-purple/25 blur-3xl" />
-                  <span className="absolute right-4 top-4 rounded-full bg-coco-purple px-2 py-0.5 text-[10.5px] font-semibold">Most popular</span>
-                </>
-              )}
-              <div className="relative">
-                <div className="text-[17px] font-bold">{p.name}</div>
-                <div className="mt-0.5 text-[12.5px] text-white/45">{p.tagline}</div>
-                <div className="mt-4 text-3xl font-bold tracking-tight tabular">{usd(p.price)}</div>
-                <div className="text-[12px] text-white/40">one-time hardware purchase</div>
-                <div className="mt-4 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3.5 py-2.5">
-                  <div className="text-[11.5px] text-emerald-300/80">Est. revenue / month</div>
-                  <div className="text-[15px] font-semibold text-emerald-200 tabular">{usd(p.revenueLow)} – {usd(p.revenueHigh)}</div>
-                </div>
-                <ul className="mt-4 space-y-2 text-[12.5px] text-white/65">
-                  <li className="flex items-center gap-2"><Cpu size={14} className="text-white/35" />{p.cores} cores · {p.vcpu} vCPU</li>
-                  <li className="flex items-center gap-2"><MemoryStick size={14} className="text-white/35" />{p.ram}</li>
-                  <li className="flex items-center gap-2"><HardDrive size={14} className="text-white/35" />{p.storage}</li>
-                  <li className="flex items-center gap-2"><Network size={14} className="text-white/35" />{p.network}</li>
-                  {p.gpu && <li className="flex items-center gap-2"><Microchip size={14} className="text-coco-lilac" />{p.gpu}</li>}
-                  <li className="flex items-center gap-2"><MapPin size={14} className="text-white/35" />{p.locations.join(' · ')}</li>
-                </ul>
-              </div>
-              <div className="relative mt-auto pt-5">
-                <div className="mb-3 flex justify-between text-[11.5px] text-white/40">
-                  <span><span className={p.stock <= 2 ? 'text-amber-300' : 'text-white/70'}>{p.stock} in stock</span></span>
-                  <span>Online in {p.leadTime}</span>
-                </div>
-                <Button variant={p.featured ? 'primary' : 'white'} className="w-full" onClick={() => setBuying(p)}>Buy {p.name}</Button>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
+      <div className="mb-4 mt-8 flex items-center gap-2 text-[15px] font-semibold"><Package size={16} className="text-coco-lilac" /> Configure a new order</div>
+      <div data-theme={theme} className="inv-theme text-[var(--ink)]">
+        <PackageBuilder onContinue={(s) => navigate(`/checkout?${selectionQuery(s)}`)} />
       </div>
 
       <div className="mt-5 flex items-start gap-2.5 text-[12px] leading-relaxed text-white/35">
         <ShieldCheck size={15} className="mt-0.5 shrink-0" />
         Payments are processed by Stripe. Revenue estimates are based on current network utilization and are not guaranteed. Hardware is covered by a 3-year warranty and owned by you.
       </div>
-
-      {buying && createPortal(<CheckoutModal pkg={buying} onClose={() => setBuying(null)} />, document.body)}
     </motion.div>
   );
 }

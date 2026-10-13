@@ -1,5 +1,4 @@
-// Also imported by the serverless functions in /api, where import.meta.env doesn't exist.
-const env = import.meta.env ?? globalThis.process?.env ?? {};
+const env = import.meta.env;
 
 // Hibarri API, e.g. https://api.hibarri.com/api. Superadmin > Coco reads everything sent here.
 export const API_URL = (env.VITE_API_URL || 'https://api.hibarri.com/api').replace(/\/+$/, '');
@@ -21,8 +20,9 @@ export const OFFER_WINDOW_HOURS = 24;
 export const ENDPOINTS = {
   leads: env.VITE_LEADS_ENDPOINT || (API_URL ? `${API_URL}/coco/leads` : ''),
   catalog: env.VITE_CATALOG_ENDPOINT || '',
-  checkout: env.VITE_CHECKOUT_ENDPOINT || '/api/checkout',
-  email: env.VITE_EMAIL_ENDPOINT || '/api/email',
+  // Same-origin so the session cookie is sent; Vercel and the Vite dev proxy forward /api to the backend.
+  checkout: '/api/checkout',
+  email: '/api/email',
 };
 
 export const BANK = {

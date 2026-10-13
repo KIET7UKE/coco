@@ -214,7 +214,7 @@ export function PartnerBand() {
                 <Link to="/investors" className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 font-semibold text-black hover:bg-white/90 transition">
                   Become a partner <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
-                <Link to="/dashboard" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 font-semibold text-white hover:bg-white/[0.06] transition">
+                <Link to="/investors#demo" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 font-semibold text-white hover:bg-white/[0.06] transition">
                   View demo dashboard
                 </Link>
               </div>

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Server } from 'lucide-react';
 import { Badge, Meter, Table } from './ui';
 import { usd } from '../../data/packages';
+import { useDashboardPath } from '../../context/AccountDataContext';
 
 export function MobileList({ children }) {
   return <ul className="divide-y divide-white/[0.05] border-t border-white/[0.06] md:hidden">{children}</ul>;
@@ -9,7 +10,8 @@ export function MobileList({ children }) {
 
 export function ServersTable({ servers }) {
   const navigate = useNavigate();
-  const open = (id) => navigate(`/dashboard/servers/${id}`);
+  const path = useDashboardPath();
+  const open = (id) => navigate(path(`/servers/${id}`));
   return (
     <>
       <MobileList>
@@ -85,6 +87,7 @@ export function ServersTable({ servers }) {
 
 export function CustomersTable({ customers, showServer = false }) {
   const navigate = useNavigate();
+  const path = useDashboardPath();
   const head = ['Customer', 'Product', ...(showServer ? ['Server', 'Since', 'Status'] : []), 'Usage', '>Revenue'];
   return (
     <>
@@ -104,7 +107,7 @@ export function CustomersTable({ customers, showServer = false }) {
                 {showServer && (
                   <>
                     <span>·</span>
-                    <button onClick={() => navigate(`/dashboard/servers/${c.server}`)} className="shrink-0 text-coco-lilac">#{c.server}</button>
+                    <button onClick={() => navigate(path(`/servers/${c.server}`))} className="shrink-0 text-coco-lilac">#{c.server}</button>
                   </>
                 )}
               </span>
@@ -131,7 +134,7 @@ export function CustomersTable({ customers, showServer = false }) {
               {showServer && (
                 <>
                   <td className="px-5 py-3.5">
-                    <button onClick={() => navigate(`/dashboard/servers/${c.server}`)} className="text-coco-lilac hover:underline">#{c.server}</button>
+                    <button onClick={() => navigate(path(`/servers/${c.server}`))} className="text-coco-lilac hover:underline">#{c.server}</button>
                   </td>
                   <td className="whitespace-nowrap px-5 py-3.5 text-white/50">{c.since}</td>
                   <td className="px-5 py-3.5"><Badge>{c.status}</Badge></td>

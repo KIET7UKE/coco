@@ -1,55 +1,74 @@
-import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Users, Cpu, Microchip, TrendingUp, Download } from 'lucide-react';
-import { Card, PageHeader, Stat, Button, Segmented, page } from '../../components/dashboard/ui';
-import { CustomersTable } from '../../components/dashboard/tables';
-import { CUSTOMERS, PORTFOLIO } from '../../data/dashboard';
+import { useNavigate } from 'react-router-dom';
+import { Users, Server, TrendingUp, ShieldCheck } from 'lucide-react';
+import { Card, CardHeader, PageHeader, Stat, Badge, EmptyState, Table, page } from '../../components/dashboard/ui';
+import { MobileList } from '../../components/dashboard/tables';
+import { useAccountData, useDashboardPath } from '../../context/AccountDataContext';
 import { usd } from '../../data/packages';
 
 export default function Customers() {
-  const [type, setType] = useState('All');
-  const [q, setQ] = useState('');
-
-  const list = useMemo(
-    () =>
-      CUSTOMERS.filter((c) => {
-        const isGpu = c.product === 'GPU';
-        const matchType = type === 'All' || (type === 'GPU' ? isGpu : !isGpu);
-        return matchType && `${c.name} ${c.product} ${c.server}`.toLowerCase().includes(q.toLowerCase());
-      }),
-    [type, q],
-  );
-
-  const gpu = CUSTOMERS.filter((c) => c.product === 'GPU');
-  const top = CUSTOMERS.reduce((a, c) => a + c.revenue, 0);
+  const navigate = useNavigate();
+  const path = useDashboardPath();
+  const { servers, portfolio } = useAccountData();
+  const total = portfolio?.activeCustomers ?? 0;
+  const withCustomers = servers.filter((s) => s.customers > 0);
+  const revenue = portfolio?.thisMonthRevenue ?? 0;
 
   return (
     <motion.div {...page}>
       <PageHeader
         title="Customers"
         sub="Developers and teams running workloads on your servers. CoCo finds, bills and supports them for you."
-        actions={<Button variant="ghost"><Download size={15} /> Export CSV</Button>}
       />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Active Customers" value={PORTFOLIO.activeCustomers} sub="+12 this month" icon={Users} accent />
-        <Stat label="Compute customers" value={PORTFOLIO.activeCustomers - gpu.length * 9} sub="vCPU & memory plans" icon={Cpu} />
-        <Stat label="GPU customers" value={gpu.length * 9} sub="L40S on Server #003" icon={Microchip} />
-        <Stat label="Avg. revenue / customer" value={usd(PORTFOLIO.thisMonthRevenue / PORTFOLIO.activeCustomers, { maximumFractionDigits: 2 })} sub={`Top 10 bring in ${usd(top)}`} icon={TrendingUp} />
+        <Stat label="Active Customers" value={total} sub="Running workloads now" icon={Users} accent />
+        <Stat label="Servers with customers" value={withCustomers.length} sub={`of ${servers.length} servers`} icon={Server} />
+        <Stat label="Revenue this month" value={usd(revenue)} sub="From customer usage" icon={TrendingUp} />
+        <Stat label="Avg. revenue / customer" value={total ? usd(revenue / total, { maximumFractionDigits: 2 }) : '—'} sub="This month" icon={TrendingUp} />
       </div>
 
       <Card className="mt-4">
-        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <label className="flex flex-1 items-center gap-2.5 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2 sm:max-w-xs">
-            <Search size={15} className="text-white/40" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search customers…" className="flex-1 bg-transparent text-[13px] outline-none placeholder:text-white/35" />
-          </label>
-          <Segmented id="ctype" options={['All', 'Compute', 'GPU']} value={type} onChange={setType} />
-        </div>
-        <CustomersTable customers={list} showServer />
-        {list.length === 0 && <div className="py-12 text-center text-[13px] text-white/40">No customers match your search.</div>}
-        <div className="border-t border-white/[0.06] px-5 py-3.5 text-[12px] text-white/35">
-          Showing your top {list.length} of {PORTFOLIO.activeCustomers} customers. Customer identities are kept private. CoCo handles their contracts and support.
-        </div>
+        <CardHeader title="Customers by server" sub="Customer identities are kept private. CoCo handles their contracts and support." icon={ShieldCheck} />
+        {withCustomers.length === 0 ? (
+          <EmptyState icon={Users} title="No customers yet">
+            {servers.length
+              ? 'CoCo starts placing customer workloads on your servers as soon as they go online.'
+              : 'Once you own a server and it goes online, the customers running on it are counted here.'}
+          </EmptyState>
+        ) : (
+          <div className="mt-3">
+            <MobileList>
+              {withCustomers.map((s) => (
+                <li key={s.id}>
+                  <button onClick={() => navigate(path(`/servers/${s.id}`))} className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left">
+                    <span className="min-w-0">
+                      <span className="block truncate text-[14px] font-semibold">Server #{s.id}</span>
+                      <span className="block truncate text-[12px] text-white/45">{s.location} · {s.datacenter.split(' · ')[1]}</span>
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="block text-[14px] font-semibold tabular">{s.customers}</span>
+                      <span className="block text-[11.5px] text-white/45">{usd(s.revenue)}</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </MobileList>
+            <div className="hidden md:block">
+              <Table head={['Server', 'Data center', 'Status', 'Customers', 'vCPU sold', '>Revenue']}>
+                {withCustomers.map((s) => (
+                  <tr key={s.id} onClick={() => navigate(path(`/servers/${s.id}`))} className="cursor-pointer transition-colors hover:bg-white/[0.025]">
+                    <td className="px-5 py-3.5 font-semibold">Server #{s.id}</td>
+                    <td className="px-5 py-3.5 text-white/70">{s.location} · {s.datacenter.split(' · ')[1]}</td>
+                    <td className="px-5 py-3.5"><Badge>{s.status}</Badge></td>
+                    <td className="px-5 py-3.5 tabular">{s.customers}</td>
+                    <td className="px-5 py-3.5 tabular text-white/70">{s.allocatedVcpu} / {s.totalVcpu}</td>
+                    <td className="px-5 py-3.5 text-right font-semibold tabular">{usd(s.revenue)}</td>
+                  </tr>
+                ))}
+              </Table>
+            </div>
+          </div>
+        )}
       </Card>
     </motion.div>
   );
