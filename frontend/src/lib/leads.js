@@ -14,7 +14,7 @@ export async function submitLead(form, data) {
   };
 
   if (!ENDPOINTS.leads) {
-    if (import.meta.env.DEV) console.info('[leads] VITE_API_URL / VITE_LEADS_ENDPOINT not set, submission:', payload);
+    if (import.meta.env.DEV) console.info('[leads] VITE_HIBARRI_API_URL / VITE_LEADS_ENDPOINT not set, submission:', payload);
     return payload;
   }
 

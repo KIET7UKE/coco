@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Menu, X, ArrowRight } from 'lucide-react';
 import { Logo } from '../Logo';
@@ -8,7 +8,7 @@ import { PlatformArt, DocsArt, EnterpriseArt } from './MenuArt';
 import { EASE } from '../ui/motion';
 import ThemeToggle from '../ui/ThemeToggle';
 import { useTheme } from '../../hooks/useTheme';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth, dashboardPathFor } from '../../context/AuthContext';
 
 const MENUS = [
   {
@@ -53,6 +53,7 @@ const MENUS = [
     items: [
       { title: 'Cloud Partners', desc: 'Own servers and earn from every vCPU sold', href: '/investors' },
       { title: 'Server packages', desc: 'Pick a data center and price your servers', href: '/packages' },
+      { title: 'Store', desc: 'Browse live server stock and prices', href: '/store' },
       { title: 'Affiliate program', desc: 'Get paid for each developer you refer', href: '/#partners' },
       { title: 'Blog', desc: 'Comparisons, pricing, and hosting guides', href: '/blog' },
       { title: 'About', desc: 'The team and mission behind CoCo', href: '/#cta' },
@@ -133,6 +134,7 @@ function NavLink({ href, className, style, children, onClick }) {
 export default function Navbar({ themeToggle = true }) {
   const { theme } = useTheme();
   const { user, isAuthenticated } = useAuth();
+  const partnerSite = useLocation().pathname.startsWith('/investors');
   const [open, setOpen] = useState(null);
   const [prevIndex, setPrevIndex] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -279,16 +281,23 @@ export default function Navbar({ themeToggle = true }) {
           {themeToggle && <ThemeToggle />}
           {isAuthenticated && user ? (
             <Link
-              to="/dashboard"
+              to={dashboardPathFor(user)}
               className="flex items-center gap-2 rounded-xl border border-coco-purple/35 bg-coco-purple/15 px-3.5 py-1.5 text-[13px] font-semibold text-coco-lilac hover:bg-coco-purple/25 transition-colors"
             >
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              {user.name.split(' ')[0]} ({user.role === 'investor' ? 'Partner' : 'Account'})
+              {user.name.split(' ')[0]} ({user.role === 'investor' ? 'Partner' : user.role === 'user' ? 'Dashboard' : 'Account'})
             </Link>
           ) : (
-            <Link to="/investors/login" className="rounded-lg px-3 py-2 text-[14px] font-medium text-white/80 hover:text-white transition-colors">
-              Sign in
-            </Link>
+            <>
+              <Link to={partnerSite ? '/investors/login' : '/login'} className="rounded-lg px-3 py-2 text-[14px] font-medium text-white/80 hover:text-white transition-colors">
+                Sign in
+              </Link>
+              {!partnerSite && (
+                <Link to="/register" className="rounded-lg px-3 py-2 text-[14px] font-medium text-white/80 hover:text-white transition-colors">
+                  Sign up
+                </Link>
+              )}
+            </>
           )}
           <a
             href="/#cta"
@@ -325,7 +334,8 @@ export default function Navbar({ themeToggle = true }) {
 function MobileMenu({ onClose, themeToggle }) {
   const [expanded, setExpanded] = useState(null);
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const partnerSite = useLocation().pathname.startsWith('/investors');
   return (
     <motion.div
       data-theme={theme}
@@ -399,11 +409,11 @@ function MobileMenu({ onClose, themeToggle }) {
       </div>
       <div className="grid shrink-0 grid-cols-2 gap-3 border-t border-white/[0.06] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
         {isAuthenticated ? (
-          <Link to="/dashboard" onClick={onClose} className="rounded-xl border border-coco-purple/40 bg-coco-purple/15 text-coco-lilac py-3 text-center font-semibold">
+          <Link to={dashboardPathFor(user)} onClick={onClose} className="rounded-xl border border-coco-purple/40 bg-coco-purple/15 text-coco-lilac py-3 text-center font-semibold">
             My Dashboard
           </Link>
         ) : (
-          <Link to="/investors/login" onClick={onClose} className="rounded-xl border border-white/10 py-3 text-center font-medium">
+          <Link to={partnerSite ? '/investors/login' : '/login'} onClick={onClose} className="rounded-xl border border-white/10 py-3 text-center font-medium">
             Sign in
           </Link>
         )}

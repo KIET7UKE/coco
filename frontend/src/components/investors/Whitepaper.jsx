@@ -4,7 +4,6 @@ import { BrainCircuit, Check, Download, FileText, Landmark, Lock, Server } from 
 import { Reveal } from '../ui/motion';
 import { Field, PhoneField } from '../funnel/Modal';
 import { BROADCAST } from '../../config/funnel';
-import { getRegistration } from '../../lib/broadcast';
 import { submitLead } from '../../lib/leads';
 import { sendEmail } from '../../lib/email';
 import { useVisitor } from '../../lib/visitor';
@@ -22,11 +21,12 @@ const INSIDE = [
   { icon: Landmark, t: '$1.1 trillion cloud landlord economy' },
 ];
 
-function readSaved() {
+// Only an unlocked flag is stored; older saves also held a name and email, which are never shown.
+function readUnlocked() {
   try {
-    return JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+    return Boolean(JSON.parse(localStorage.getItem(STORE_KEY) || 'null'));
   } catch {
-    return null;
+    return false;
   }
 }
 
@@ -62,22 +62,20 @@ function Cover() {
   );
 }
 
-function Unlocked({ lead }) {
+function Unlocked() {
   return (
     <div>
       <span className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-500/15 text-emerald-500">
         <Check size={20} strokeWidth={3} />
       </span>
-      <h3 className="mt-4 text-[22px] font-bold leading-tight">It's yours, {lead.name.split(' ')[0]}!</h3>
-      <p className="mt-2 text-[15px] leading-relaxed text-[var(--muted)]">
-        We've also emailed a copy to <b className="font-semibold text-[var(--ink)]">{lead.email}</b>.
-      </p>
+      <h3 className="mt-4 text-[22px] font-bold leading-tight">It's yours!</h3>
+      <p className="mt-2 text-[15px] leading-relaxed text-[var(--muted)]">We've emailed you a copy.</p>
       <a
         href={BROADCAST.whitepaperUrl}
         download={FILE_NAME}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => submitLead('whitepaper-download', { email: lead.email, name: lead.name, page: 'investors' })}
+        onClick={() => submitLead('whitepaper-download', { page: 'investors' })}
         className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-coco-purple py-3.5 text-[15px] font-semibold text-white shadow-[0_12px_32px_-12px_rgba(158,0,255,0.9)] transition hover:bg-[#ad1fff]"
       >
         <Download size={16} /> Download the white paper
@@ -91,8 +89,7 @@ function Unlocked({ lead }) {
 
 function RequestForm({ onDone }) {
   const visitor = useVisitor();
-  const prior = getRegistration()?.lead;
-  const [form, setForm] = useState({ name: prior?.name ?? '', email: prior?.email ?? '', phone: '', iso: prior?.phoneCountry ?? '', consent: false });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', iso: '', consent: false });
   const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
   const isoTouched = useRef(false);
@@ -133,11 +130,11 @@ function RequestForm({ onDone }) {
     await submitLead('whitepaper-request', lead);
     sendEmail('whitepaper', { name: lead.name, email: lead.email });
     try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({ name: lead.name, email: lead.email }));
+      localStorage.setItem(STORE_KEY, JSON.stringify({ unlocked: true }));
     } catch {
       /* storage unavailable */
     }
-    onDone(lead);
+    onDone();
   };
 
   return (
@@ -186,7 +183,7 @@ function RequestForm({ onDone }) {
 }
 
 export default function Whitepaper() {
-  const [lead, setLead] = useState(readSaved);
+  const [unlocked, setUnlocked] = useState(readUnlocked);
   return (
     <section id="whitepaper" className="mx-auto max-w-[1180px] scroll-mt-20 px-4 pb-28 sm:px-6 sm:pb-36">
       <div className="relative overflow-hidden rounded-[28px] border border-[var(--line)] bg-[var(--surface)]">
@@ -218,7 +215,7 @@ export default function Whitepaper() {
           </Reveal>
           <Reveal delay={0.08}>
             <div className="rounded-3xl border border-[var(--line)] bg-[var(--page)] p-6 shadow-[0_30px_80px_-40px_rgba(40,8,90,0.45)] sm:p-7">
-              {lead ? <Unlocked lead={lead} /> : <RequestForm onDone={setLead} />}
+              {unlocked ? <Unlocked /> : <RequestForm onDone={() => setUnlocked(true)} />}
             </div>
           </Reveal>
         </div>

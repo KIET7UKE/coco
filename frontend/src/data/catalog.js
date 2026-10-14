@@ -190,3 +190,17 @@ export async function getCatalog(locationId) {
   cache.set(locationId, items);
   return items;
 }
+
+// Store products come from Ingram Micro (im-) or TD SYNNEX (td-) through the backend.
+export const isStoreId = (id) => /^(im|td)-/.test(id || '');
+
+export async function getStoreModel(id) {
+  try {
+    const res = await fetch(`/api/store/products/${encodeURIComponent(id)}`);
+    if (!res.ok) return null;
+    const { product } = await res.json();
+    return product?.buyable ? normalizeModel(product) : null;
+  } catch {
+    return null;
+  }
+}

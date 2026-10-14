@@ -91,9 +91,12 @@ export const shippingAddressLines = (l) => [
   l.countryName,
 ];
 
+// `legacy` models are no longer offered in the store or package builder, but still price checkouts
+// started from older links.
 export const MODELS = [
   {
     id: 'r660',
+    legacy: true,
     name: 'PowerEdge R660 Rack Smart Selection',
     u: 1,
     cpu: '2× Intel Xeon Silver 4410Y (12 cores each)',
@@ -105,6 +108,7 @@ export const MODELS = [
   },
   {
     id: 'r670',
+    legacy: true,
     name: 'PowerEdge R670 Smart Selection',
     u: 1,
     cpu: '2× Intel Xeon 6 (16 cores each)',
@@ -116,6 +120,7 @@ export const MODELS = [
   },
   {
     id: 'r4715',
+    legacy: true,
     name: 'PowerEdge R4715 Smart Selection',
     u: 1,
     cpu: '1× AMD EPYC 9005 (32 cores)',
@@ -127,6 +132,7 @@ export const MODELS = [
   },
   {
     id: 'r5715',
+    legacy: true,
     name: 'Dell PowerEdge R5715 Smart Selection',
     u: 2,
     cpu: '1× AMD EPYC 9005 (64 cores)',
@@ -138,6 +144,7 @@ export const MODELS = [
   },
   {
     id: 'r770',
+    legacy: true,
     name: 'PowerEdge R770 Smart Selection',
     u: 2,
     cpu: '2× Intel Xeon 6 (32 cores each)',

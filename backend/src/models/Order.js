@@ -36,6 +36,11 @@ const orderSchema = new mongoose.Schema(
       storage: String,
       network: String,
       u: Number,
+      // Distributor the server is procured from: ingram, tdsynnex, or empty for the built-in catalog.
+      source: String,
+      sku: String,
+      vendorPartNumber: String,
+      supplierPrice: Number,
     },
     dataCenter: {
       id: { type: String, required: true },

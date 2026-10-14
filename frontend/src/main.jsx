@@ -3,6 +3,11 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { loadFunnelMedia } from './lib/funnelMedia'
+import { reloadOnceForNewBuild } from './lib/chunkReload'
+
+window.addEventListener('vite:preloadError', (event) => {
+  if (reloadOnceForNewBuild()) event.preventDefault()
+})
 
 loadFunnelMedia()
 

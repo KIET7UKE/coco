@@ -5,7 +5,7 @@ import { Banknote, CreditCard, ShieldCheck, CircleCheck, Clock, Info, ArrowLeft,
 import FunnelLayout from '../../components/funnel/FunnelLayout';
 import CallbackButton from '../../components/funnel/CallbackButton';
 import { Field } from '../../components/funnel/Modal';
-import { getCatalog, getLocation, locationLabel, shippingAddressLines } from '../../data/catalog';
+import { getCatalog, getLocation, getStoreModel, isStoreId, locationLabel, shippingAddressLines } from '../../data/catalog';
 import { quote, selectionFromQuery, selectionQuery, RACK_MONTHS } from '../../lib/pricing';
 import { getRegistration } from '../../lib/broadcast';
 import { submitLead } from '../../lib/leads';
@@ -234,8 +234,15 @@ export default function CheckoutPage({ funnel = false }) {
   const tracking = useFormTracking('server-order', { active: !order && payment !== 'success' });
 
   useEffect(() => {
-    getCatalog(location.id).then(setCatalog);
-  }, [location.id]);
+    let alive = true;
+    getCatalog(location.id).then(async (items) => {
+      const extra = isStoreId(selection.model) && !items.some((m) => m.id === selection.model) ? await getStoreModel(selection.model) : null;
+      if (alive) setCatalog(extra ? [...items, extra] : items);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [location.id, selection.model]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

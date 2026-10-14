@@ -13,6 +13,8 @@ import serverRoutes from './routes/serverRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import emailRoutes from './routes/emailRoutes.js';
+import storeRoutes from './routes/storeRoutes.js';
+import devRoutes from './routes/devRoutes.js';
 
 export const app = express();
 
@@ -75,6 +77,8 @@ app.use('/api/servers', serverRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/store', storeRoutes);
+app.use('/api/dev', devRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'not_found', message: 'Route not found' });

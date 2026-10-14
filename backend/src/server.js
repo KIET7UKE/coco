@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import { validateEnv } from './config/env.js';
 import { app } from './app.js';
 import { connectDB } from './config/db.js';
+import { recoverStaleDeployments } from './services/deployService.js';
+import { startSimulatedMeter } from './services/meteringService.js';
 
 const PORT = process.env.PORT || 5001;
 
@@ -24,6 +26,9 @@ async function bootstrap() {
     }
     console.log(`[Coco Server] Running on http://localhost:${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
   });
+
+  recoverStaleDeployments().catch((err) => console.error('[Deploy] Stale recovery failed:', err?.message));
+  startSimulatedMeter();
 
   process.on('unhandledRejection', (err) => {
     console.error('[Coco Server] Unhandled Rejection:', err);

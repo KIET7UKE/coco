@@ -19,7 +19,7 @@ export async function createCheckoutSession(req, res) {
   }
 
   const body = req.body ?? {};
-  const priced = priceSelection(body.selection);
+  const priced = await priceSelection(body.selection);
   const { pkg, location, model, q, serversCents, rackCents, amountCents } = priced;
   if (amountCents > MAX_AMOUNT_CENTS) {
     return res.status(400).json({ error: 'amount_too_large', message: 'Order exceeds card payment ceiling' });
@@ -170,7 +170,7 @@ export async function getSessionStatus(req, res) {
 
 export async function createWireOrder(req, res) {
   const body = req.body ?? {};
-  const priced = priceSelection(body.selection);
+  const priced = await priceSelection(body.selection);
   const customer = customerFor(req.user, body.customer);
   const order = await createOrder({ user: req.user, customer, priced, paymentMethod: 'wire' });
   console.info(`[Checkout] Wire order ${order.reference} created for ${req.user.email}`);
