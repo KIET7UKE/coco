@@ -18,7 +18,9 @@ npm run dev            # http://localhost:5001, frontend dev server proxies /api
 2. Set the variables from `.env.example` on the host. In production the server refuses to start without
    `MONGODB_URI`, `JWT_SECRET` (32+ chars), `CLIENT_URL`, `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
    Set `NODE_ENV=production` so cookies are `Secure`.
-3. In `frontend/vercel.json`, replace `REPLACE-WITH-BACKEND-HOST` with the backend's host name and redeploy the frontend.
+3. In `frontend/vercel.json`, point the `/api/:path*` rewrite at the backend's host and redeploy the frontend.
+   The Vercel project's Root Directory must be `frontend`, otherwise that file (and the rewrite) is ignored.
+   `CLIENT_URL` must be the public site (e.g. `https://coco.hibarri.com`); its first entry is used in Stripe return links and emails.
 4. In Stripe > Developers > Webhooks, add `https://<your-site>/api/webhook/stripe` with the events
    `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`
    and `checkout.session.expired`. Put its signing secret in `STRIPE_WEBHOOK_SECRET`.
@@ -33,6 +35,21 @@ npm run dev            # http://localhost:5001, frontend dev server proxies /api
    buyer becomes a Cloud Partner. The servers appear in their dashboard immediately with status `Ordered`.
 4. Admins move each server through `Procuring → Shipping → Racking → Provisioning → Online` and record
    usage and revenue; the dashboard shows exactly what is stored.
+
+## Store (`/store`)
+
+`GET /api/store/products?q=&page=` lists servers from the first supplier that answers:
+
+1. **Ingram Micro Xvantage**: set `INGRAM_CLIENT_ID`, `INGRAM_CLIENT_SECRET` and `INGRAM_CUSTOMER_NUMBER`
+   (from developer.ingrammicro.com). Use `INGRAM_API_BASE=https://api.ingrammicro.com:443/sandbox` while testing.
+2. **TD SYNNEX** (backup): set the `TDSYNNEX_*` variables with the URLs and credentials TD SYNNEX issues.
+   Confirm the field mapping in `src/services/suppliers/tdsynnex.js` against their docs once access is granted.
+3. Neither configured or both failing: the built-in sample catalog.
+
+Lists are cached for 10 minutes. A product can be bought online only when its price is in USD and its rack
+units and cores can be read from the description; otherwise the card offers "Request a quote". At checkout the
+price is fetched live from the supplier again (store IDs start with `im-` or `td-`), and the order records the
+supplier, SKU and cost so procurement knows exactly what to buy.
 
 ## Admin API
 

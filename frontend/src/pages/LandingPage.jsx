@@ -5,9 +5,10 @@ import Navbar from '../components/site/Navbar';
 import Footer from '../components/site/Footer';
 import NightSky from '../components/landing/NightSky';
 import HeroDemo from '../components/landing/HeroDemo';
+import DeployCanvas from '../components/landing/DeployCanvas';
 import Features from '../components/landing/Features';
 import { Brands, Testimonials, Stats, Pricing, PartnerBand, FinalCta, Featured } from '../components/landing/Sections';
-import { EASE } from '../components/ui/motion';
+import { EASE, Reveal } from '../components/ui/motion';
 import { useTheme } from '../hooks/useTheme';
 
 const fadeUp = (delay) => ({
@@ -82,6 +83,39 @@ function Hero() {
   );
 }
 
+function DeploySection() {
+  return (
+    <section id="deploy" className="relative mx-auto max-w-[1180px] scroll-mt-20 px-5 lg:px-8 pt-20 sm:pt-28">
+      <Reveal className="mx-auto max-w-2xl text-center">
+        <div className="text-[13px] font-semibold uppercase tracking-[0.2em] text-coco-lilac">Deploy in seconds</div>
+        <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight">
+          Push code. <span className="text-purple-glow">We ship it.</span>
+        </h2>
+        <p className="mt-4 text-[16px] sm:text-[17px] leading-relaxed text-white/55">
+          Connect a repo, add a database, and every git push builds and deploys automatically. Your whole stack lives on one canvas.
+        </p>
+      </Reveal>
+      <Reveal delay={0.1} className="mt-12">
+        <DeployCanvas />
+      </Reveal>
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <Link
+          to="/register?plan=hobby"
+          className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-[15px] font-semibold text-black transition hover:bg-white/90"
+        >
+          Start deploying for $5 <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+        </Link>
+        <Link
+          to="/dev-demo"
+          className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/50 px-5 py-3 text-[15px] font-semibold text-white transition hover:border-white/20 hover:bg-black/70"
+        >
+          View the demo dashboard
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export default function LandingPage() {
   const { theme } = useTheme();
   return (
@@ -89,6 +123,7 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <Hero />
+        <DeploySection />
         <Brands />
         <Features />
         <Testimonials />

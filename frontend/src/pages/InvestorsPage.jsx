@@ -89,6 +89,8 @@ function InvestorFooter() {
       <div className="flex flex-wrap gap-6">
         <Link to="/" className="hover:text-[var(--ink)]">CoCo Cloud</Link>
         <Link to="/dashboard" className="hover:text-[var(--ink)]">Partner dashboard</Link>
+        <Link to="/demo" className="hover:text-[var(--ink)]">Partner demo</Link>
+        <Link to="/dev-demo" className="hover:text-[var(--ink)]">Developer demo</Link>
         <a href="#whitepaper" className="hover:text-[var(--ink)]">White paper</a>
         <a href="#faq" className="hover:text-[var(--ink)]">FAQ</a>
         <a href="mailto:partners@hibarri.com" className="hover:text-[var(--ink)]">Contact</a>

@@ -1,7 +1,9 @@
 const env = import.meta.env;
 
-// Hibarri API, e.g. https://api.hibarri.com/api. Superadmin > Coco reads everything sent here.
-export const API_URL = (env.VITE_API_URL || 'https://api.hibarri.com/api').replace(/\/+$/, '');
+// Hibarri API (analytics, leads, CMS pages, funnel videos), called cross-origin without cookies.
+// Superadmin > Coco reads everything sent here. Accounts/dashboard/checkout use the Coco backend via
+// same-origin /api instead (see vercel.json). VITE_API_URL is the old name, still read for existing deployments.
+export const API_URL = (env.VITE_HIBARRI_API_URL || env.VITE_API_URL || 'https://api.hibarri.com/api').replace(/\/+$/, '');
 
 // Media fields are replaced at startup by the active videos from Superadmin > Coco > Videos (lib/funnelMedia.js).
 export const BROADCAST = {

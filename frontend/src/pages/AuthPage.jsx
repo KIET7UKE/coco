@@ -3,9 +3,10 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, Building2, Phone, ArrowRight, Sparkles, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Logo } from '../components/Logo';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, dashboardPathFor } from '../context/AuthContext';
 import { getRegistration } from '../lib/broadcast';
 import { safeNext } from '../lib/api';
+import { getPlan } from '../data/devPlans';
 
 const MIN_PASSWORD = 8;
 const inputClass =
@@ -30,10 +31,15 @@ export default function AuthPage({ defaultRole = 'investor', defaultMode = 'logi
   const [params] = useSearchParams();
   const next = safeNext(params.get('next'));
   const buying = /^\/(live\/)?checkout/.test(next);
+  const plan = getPlan(params.get('plan'))?.id;
   const lead = getRegistration()?.lead;
+  const destination = (u) => {
+    if (plan && u?.role === 'user') return `/dev/billing?subscribe=${plan}`;
+    return params.get('next') ? next : dashboardPathFor(u);
+  };
 
   const [mode, setMode] = useState(buying && !params.get('mode') ? 'register' : params.get('mode') === 'register' ? 'register' : defaultMode);
-  const [role, setRole] = useState(buying ? 'investor' : defaultRole);
+  const [role, setRole] = useState(buying ? 'investor' : plan ? 'user' : defaultRole);
   const [form, setForm] = useState({
     name: lead?.name ?? '',
     email: lead?.email ?? '',
@@ -46,12 +52,15 @@ export default function AuthPage({ defaultRole = 'investor', defaultMode = 'logi
 
   const { user, loading, login, register } = useAuth();
   const isInvestor = role === 'investor';
+  // /login and /register are the developer pages; partners and checkout buyers keep the role switch.
+  const developer = defaultRole === 'user' && !buying;
+  const planName = getPlan(plan)?.name;
 
   useEffect(() => {
     document.title = `${mode === 'login' ? 'Sign in' : 'Create account'} · CoCo by Hibarri`;
   }, [mode]);
 
-  if (!loading && user) return <Navigate to={next} replace />;
+  if (!loading && user) return <Navigate to={destination(user)} replace />;
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
   const switchMode = (m) => {
@@ -68,12 +77,11 @@ export default function AuthPage({ defaultRole = 'investor', defaultMode = 'logi
     }
     setBusy(true);
     try {
-      if (mode === 'login') {
-        await login(form.email, form.password);
-      } else {
-        await register({ name: form.name, email: form.email, password: form.password, phone: form.phone, company: form.company, role });
-      }
-      navigate(next, { replace: true });
+      const signedIn =
+        mode === 'login'
+          ? await login(form.email, form.password)
+          : await register({ name: form.name, email: form.email, password: form.password, phone: form.phone, company: form.company, role: developer ? 'user' : role });
+      navigate(destination(signedIn), { replace: true });
     } catch (err) {
       setError(err.message || 'Authentication failed. Please verify your details.');
     } finally {
@@ -106,7 +114,7 @@ export default function AuthPage({ defaultRole = 'investor', defaultMode = 'logi
           </Link>
         </div>
 
-        {mode === 'register' && (
+        {mode === 'register' && !developer && (
           <div className="mb-6 flex rounded-2xl border border-white/[0.08] bg-black/40 p-1 text-[13px] font-medium">
             <button
               type="button"
@@ -131,14 +139,26 @@ export default function AuthPage({ defaultRole = 'investor', defaultMode = 'logi
 
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold tracking-tight">
-            {mode === 'login' ? 'Sign in' : isInvestor ? 'Join as Cloud Partner' : 'Create Account'}
+            {developer
+              ? mode === 'login'
+                ? 'Sign in to CoCo Cloud'
+                : 'Create your developer account'
+              : mode === 'login'
+                ? 'Sign in'
+                : isInvestor
+                  ? 'Join as Cloud Partner'
+                  : 'Create Account'}
           </h1>
           <p className="mt-1 text-[13.5px] text-white/60">
             {buying
               ? 'Your servers and orders are saved to your account, so you can track them in your dashboard.'
-              : isInvestor
-                ? 'Track your server inventory, data center locations, and compute earnings.'
-                : 'Deploy workloads, manage infrastructure, and scale your compute.'}
+              : developer
+                ? planName
+                  ? `You picked the ${planName} plan. ${mode === 'login' ? 'Sign in' : 'Create your account'} and we'll take you to checkout.`
+                  : 'Deploy apps, databases and workers. Plans from $5/month.'
+                : isInvestor
+                  ? 'Track your server inventory, data center locations, and compute earnings.'
+                  : 'Deploy workloads, manage infrastructure, and scale your compute.'}
           </p>
         </div>
 
@@ -152,8 +172,12 @@ export default function AuthPage({ defaultRole = 'investor', defaultMode = 'logi
           {mode === 'register' && (
             <>
               <InputField label="Full name" icon={User} type="text" required autoComplete="name" value={form.name} onChange={set('name')} placeholder="e.g. Elena Rostova" />
-              <InputField label="Phone" icon={Phone} type="tel" required autoComplete="tel" value={form.phone} onChange={set('phone')} placeholder="+1 555 010 0100" />
-              {isInvestor && (
+              {developer ? (
+                <InputField label="Company (optional)" icon={Building2} type="text" autoComplete="organization" value={form.company} onChange={set('company')} placeholder="e.g. Brightloop" />
+              ) : (
+                <InputField label="Phone" icon={Phone} type="tel" required autoComplete="tel" value={form.phone} onChange={set('phone')} placeholder="+1 555 010 0100" />
+              )}
+              {isInvestor && !developer && (
                 <InputField label="Company / entity (optional)" icon={Building2} type="text" autoComplete="organization" value={form.company} onChange={set('company')} placeholder="e.g. Apex Holdings LLC" />
               )}
             </>
@@ -206,6 +230,21 @@ export default function AuthPage({ defaultRole = 'investor', defaultMode = 'logi
                 Sign in
               </button>
             </>
+          )}
+          {!buying && (
+            <div className="mt-3 text-[12.5px] text-white/40">
+              {developer ? (
+                <>
+                  Cloud Partner?{' '}
+                  <Link to="/investors/login" className="font-medium text-white/70 hover:text-white hover:underline">Partner sign in</Link>
+                </>
+              ) : (
+                <>
+                  Developer?{' '}
+                  <Link to="/login" className="font-medium text-white/70 hover:text-white hover:underline">Developer sign in</Link>
+                </>
+              )}
+            </div>
           )}
         </div>
       </motion.div>

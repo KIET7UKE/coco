@@ -52,6 +52,15 @@ const userSchema = new mongoose.Schema(
       enum: ['active', 'suspended', 'pending'],
       default: 'active',
     },
+    devPlan: {
+      tier: { type: String, enum: ['hobby', 'pro'], default: null },
+      status: { type: String, enum: ['none', 'active', 'past_due', 'canceled'], default: 'none' },
+      stripeSubscriptionId: { type: String, default: '' },
+      currentPeriodStart: { type: Date, default: null },
+      currentPeriodEnd: { type: Date, default: null },
+      includedCents: { type: Number, default: 0 },
+      overageBilledFor: { type: Date, default: null },
+    },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
       default: {},

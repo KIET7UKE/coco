@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { getLocation, getCatalog } from '../data/catalog.js';
 import { calculateQuote, PACKAGE_TYPES } from './pricingService.js';
+import { isStoreId, getOrderableModel } from './storeService.js';
 import { Order } from '../models/Order.js';
 import { HttpError, str } from '../lib/http.js';
 
@@ -23,14 +24,17 @@ export async function newReference() {
   throw new HttpError(500, 'reference_generation_failed');
 }
 
-// Prices are always recomputed from the server catalog; anything the browser sends is ignored.
-export function priceSelection(selection = {}) {
+// Prices are always recomputed from the server catalog or a live supplier quote; anything the browser sends is ignored.
+export async function priceSelection(selection = {}) {
   const pkg = str(selection.pkg, 20);
   if (!PACKAGE_TYPES.some((p) => p.id === pkg)) {
     throw new HttpError(400, 'invalid_package', 'Invalid package selection');
   }
   const location = getLocation(str(selection.location, 20));
-  const model = getCatalog(location.id).find((m) => m.id === str(selection.model, 40));
+  const modelId = str(selection.model, 40);
+  const model = isStoreId(modelId)
+    ? await getOrderableModel(modelId)
+    : getCatalog(location.id).find((m) => m.id === modelId);
   if (!model) {
     throw new HttpError(400, 'model_unavailable', 'Requested server model is not available');
   }
@@ -65,6 +69,10 @@ export async function createOrder({ user, customer, priced, paymentMethod }) {
       storage: model.storage,
       network: model.network,
       u: model.u,
+      source: model.source || '',
+      sku: model.sku || '',
+      vendorPartNumber: model.vendorPartNumber || '',
+      supplierPrice: model.supplierPrice,
     },
     dataCenter: {
       id: location.id,

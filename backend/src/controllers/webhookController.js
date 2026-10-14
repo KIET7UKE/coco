@@ -1,6 +1,7 @@
 import { getStripe } from '../config/stripe.js';
 import { fulfillOrder } from '../services/provisionService.js';
 import { Order } from '../models/Order.js';
+import { DEV_BILLING_EVENTS, handleDevBillingEvent } from '../services/devBillingService.js';
 
 const HANDLED = new Set([
   'checkout.session.completed',
@@ -38,6 +39,15 @@ export async function handleStripeWebhook(req, res) {
   } catch (err) {
     console.warn('[StripeWebhook] Signature check failed:', err.message);
     return res.status(400).json({ error: 'invalid_signature' });
+  }
+
+  if (DEV_BILLING_EVENTS.has(event.type)) {
+    try {
+      if (await handleDevBillingEvent(event)) return res.json({ received: true });
+    } catch (err) {
+      console.error(`[StripeWebhook] Failed to process developer plan event ${event.type}:`, err);
+      return res.status(500).json({ error: 'processing_failed' });
+    }
   }
 
   const session = event.data.object;

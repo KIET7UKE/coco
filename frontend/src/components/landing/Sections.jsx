@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight, Check, Cpu, Microchip, Server, HardDrive, Quo
 import { Reveal, LiveCounter, Counter } from '../ui/motion';
 import { PartnerLogo } from '../investors/Partners';
 import { PARTNERS } from '../../data/partners';
+import { PLANS as DEV_PLANS, RATES as DEV_RATES, HOURS_PER_MONTH } from '../../data/devPlans';
 
 const QUOTES = [
   {
@@ -131,34 +132,70 @@ export function Stats() {
 }
 
 const RATES = [
-  { icon: Cpu, name: 'vCPU', unit: 'per vCPU', hourly: 0.018 },
-  { icon: Server, name: 'Memory', unit: 'per GB RAM', hourly: 0.0045 },
+  { icon: Cpu, name: 'vCPU', unit: 'per vCPU', hourly: DEV_RATES.vcpuHour },
+  { icon: Server, name: 'Memory', unit: 'per GB RAM', hourly: DEV_RATES.memGbHour },
   { icon: Microchip, name: 'GPU · L40S', unit: 'per GPU', hourly: 1.12 },
   { icon: HardDrive, name: 'NVMe storage', unit: 'per GB', hourly: 0.00012 },
 ];
 
+function PlanCard({ plan }) {
+  return (
+    <div
+      className={`relative flex h-full flex-col rounded-3xl border p-7 ${
+        plan.featured ? 'border-coco-purple/50 bg-[#120a1d] shadow-[0_30px_80px_-40px_rgba(158,0,255,0.7)]' : 'border-white/[0.08] bg-[#0e0d13]'
+      }`}
+    >
+      {plan.featured && (
+        <span className="absolute right-6 top-6 rounded-full bg-coco-purple/20 px-2.5 py-1 text-[11px] font-semibold text-coco-lilac">Most popular</span>
+      )}
+      <div className="text-[15px] font-semibold">{plan.name}</div>
+      <div className="mt-1 text-[13px] text-white/50">{plan.blurb}</div>
+      <div className="mt-6 flex items-baseline gap-1">
+        <span className="text-5xl font-bold tracking-tight tabular">${plan.price}</span>
+        <span className="text-[14px] text-white/45">/ month</span>
+      </div>
+      <div className="mt-1 text-[13px] text-coco-lilac">Includes ${plan.included} of usage credits</div>
+      <ul className="mt-6 flex-1 space-y-3 text-[14px] text-white/75">
+        {plan.features.map((t) => (
+          <li key={t} className="flex items-center gap-3">
+            <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-coco-purple/20"><Check size={12} className="text-coco-lilac" /></span>
+            {t}
+          </li>
+        ))}
+      </ul>
+      <Link
+        to={`/register?plan=${plan.id}`}
+        className={`mt-8 flex items-center justify-center gap-2 rounded-xl py-3.5 text-[15px] font-semibold transition ${
+          plan.featured ? 'bg-coco-purple text-white hover:bg-[#ad1fff]' : 'bg-white text-black hover:bg-white/90'
+        }`}
+      >
+        Start with {plan.name} <ArrowRight size={16} />
+      </Link>
+    </div>
+  );
+}
+
 export function Pricing() {
   const [mode, setMode] = useState('hourly');
-  const mult = mode === 'hourly' ? 1 : 730;
-  const fmt = (n) => (n < 0.01 ? `$${n.toFixed(5)}` : n < 1 ? `$${n.toFixed(3)}` : `$${n.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
+  const mult = mode === 'hourly' ? 1 : HOURS_PER_MONTH;
+  const fmt = (n) => (n < 0.01 ? `$${n.toFixed(5)}` : n < 1 ? `$${n.toFixed(4)}` : `$${n.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`);
   return (
-    <section id="pricing" className="relative mx-auto max-w-[1240px] px-5 lg:px-8 py-24 sm:py-32">
-      <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-center">
-        <Reveal>
-          <div className="text-[13px] font-semibold uppercase tracking-[0.2em] text-coco-violet">Pricing</div>
-          <h2 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight leading-[1.05]">Meets your budget, wherever it is</h2>
-          <p className="mt-5 text-[17px] leading-relaxed text-white/55">
-            No reserved instances, no egress surprises. You pay for the exact resources you use, metered per second and billed at the end of each cycle.
-          </p>
-          <ul className="mt-7 space-y-3 text-[15px] text-white/75">
-            {['$5 free credit every month on Hobby', 'Hard spending limits and budget alerts', 'Volume discounts from $1k / month'].map((t) => (
-              <li key={t} className="flex items-center gap-3">
-                <span className="grid h-5 w-5 place-items-center rounded-full bg-coco-purple/20"><Check size={12} className="text-coco-lilac" /></span>
-                {t}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+    <section id="pricing" className="relative mx-auto max-w-[1240px] scroll-mt-20 px-5 lg:px-8 py-24 sm:py-32">
+      <Reveal className="mx-auto max-w-2xl text-center">
+        <div className="text-[13px] font-semibold uppercase tracking-[0.2em] text-coco-violet">Pricing</div>
+        <h2 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight leading-[1.05]">Start at $5. Pay only for what you use.</h2>
+        <p className="mt-5 text-[17px] leading-relaxed text-white/55">
+          Every plan includes usage credits. Beyond that, vCPU and RAM are metered per second at rates 10% below Railway.
+        </p>
+      </Reveal>
+      <div className="mx-auto mt-14 grid max-w-4xl gap-4 md:grid-cols-2">
+        {DEV_PLANS.map((p, i) => (
+          <Reveal key={p.id} delay={i * 0.08}>
+            <PlanCard plan={p} />
+          </Reveal>
+        ))}
+      </div>
+      <div className="mx-auto mt-6 max-w-4xl">
         <Reveal delay={0.1}>
           <div className="rounded-3xl border border-white/[0.08] bg-[#0e0d13] p-3">
             <div className="flex items-center justify-between px-4 pt-3 pb-4">
