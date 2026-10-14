@@ -39,7 +39,7 @@ function OrderTracker({ order, servers }) {
     <Card className="mb-4">
       <CardHeader
         title={`Order ${order.reference} · ${orderLabel(order)}`}
-        sub={`Placed ${fmtDate(order.createdAt)} · ${dc.provider} ${dc.facility}, ${dc.city} · ${usd(order.quote.total)}`}
+        hint={`Placed ${fmtDate(order.createdAt)} · ${dc.provider} ${dc.facility}, ${dc.city} · ${usd(order.quote.total)}`}
         icon={Truck}
         action={<span className="rounded-full bg-coco-purple/15 px-2.5 py-1 text-[12px] font-medium text-coco-lilac">{order.paymentStatus === 'paid' ? (step >= ORDER_STEPS.length ? 'Online' : 'In progress') : orderStatus(order)}</span>}
       />
@@ -90,7 +90,7 @@ export default function BuyServers() {
     <motion.div {...page}>
       <PageHeader
         title="Buy Servers"
-        sub="Pick a data center and package and pay securely. We procure, rack and manage it, then it shows up in your portfolio."
+        hint="Pick a data center and package and pay securely. We procure, rack and manage it, then it shows up in your portfolio."
       />
 
       {active.map((o) => <OrderTracker key={o.reference} order={o} servers={servers} />)}

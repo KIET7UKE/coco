@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Boxes, Plus } from 'lucide-react';
 import { Button, Card, EmptyState, PageHeader, page } from '../../components/dashboard/ui';
+import { SERVICE_ICONS } from '../../components/dev/ServiceNode';
 import { useDevData } from '../../context/DevDataContext';
 import { timeAgo } from '../../lib/devApi';
 
@@ -93,7 +94,7 @@ export default function Projects() {
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {projects.map((p) => (
             <Link key={p.id} to={`${base}/projects/${p.id}`} className="group">
-              <Card className="relative h-full overflow-hidden p-5 transition-colors group-hover:border-coco-violet/40">
+              <Card className="relative flex h-full flex-col overflow-hidden p-5 transition-colors group-hover:border-coco-violet/40">
                 <div className="absolute inset-0 bg-dot-grid opacity-30" />
                 <div className="relative flex items-center gap-2.5">
                   <span className="grid h-9 w-9 place-items-center rounded-lg bg-coco-purple/15 text-coco-lilac"><Boxes size={16} /></span>
@@ -102,7 +103,20 @@ export default function Projects() {
                     <div className="text-[12px] text-white/40">{REGIONS.find((r) => r.id === p.region)?.label ?? p.region}</div>
                   </div>
                 </div>
-                <div className="relative mt-5 flex items-center justify-between text-[12.5px] text-white/50">
+                {p.description && <p className="relative mt-3 line-clamp-2 text-[13px] leading-snug text-white/55">{p.description}</p>}
+                {p.serviceTypes?.length > 0 && (
+                  <div className="relative mt-4 flex flex-wrap gap-1.5">
+                    {p.serviceTypes.map((type, i) => {
+                      const Icon = SERVICE_ICONS[type] ?? Boxes;
+                      return (
+                        <span key={i} className="grid h-7 w-7 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.03] text-white/60">
+                          <Icon size={13} />
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="relative mt-auto flex items-center justify-between pt-5 text-[12.5px] text-white/50">
                   <span>
                     <span className="font-semibold text-emerald-300">{p.activeServices}</span> / {p.services} services active
                   </span>

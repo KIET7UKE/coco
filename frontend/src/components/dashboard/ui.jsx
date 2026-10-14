@@ -1,5 +1,105 @@
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
+import { CircleHelp } from 'lucide-react';
 import { EASE } from '../ui/motion';
+import { useTheme } from '../../hooks/useTheme';
+
+const TIP_W = 264;
+
+/** A (?) that reveals secondary copy on hover, keyboard focus or tap, so the page shows only headline numbers. */
+export function InfoTip({ children, label = 'More info', size = 13, className = '' }) {
+  const { theme } = useTheme();
+  const id = useId();
+  const btn = useRef(null);
+  const [hover, setHover] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const [pos, setPos] = useState(null);
+  const open = hover || pinned;
+
+  useLayoutEffect(() => {
+    if (!open) return undefined;
+    const place = () => {
+      const r = btn.current?.getBoundingClientRect();
+      if (r) setPos({ x: r.left + r.width / 2, top: r.top, bottom: r.bottom });
+    };
+    place();
+    window.addEventListener('scroll', place, true);
+    window.addEventListener('resize', place);
+    return () => {
+      window.removeEventListener('scroll', place, true);
+      window.removeEventListener('resize', place);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!pinned) return undefined;
+    const close = (e) => {
+      if (e.type === 'keydown' ? e.key === 'Escape' : !btn.current?.contains(e.target)) setPinned(false);
+    };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', close);
+    return () => {
+      document.removeEventListener('pointerdown', close);
+      document.removeEventListener('keydown', close);
+    };
+  }, [pinned]);
+
+  const below = pos && pos.top < 140;
+  const left = pos && Math.min(Math.max(pos.x, TIP_W / 2 + 8), window.innerWidth - TIP_W / 2 - 8);
+
+  return (
+    <>
+      <button
+        ref={btn}
+        type="button"
+        aria-label={label}
+        aria-describedby={open ? id : undefined}
+        aria-expanded={pinned}
+        onPointerEnter={(e) => e.pointerType === 'mouse' && setHover(true)}
+        onPointerLeave={(e) => e.pointerType === 'mouse' && setHover(false)}
+        onFocus={(e) => e.target.matches(':focus-visible') && setHover(true)}
+        onBlur={() => setHover(false)}
+        onClick={(e) => {
+          // Tips sit inside clickable rows and links; a tap should only toggle the tip.
+          e.preventDefault();
+          e.stopPropagation();
+          setPinned((v) => !v);
+        }}
+        className={`relative inline-grid shrink-0 place-items-center rounded-full align-middle text-white/45 transition-colors hover:text-white/80 focus-visible:text-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coco-violet/60 before:absolute before:-inset-1.5 ${open ? 'text-white/75' : ''} ${className}`}
+      >
+        <CircleHelp size={size} />
+      </button>
+      {open && pos &&
+        createPortal(
+          <div data-theme={theme} className="dash-theme pointer-events-none fixed z-[100]" style={{ left, width: TIP_W, transform: 'translateX(-50%)', ...(below ? { top: pos.bottom + 8 } : { bottom: window.innerHeight - pos.top + 8 }) }}>
+            <motion.div
+              id={id}
+              role="tooltip"
+              initial={{ opacity: 0, y: below ? -4 : 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.15, ease: EASE }}
+              className="mx-auto w-max max-w-full rounded-xl border border-white/10 bg-[#0e0d13] px-3.5 py-2.5 text-left text-[12.5px] font-normal normal-case leading-relaxed tracking-normal text-white/75 shadow-2xl"
+            >
+              {children}
+            </motion.div>
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+}
+
+/** Text followed by an optional (?) holding its explanation. */
+export function Hinted({ hint, children, className = '', size }) {
+  if (!hint) return children;
+  return (
+    <span className={`inline-flex min-w-0 items-center gap-1.5 ${className}`}>
+      <span className="min-w-0 truncate">{children}</span>
+      <InfoTip size={size}>{hint}</InfoTip>
+    </span>
+  );
+}
 
 export function Card({ className = '', children, ...rest }) {
   return (
@@ -9,7 +109,7 @@ export function Card({ className = '', children, ...rest }) {
   );
 }
 
-export function CardHeader({ title, sub, action, icon: Icon }) {
+export function CardHeader({ title, sub, hint, action, icon: Icon }) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3 px-4 pt-4 sm:px-5 sm:pt-5">
       <div className="flex min-w-0 items-center gap-2.5">
@@ -18,8 +118,8 @@ export function CardHeader({ title, sub, action, icon: Icon }) {
             <Icon size={15} />
           </span>
         )}
-        <div>
-          <h3 className="text-[15px] font-semibold">{title}</h3>
+        <div className="min-w-0">
+          <h3 className="text-[15px] font-semibold"><Hinted hint={hint}>{title}</Hinted></h3>
           {sub && <p className="text-[12.5px] text-white/45">{sub}</p>}
         </div>
       </div>
@@ -28,11 +128,14 @@ export function CardHeader({ title, sub, action, icon: Icon }) {
   );
 }
 
-export function PageHeader({ title, sub, actions }) {
+export function PageHeader({ title, sub, hint, actions }) {
   return (
     <div className="mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <h1 className="text-[24px] font-bold tracking-tight sm:text-[28px]">{title}</h1>
+        <h1 className="flex flex-wrap items-center gap-x-2 text-[24px] font-bold tracking-tight sm:text-[28px]">
+          {title}
+          {hint && <InfoTip size={16}>{hint}</InfoTip>}
+        </h1>
         {sub && <p className="mt-1 text-[13.5px] text-white/50 sm:text-[14px]">{sub}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -40,12 +143,14 @@ export function PageHeader({ title, sub, actions }) {
   );
 }
 
-export function Stat({ label, value, sub, icon: Icon, trend, accent, children, className = '' }) {
+export function Stat({ label, value, sub, hint, icon: Icon, trend, accent, children, className = '' }) {
   return (
     <Card className={`relative min-w-0 overflow-hidden p-4 sm:p-5 ${className}`}>
       {accent && <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-coco-purple/20 blur-2xl" />}
       <div className="relative flex items-center justify-between gap-2">
-        <span className="truncate text-[12px] font-medium text-white/50 sm:text-[12.5px]">{label}</span>
+        <Hinted hint={hint} className="text-[12px] font-medium text-white/50 sm:text-[12.5px]">
+          <span className="truncate text-[12px] font-medium text-white/50 sm:text-[12.5px]">{label}</span>
+        </Hinted>
         {Icon && <Icon size={16} className="shrink-0 text-white/30" />}
       </div>
       <div className="relative mt-2.5 flex flex-wrap items-baseline gap-x-2 sm:mt-3">

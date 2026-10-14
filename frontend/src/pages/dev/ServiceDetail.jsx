@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Cpu, MemoryStick, Rocket, Square, Trash2 } from 'lucide-react';
+import { ArrowLeft, Clock, Cpu, Eye, EyeOff, GitBranch, Globe, MemoryStick, Rocket, Square, Trash2 } from 'lucide-react';
 import { Button, Card, CardHeader, PageHeader, Segmented, page } from '../../components/dashboard/ui';
 import { Sparkline } from '../../components/dashboard/charts';
 import { StatusPill, SERVICE_ICONS } from '../../components/dev/ServiceNode';
@@ -11,7 +11,7 @@ import { getPlan, monthlyCost } from '../../data/devPlans';
 import { fieldClass } from './Projects';
 
 const IN_FLIGHT = ['queued', 'building', 'deploying'];
-const TABS = ['Deployments', 'Metrics', 'Settings'];
+const tabsFor = (service) => ['Deployments', 'Metrics', ...(service?.variables?.length ? ['Variables'] : []), 'Settings'];
 
 function Logs({ deploymentId }) {
   const { api } = useDevData();
@@ -54,9 +54,15 @@ function Deployments({ deployments }) {
       {deployments.map((d) => (
         <li key={d.id}>
           <button type="button" onClick={() => setOpen(open === d.id ? null : d.id)} className="flex w-full items-center gap-3 px-5 py-3 text-left transition hover:bg-white/[0.02]">
-            <StatusPill status={d.status} />
-            <span className="flex-1 truncate font-mono text-[12.5px] text-white/60">{d.commit}</span>
-            <span className="text-[12px] text-white/40">{timeAgo(d.startedAt)}</span>
+            <span className="w-24 shrink-0"><StatusPill status={d.status} /></span>
+            <span className="min-w-0 flex-1 truncate">
+              {d.message && <span className="text-[13px] text-white/85">{d.message} </span>}
+              <span className="font-mono text-[12px] text-white/40">
+                {d.branch && <><GitBranch size={11} className="mb-0.5 inline" /> {d.branch} · </>}
+                {d.commit}
+              </span>
+            </span>
+            <span className="shrink-0 text-[12px] text-white/40">{timeAgo(d.startedAt)}</span>
           </button>
           {open === d.id && (
             <div className="px-5 pb-4">
@@ -91,6 +97,36 @@ function Metrics({ metrics, service }) {
         <div className="mt-1 text-xl font-bold tabular">{money(cost)}</div>
         <div className="mt-2 text-[12.5px] text-white/45">About {money(cost * 30)} / month at this rate</div>
       </div>
+    </div>
+  );
+}
+
+const REFERENCE = /\$\{\{.+?\}\}/;
+
+function Variables({ variables }) {
+  const [reveal, setReveal] = useState(false);
+  return (
+    <div className="pb-2">
+      <div className="flex items-center justify-between gap-3 px-5 pb-3 text-[12.5px] text-white/45">
+        <span>
+          {variables.length} variable{variables.length === 1 ? '' : 's'}. <span className="font-mono text-coco-lilac">{'${{service.VAR}}'}</span> references resolve over the private network at deploy time.
+        </span>
+        <button type="button" onClick={() => setReveal((v) => !v)} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 font-medium text-white/60 transition hover:bg-white/[0.05] hover:text-white">
+          {reveal ? <EyeOff size={14} /> : <Eye size={14} />} {reveal ? 'Hide' : 'Reveal'} values
+        </button>
+      </div>
+      <ul className="divide-y divide-white/[0.05] border-t border-white/[0.06]">
+        {variables.map((v) => (
+          <li key={v.key} className="grid gap-1 px-5 py-2.5 font-mono text-[12.5px] sm:grid-cols-[minmax(0,240px)_1fr] sm:gap-4">
+            <span className="truncate text-white/85">{v.key}</span>
+            {REFERENCE.test(v.value) ? (
+              <span className="truncate text-coco-lilac">{v.value}</span>
+            ) : (
+              <span className="truncate text-white/50">{v.secret && !reveal ? '••••••••••••' : v.value}</span>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -147,7 +183,7 @@ export default function ServiceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { api, base, billing, reload: reloadAll } = useDevData();
-  const [tab, setTab] = useState(TABS[0]);
+  const [tab, setTab] = useState('Deployments');
   const [error, setError] = useState('');
   const { data, error: loadError, reload } = useDevResource(() => api.service(id), [api, id], { interval: 4000 });
   const service = data?.service;
@@ -187,7 +223,20 @@ export default function ServiceDetail() {
             {service?.name ?? '…'}
           </span>
         }
-        sub={service ? <span className="flex flex-wrap items-center gap-3"><StatusPill status={service.status} /> {service.vcpu} vCPU · {service.memoryGb} GB · {service.replicas} replica{service.replicas === 1 ? '' : 's'}</span> : ' '}
+        sub={
+          service ? (
+            <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <StatusPill status={service.status} />
+              <span>{service.vcpu} vCPU · {service.memoryGb} GB · {service.replicas} replica{service.replicas === 1 ? '' : 's'}</span>
+              {service.domain && <span className="inline-flex items-center gap-1.5"><Globe size={13} /> {service.domain}</span>}
+              {service.schedule && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock size={13} /> {service.schedule.label} <span className="font-mono text-[12px] text-white/35">{service.schedule.cron}</span>
+                </span>
+              )}
+            </span>
+          ) : ' '
+        }
         actions={
           service && (
             <>
@@ -211,11 +260,12 @@ export default function ServiceDetail() {
         </div>
       )}
       <Card>
-        <CardHeader title={tab} action={<Segmented id="svc-tabs" options={TABS} value={tab} onChange={setTab} />} />
+        <CardHeader title={tab} action={<Segmented id="svc-tabs" options={tabsFor(service)} value={tab} onChange={setTab} />} />
         <div className="mt-3">
           {!data && <div className="px-5 py-10 text-center text-[13px] text-white/45">Loading…</div>}
           {data && tab === 'Deployments' && <Deployments deployments={data.deployments} />}
           {data && tab === 'Metrics' && <Metrics metrics={data.metrics} service={service} />}
+          {data && tab === 'Variables' && <Variables variables={service.variables ?? []} />}
           {data && tab === 'Settings' && (
             <Settings
               key={service.id}

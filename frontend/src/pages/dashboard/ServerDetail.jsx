@@ -4,10 +4,10 @@ import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, MapPin, Activity, Cpu, MemoryStick, HardDrive, Network, Microchip, TriangleAlert, Info, CircleAlert,
-  Building, Users, CircleCheck, LifeBuoy, CalendarDays, Hash, Clock, Unplug,
+  Building, Users, CircleCheck, LifeBuoy, CalendarDays, Clock, Unplug,
 } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
-import { Card, CardHeader, Badge, Button, page } from '../../components/dashboard/ui';
+import { Card, CardHeader, Badge, Button, Hinted, page } from '../../components/dashboard/ui';
 import { Bars, Ring, Sparkline } from '../../components/dashboard/charts';
 import { useAccountData, useDashboardPath } from '../../context/AccountDataContext';
 import { api } from '../../lib/api';
@@ -17,16 +17,15 @@ const SUPPORT_EMAIL = 'coco@hibarri.com';
 
 const fmtGb = (gb) => (gb >= 1024 ? `${(gb / 1024).toFixed(gb % 1024 ? 2 : 1)} TB` : `${gb} GB`);
 
-function KPI({ label, value, sub, icon: Icon, accent }) {
+function KPI({ label, value, hint, icon: Icon, accent }) {
   return (
     <Card className={`relative min-w-0 overflow-hidden p-4 sm:p-5 ${accent ? 'border-coco-purple/30' : ''}`}>
       {accent && <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-coco-purple/25 blur-2xl" />}
       <div className="relative flex items-center justify-between gap-2 text-[12px] text-white/50 sm:text-[12.5px]">
-        <span className="truncate">{label}</span>
+        <Hinted hint={hint}>{label}</Hinted>
         <Icon size={15} className="shrink-0 text-white/30" />
       </div>
       <div className="relative mt-2 whitespace-nowrap text-[20px] font-bold tracking-tight tabular sm:text-[24px]">{value}</div>
-      {sub && <div className="relative mt-0.5 text-[11.5px] leading-snug text-white/40 sm:text-[12px]">{sub}</div>}
     </Card>
   );
 }
@@ -222,20 +221,20 @@ export default function ServerDetail() {
       )}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <KPI label="Purchase Price" value={usd(s.purchasePrice)} sub={`Bought ${s.purchasedOn}`} icon={CalendarDays} />
-        <KPI label="Revenue to Date" value={usd(s.revenueToDate)} sub={`${roi.toFixed(0)}% of purchase price recovered`} icon={Activity} accent />
-        <KPI label="Revenue Generated" value={usd(s.revenue)} sub="This month" icon={Activity} />
+        <KPI label="Purchase Price" value={usd(s.purchasePrice)} hint={`Bought ${s.purchasedOn}.`} icon={CalendarDays} />
+        <KPI label="Revenue to Date" value={usd(s.revenueToDate)} hint={`${roi.toFixed(0)}% of the purchase price recovered so far.`} icon={Activity} accent />
+        <KPI label="Revenue Generated" value={usd(s.revenue)} hint="Earned this month." icon={Activity} />
         <KPI
           label="Uptime"
           value={s.status === 'Online' && s.uptime > 0 ? `${s.uptime}%` : '—'}
-          sub={s.uptimeDays ? `${s.uptimeDays} ${s.uptimeDays === 1 ? 'day' : 'days'} in service` : s.status === 'Online' ? 'Went online today' : 'Not in service yet'}
+          hint={s.uptimeDays ? `${s.uptimeDays} ${s.uptimeDays === 1 ? 'day' : 'days'} in service.` : s.status === 'Online' ? 'Went online today.' : 'Not in service yet.'}
           icon={Clock}
         />
-        <KPI label="Current Customers" value={s.customers} sub="Workloads running now" icon={Users} />
+        <KPI label="Current Customers" value={s.customers} hint="Customer workloads running on this server now." icon={Users} />
       </div>
 
       <Card className="mt-4">
-        <CardHeader title="Utilization" sub="Live resource usage on this server" icon={Activity} />
+        <CardHeader title="Utilization" hint="Live resource usage on this server." icon={Activity} />
         <div className="grid grid-cols-2 gap-x-4 gap-y-6 p-4 sm:grid-cols-3 sm:gap-6 sm:p-6 lg:grid-cols-5">
           {[
             ['CPU utilization', s.cpuUtil, Cpu],
@@ -261,15 +260,14 @@ export default function ServerDetail() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <Card className="p-5">
-          <h3 className="text-[15px] font-semibold">Capacity allocation</h3>
-          <p className="text-[12.5px] text-white/45">How much of this server is sold to customers</p>
+          <h3 className="flex text-[15px] font-semibold"><Hinted hint="How much of this server is sold to customers.">Capacity allocation</Hinted></h3>
           <div className="mt-5 space-y-6">
             <Allocation label="vCPU" used={s.allocatedVcpu} total={s.totalVcpu} unit="vCPU" />
             <Allocation label="RAM" used={s.allocatedRam} total={s.ramGb} unit="RAM" format={fmtGb} />
           </div>
         </Card>
         <Card className="flex flex-col">
-          <CardHeader title="Revenue generated" sub="Monthly revenue from this server" action={<span className="text-[13px] font-semibold tabular">{usd(s.revenueToDate)} total</span>} />
+          <CardHeader title="Revenue generated" hint="Monthly revenue from this server." action={<span className="text-[13px] font-semibold tabular">{usd(s.revenueToDate)} total</span>} />
           <div className="flex-1 px-5 pb-5 pt-8">
             <Bars data={s.history} height={210} format={usd} />
           </div>
@@ -288,6 +286,7 @@ export default function ServerDetail() {
               ['Network', s.network],
               ['GPU', s.gpuModel ?? 'None'],
               ['Serial', s.serial ?? `CC-${s.location.slice(0, 3).toUpperCase()}-${s.id}-${(Number(s.id) * 7919).toString(16).toUpperCase()}`],
+              ...(s.order ? [['Order', s.order]] : []),
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-4 py-2.5">
                 <dt className="text-white/45">{k}</dt>
@@ -349,17 +348,20 @@ export default function ServerDetail() {
         </Card>
       </div>
 
-      <Card className="mt-4">
-        <CardHeader title="Current customers" sub={`${s.customers} ${s.customers === 1 ? 'customer' : 'customers'} running workloads on Server #${s.id}`} icon={Users} />
-        <div className="px-5 pb-6 pt-4 text-[13px] text-white/45">
-          {s.customers
-            ? 'CoCo places, bills and supports these customers for you. Their identities are kept private.'
-            : s.status === 'Online'
-              ? 'No customer workloads are on this server right now.'
-              : 'Customers are placed on this server once it goes online.'}
-        </div>
+      <Card className="mt-4 pb-4 sm:pb-5">
+        <CardHeader
+          title="Current customers"
+          hint={
+            s.customers
+              ? `${s.customers} ${s.customers === 1 ? 'customer is' : 'customers are'} running workloads here. CoCo places, bills and supports them for you, and their identities are kept private.`
+              : s.status === 'Online'
+                ? 'No customer workloads are on this server right now.'
+                : 'Customers are placed on this server once it goes online.'
+          }
+          icon={Users}
+          action={<span className="text-[15px] font-semibold tabular">{s.customers}</span>}
+        />
       </Card>
-      <div className="mt-3 flex items-center gap-1.5 text-[11.5px] text-white/30"><Hash size={12} /> Serial {s.serial} · Order {s.order}</div>
     </motion.div>
   );
 }

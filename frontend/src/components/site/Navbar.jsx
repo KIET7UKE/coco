@@ -293,28 +293,19 @@ export default function Navbar({ themeToggle = true }) {
                 Sign in
               </Link>
               {!partnerSite && (
-                <Link to="/register" className="rounded-lg px-3 py-2 text-[14px] font-medium text-white/80 hover:text-white transition-colors">
+                <Link
+                  to="/register"
+                  className="rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-[14px] font-medium text-white hover:bg-white/[0.08] hover:border-white/20 transition-colors"
+                >
                   Sign up
                 </Link>
               )}
             </>
           )}
-          <a
-            href="/#cta"
-            className="rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-[14px] font-medium text-white hover:bg-white/[0.08] hover:border-white/20 transition-colors"
-          >
-            Book a demo
-          </a>
         </div>
 
         <div className="flex items-center gap-1.5 lg:hidden">
           {themeToggle && <ThemeToggle />}
-          <Link to="/dashboard" className="hidden rounded-lg px-3 py-2 text-[14px] font-medium text-white/80 hover:text-white">
-            Sign in
-          </Link>
-          <a href="/#cta" className="hidden rounded-lg bg-coco-purple px-3.5 py-2 text-[14px] font-semibold text-white hover:bg-[#ad1fff] transition-colors">
-            Book a demo
-          </a>
           <button
             className="grid h-10 w-10 place-items-center rounded-lg text-white/80 hover:bg-white/10"
             onClick={() => setMobileOpen(true)}
@@ -407,19 +398,21 @@ function MobileMenu({ onClose, themeToggle }) {
           Pricing
         </a>
       </div>
-      <div className="grid shrink-0 grid-cols-2 gap-3 border-t border-white/[0.06] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+      <div className="flex shrink-0 gap-3 border-t border-white/[0.06] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] [&>*]:flex-1">
         {isAuthenticated ? (
           <Link to={dashboardPathFor(user)} onClick={onClose} className="rounded-xl border border-coco-purple/40 bg-coco-purple/15 text-coco-lilac py-3 text-center font-semibold">
             My Dashboard
           </Link>
         ) : (
-          <Link to={partnerSite ? '/investors/login' : '/login'} onClick={onClose} className="rounded-xl border border-white/10 py-3 text-center font-medium">
-            Sign in
-          </Link>
+          <>
+            <Link to={partnerSite ? '/investors/login' : '/login'} onClick={onClose} className="rounded-xl border border-white/10 py-3 text-center font-medium">
+              Sign in
+            </Link>
+            <Link to={partnerSite ? '/investors/register' : '/register'} onClick={onClose} className="rounded-xl bg-coco-purple py-3 text-center font-semibold">
+              {partnerSite ? 'Become a partner' : 'Sign up'}
+            </Link>
+          </>
         )}
-        <a href="/#cta" onClick={onClose} className="rounded-xl bg-coco-purple py-3 text-center font-semibold">
-          Book a demo
-        </a>
       </div>
     </motion.div>
   );
