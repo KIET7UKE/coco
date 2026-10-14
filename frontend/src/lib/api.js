@@ -1,4 +1,4 @@
-/* Calls the Coco backend. Requests stay same-origin (Vite proxy in dev, Vercel rewrite in
+/* Calls the Coco backend. Requests stay same-origin (Vite proxy in dev, Vercel middleware in
    production) so the httpOnly session cookie is first-party and sent automatically. */
 export class ApiError extends Error {
   constructor(status, data) {

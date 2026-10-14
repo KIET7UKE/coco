@@ -2,7 +2,7 @@ const env = import.meta.env;
 
 // Hibarri API (analytics, leads, CMS pages, funnel videos), called cross-origin without cookies.
 // Superadmin > Coco reads everything sent here. Accounts/dashboard/checkout use the Coco backend via
-// same-origin /api instead (see vercel.json). VITE_API_URL is the old name, still read for existing deployments.
+// same-origin /api instead (see middleware.js). VITE_API_URL is the old name, still read for existing deployments.
 export const API_URL = (env.VITE_HIBARRI_API_URL || env.VITE_API_URL || 'https://api.hibarri.com/api').replace(/\/+$/, '');
 
 // Media fields are replaced at startup by the active videos from Superadmin > Coco > Videos (lib/funnelMedia.js).
@@ -22,7 +22,7 @@ export const OFFER_WINDOW_HOURS = 24;
 export const ENDPOINTS = {
   leads: env.VITE_LEADS_ENDPOINT || (API_URL ? `${API_URL}/coco/leads` : ''),
   catalog: env.VITE_CATALOG_ENDPOINT || '',
-  // Same-origin so the session cookie is sent; Vercel and the Vite dev proxy forward /api to the backend.
+  // Same-origin so the session cookie is sent; Vercel middleware and the Vite dev proxy forward /api to the backend.
   checkout: '/api/checkout',
   email: '/api/email',
 };
