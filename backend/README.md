@@ -1,7 +1,7 @@
 # CoCo backend
 
 Express + MongoDB API for accounts, orders, Stripe checkout, server provisioning and the partner dashboard.
-The frontend calls it on the same origin at `/api` (Vite dev proxy locally, `frontend/vercel.json` rewrite in production),
+The frontend calls it on the same origin at `/api` (Vite dev proxy locally, `frontend/middleware.js` on Vercel),
 so the httpOnly session cookie works without CORS credentials.
 
 ## Run locally
@@ -18,8 +18,8 @@ npm run dev            # http://localhost:5001, frontend dev server proxies /api
 2. Set the variables from `.env.example` on the host. In production the server refuses to start without
    `MONGODB_URI`, `JWT_SECRET` (32+ chars), `CLIENT_URL`, `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
    Set `NODE_ENV=production` so cookies are `Secure`.
-3. In `frontend/vercel.json`, point the `/api/:path*` rewrite at the backend's host and redeploy the frontend.
-   The Vercel project's Root Directory must be `frontend`, otherwise that file (and the rewrite) is ignored.
+3. In the Vercel project, set `COCO_BACKEND_URL` to the backend's URL (e.g. `https://coco-production-79bd.up.railway.app`)
+   and redeploy the frontend. The Vercel project's Root Directory must be `frontend`, otherwise `middleware.js` is ignored.
    `CLIENT_URL` must be the public site (e.g. `https://coco.hibarri.com`); its first entry is used in Stripe return links and emails.
 4. In Stripe > Developers > Webhooks, add `https://<your-site>/api/webhook/stripe` with the events
    `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`

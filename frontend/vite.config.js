@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    // The backend (backend/, port 5001). vercel.json does the same in production.
+    // The backend (backend/, port 5001). middleware.js does the same on Vercel.
     proxy: {
       '/api': {
         target: 'http://localhost:5001',
