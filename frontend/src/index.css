@@ -323,6 +323,12 @@
   background-color: #ece8f3;
 }
 
+/* Floating cards on the deploy canvases (service nodes, deploy toast). */
+:is(.dash-theme, .site-theme)[data-theme='light'] :is(.bg-\[\#121118\]\/95, .bg-\[\#16151d\]\/95) {
+  background-color: rgb(255 255 255 / 0.96);
+  box-shadow: 0 1px 2px rgb(20 10 40 / 0.06), 0 14px 30px -18px rgb(20 10 40 / 0.3);
+}
+
 :is(.dash-theme, .site-theme)[data-theme='light'] .ring-\[\#08070c\] {
   --tw-ring-color: #f4f2f8;
 }
@@ -344,7 +350,7 @@
   background-image: linear-gradient(100deg, #b54dff 0%, #9e00ff 50%, #6a00b8 100%);
 }
 
-.site-theme[data-theme='light'] .bg-dot-grid {
+:is(.dash-theme, .site-theme)[data-theme='light'] .bg-dot-grid {
   background-image: radial-gradient(rgb(13 12 18 / 0.09) 1px, transparent 1px);
 }
 

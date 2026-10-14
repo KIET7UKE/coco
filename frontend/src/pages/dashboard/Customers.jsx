@@ -18,17 +18,17 @@ export default function Customers() {
     <motion.div {...page}>
       <PageHeader
         title="Customers"
-        sub="Developers and teams running workloads on your servers. CoCo finds, bills and supports them for you."
+        hint="Developers and teams running workloads on your servers. CoCo finds, bills and supports them for you."
       />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Active Customers" value={total} sub="Running workloads now" icon={Users} accent />
-        <Stat label="Servers with customers" value={withCustomers.length} sub={`of ${servers.length} servers`} icon={Server} />
-        <Stat label="Revenue this month" value={usd(revenue)} sub="From customer usage" icon={TrendingUp} />
-        <Stat label="Avg. revenue / customer" value={total ? usd(revenue / total, { maximumFractionDigits: 2 }) : '—'} sub="This month" icon={TrendingUp} />
+        <Stat label="Active Customers" value={total} hint="Customers running workloads on your servers now." icon={Users} accent />
+        <Stat label="Servers with customers" value={withCustomers.length} hint={`Out of your ${servers.length} servers.`} icon={Server} />
+        <Stat label="Revenue this month" value={usd(revenue)} hint="Earned from customer usage, month to date." icon={TrendingUp} />
+        <Stat label="Avg. revenue / customer" value={total ? usd(revenue / total, { maximumFractionDigits: 2 }) : '—'} hint="This month's revenue divided by active customers." icon={TrendingUp} />
       </div>
 
       <Card className="mt-4">
-        <CardHeader title="Customers by server" sub="Customer identities are kept private. CoCo handles their contracts and support." icon={ShieldCheck} />
+        <CardHeader title="Customers by server" hint="Customer identities are kept private. CoCo handles their contracts and support." icon={ShieldCheck} />
         {withCustomers.length === 0 ? (
           <EmptyState icon={Users} title="No customers yet">
             {servers.length

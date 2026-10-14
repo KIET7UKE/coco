@@ -11,7 +11,8 @@ import { fieldClass } from './Projects';
 const NODE_W = 208;
 const NODE_H = 96;
 const ROW = 128;
-const COLS = { app: 40, data: 380 };
+const COL = 320;
+const PAD = 40;
 const DATA_TYPES = ['postgres', 'redis'];
 
 const TYPES = [
@@ -21,16 +22,53 @@ const TYPES = [
   { id: 'redis', label: 'Redis' },
 ];
 
-function layout(services) {
-  const apps = services.filter((s) => !DATA_TYPES.includes(s.type));
+/** Explicit `connects` when the API provides them; otherwise every app talks to every datastore. */
+function edgesOf(services) {
+  const ids = new Set(services.map((s) => s.id));
+  if (services.some((s) => Array.isArray(s.connects))) {
+    return services.flatMap((s) => (s.connects ?? []).filter((t) => ids.has(t)).map((t) => [s.id, t]));
+  }
   const data = services.filter((s) => DATA_TYPES.includes(s.type));
-  const pos = new Map();
-  apps.forEach((s, i) => pos.set(s.id, { x: COLS.app, y: 40 + i * ROW }));
-  data.forEach((s, i) => pos.set(s.id, { x: COLS.data, y: 40 + i * ROW }));
-  const links = apps.flatMap((a) => data.map((d) => [pos.get(a.id), pos.get(d.id)]));
-  const height = Math.max(apps.length, data.length, 1) * ROW + 60;
-  return { pos, links, height };
+  return services.filter((s) => !DATA_TYPES.includes(s.type)).flatMap((a) => data.map((d) => [a.id, d.id]));
 }
+
+/** Datastores sit in the right-most column; each app sits one column left of the furthest thing it calls. */
+function layout(services) {
+  const edges = edgesOf(services);
+  const out = new Map(services.map((s) => [s.id, []]));
+  for (const [a, b] of edges) out.get(a).push(b);
+
+  const tier = new Map();
+  const visiting = new Set();
+  const tierOf = (s) => {
+    if (tier.has(s.id)) return tier.get(s.id);
+    if (DATA_TYPES.includes(s.type) || visiting.has(s.id)) return 0;
+    visiting.add(s.id);
+    const t = 1 + Math.max(0, ...out.get(s.id).map((id) => tierOf(services.find((x) => x.id === id))));
+    visiting.delete(s.id);
+    tier.set(s.id, t);
+    return t;
+  };
+  services.forEach(tierOf);
+
+  const maxTier = Math.max(0, ...services.map((s) => tier.get(s.id) ?? 0));
+  const columns = Array.from({ length: maxTier + 1 }, () => []);
+  for (const s of services) columns[maxTier - (tier.get(s.id) ?? 0)].push(s);
+  const rows = Math.max(1, ...columns.map((c) => c.length));
+
+  const pos = new Map();
+  columns.forEach((col, ci) =>
+    col.forEach((s, ri) => pos.set(s.id, { x: PAD + ci * COL, y: PAD + ((rows - col.length) * ROW) / 2 + ri * ROW })),
+  );
+  return {
+    pos,
+    links: edges.map(([a, b]) => [pos.get(a), pos.get(b)]),
+    height: rows * ROW + 60,
+    width: PAD * 2 + maxTier * COL + NODE_W,
+  };
+}
+
+const nodeDetail = (s) => s.domain || s.schedule?.label || s.source || `${s.vcpu} vCPU · ${s.memoryGb} GB`;
 
 function NewService({ projectId, maxSize, onDone }) {
   const { api } = useDevData();
@@ -97,7 +135,7 @@ export default function ProjectCanvas() {
   const [adding, setAdding] = useState(false);
   const { data, error, reload } = useDevResource(() => api.project(id), [api, id], { interval: 5000 });
   const services = data?.services ?? [];
-  const { pos, links, height } = layout(services);
+  const { pos, links, height, width } = layout(services);
   const maxSize = getPlan(billing?.plan?.id)?.maxSize ?? 1;
 
   const remove = async () => {
@@ -123,7 +161,7 @@ export default function ProjectCanvas() {
       </Link>
       <PageHeader
         title={data?.project.name ?? '…'}
-        sub={data ? `${services.length} service${services.length === 1 ? '' : 's'} · ${data.project.region}` : ' '}
+        sub={data ? [data.project.description, `${services.length} service${services.length === 1 ? '' : 's'} · ${data.project.region}`].filter(Boolean).join(' · ') : ' '}
         actions={
           <>
             <Button variant="ghost" onClick={remove} disabled={!data} aria-label="Delete project">
@@ -149,7 +187,7 @@ export default function ProjectCanvas() {
 
       <Card className="relative overflow-auto">
         <div className="absolute inset-0 bg-dot-grid opacity-40" />
-        <div className="relative" style={{ height, minWidth: COLS.data + NODE_W + 40 }}>
+        <div className="relative" style={{ height, minWidth: width }}>
           <svg className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
             {links.map(([a, b], i) => {
               const x1 = a.x + NODE_W;
@@ -180,7 +218,7 @@ export default function ProjectCanvas() {
                 name={s.name}
                 type={s.type}
                 status={s.status}
-                detail={s.source || `${s.vcpu} vCPU · ${s.memoryGb} GB`}
+                detail={nodeDetail(s)}
                 onClick={() => navigate(`${base}/services/${s.id}`)}
                 className="absolute"
                 style={{ left: p.x, top: p.y }}

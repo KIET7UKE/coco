@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Logo } from '../components/Logo';
 import ThemeToggle from '../components/ui/ThemeToggle';
+import { Hinted } from '../components/dashboard/ui';
 import { useTheme } from '../hooks/useTheme';
 import { usd } from '../data/packages';
 import { useAuth } from '../context/AuthContext';
@@ -101,11 +102,12 @@ function Sidebar({ onNavigate }) {
       <div className="p-3">
         <div className="relative overflow-hidden rounded-2xl border border-coco-purple/25 bg-[#120a1d] p-4">
           <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-coco-purple/30 blur-2xl" />
-          <div className="relative text-[12px] text-white/50">Pending payout</div>
-          <div className="relative mt-1 text-2xl font-bold tabular">{usd(portfolio?.pendingPayout ?? 0)}</div>
-          <div className="relative mt-2 text-[12px] text-white/50">
-            {portfolio?.activeServers ? 'Your share after CoCo’s 20% fee' : 'Starts once a server is online'}
+          <div className="relative flex text-[12px] text-white/50">
+            <Hinted hint={portfolio?.activeServers ? 'Your share of this month’s revenue after CoCo’s 20% fee.' : 'Payouts start once a server is online.'}>
+              Pending payout
+            </Hinted>
           </div>
+          <div className="relative mt-1 text-2xl font-bold tabular">{usd(portfolio?.pendingPayout ?? 0)}</div>
         </div>
         <div className="mt-3 flex items-center gap-3 rounded-xl px-2 py-2">
           <span className="on-accent grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-coco-violet to-[#2b0750] text-[12px] font-semibold">{initialsOf(user?.name)}</span>

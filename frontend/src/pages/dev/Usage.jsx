@@ -59,6 +59,7 @@ export default function Usage() {
                   <td className="px-5 py-3">
                     <Link to={`${base}/services/${s.serviceId}`} className="flex items-center gap-2.5 hover:text-coco-lilac">
                       <Icon size={14} className="text-white/50" /> {s.name}
+                      {s.projectName && <span className="text-[12px] text-white/40">{s.projectName}</span>}
                     </Link>
                   </td>
                   <td className="px-5 py-3 text-right tabular">{s.vcpuHours.toFixed(1)}</td>

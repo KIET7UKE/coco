@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Landmark, Wallet, BarChart3, Mail } from 'lucide-react';
-import { Card, CardHeader, PageHeader, EmptyState, page } from '../../components/dashboard/ui';
+import { Card, CardHeader, PageHeader, EmptyState, InfoTip, page } from '../../components/dashboard/ui';
 import { Bars } from '../../components/dashboard/charts';
 import { useAccountData } from '../../context/AccountDataContext';
 import { usd } from '../../data/packages';
@@ -18,15 +18,17 @@ export default function Payouts() {
 
   return (
     <motion.div {...page}>
-      <PageHeader title="Payouts" sub="Your share of revenue, paid to your bank account every month." />
+      <PageHeader title="Payouts" hint="Your share of revenue, paid to your bank account every month." />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="relative overflow-hidden p-5 sm:p-6 lg:col-span-2">
           <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-coco-purple/25 blur-3xl" />
           <div className="relative">
-            <div className="flex items-center gap-2 text-[13px] text-white/55"><Wallet size={15} /> Estimated payout this month</div>
+            <div className="flex items-center gap-2 text-[13px] text-white/55">
+              <Wallet size={15} /> Estimated payout this month
+              <InfoTip>Revenue to date across all servers: {usd(portfolio?.revenueToDate ?? 0)}.</InfoTip>
+            </div>
             <div className="mt-2 text-4xl font-bold tracking-tight tabular sm:text-5xl">{usd(payout)}</div>
-            <div className="mt-2 text-[13px] text-white/45">Revenue to date across all servers: {usd(portfolio?.revenueToDate ?? 0)}</div>
           </div>
           <div className="relative mt-8">
             <div className="mb-2 text-[12px] text-white/45">Gross revenue by month</div>
@@ -39,10 +41,10 @@ export default function Payouts() {
         </Card>
 
         <Card className="p-6">
-          <div className="flex items-center gap-2 text-[15px] font-semibold"><Landmark size={16} className="text-coco-lilac" /> Payout account</div>
-          <p className="mt-4 text-[13px] leading-relaxed text-white/55">
-            We verify your bank details with you directly before your first payout, so they never pass through this dashboard.
-          </p>
+          <div className="flex items-center gap-2 text-[15px] font-semibold">
+            <Landmark size={16} className="text-coco-lilac" /> Payout account
+            <InfoTip>We verify your bank details with you directly before your first payout, so they never pass through this dashboard.</InfoTip>
+          </div>
           <dl className="mt-5 space-y-3 text-[13px]">
             <div className="flex justify-between"><dt className="text-white/45">Schedule</dt><dd className="font-medium">Monthly, on the 28th</dd></div>
             <div className="flex justify-between"><dt className="text-white/45">Currency</dt><dd className="font-medium">USD</dd></div>
@@ -57,7 +59,7 @@ export default function Payouts() {
       </div>
 
       <Card className="mt-4">
-        <CardHeader title="How this month's payout is calculated" sub="Updated as your servers earn" />
+        <CardHeader title="How this month's payout is calculated" hint="Updated as your servers earn." />
         <dl className="mt-3 px-5 pb-5 text-[13px]">
           <div className="flex justify-between gap-4 border-b border-white/[0.05] py-3">
             <dt className="font-medium">Gross compute revenue (this month)</dt>

@@ -38,14 +38,14 @@ export default function Servers() {
     <motion.div {...page}>
       <PageHeader
         title="Servers"
-        sub="Every server you own on the CoCo network."
+        hint="Every server you own on the CoCo network."
         actions={<Button onClick={() => navigate(path('/buy'))}>Buy server</Button>}
       />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Online" value={count('Online')} sub={online.length ? `Avg. utilization ${avgUtil.toFixed(1)}%` : 'None online yet'} icon={Activity} />
-        <Stat label="On the way" value={onTheWay} sub="Ordered, shipping, racking or in burn-in" icon={Truck} />
-        <Stat label="Maintenance" value={count('Maintenance')} sub="Workloads drained safely" icon={Wrench} />
-        <Stat label="Revenue this month" value={usd(totalRevenue)} sub="All servers combined" icon={Server} accent />
+        <Stat label="Online" value={count('Online')} hint={online.length ? `Servers earning now. Average utilization ${avgUtil.toFixed(1)}%.` : 'None of your servers are online yet.'} icon={Activity} />
+        <Stat label="On the way" value={onTheWay} hint="Ordered, shipping, being racked or in burn-in testing." icon={Truck} />
+        <Stat label="Maintenance" value={count('Maintenance')} hint="Temporarily offline. Customer workloads are moved off safely first." icon={Wrench} />
+        <Stat label="Revenue this month" value={usd(totalRevenue)} hint="All servers combined, month to date." icon={Server} accent />
       </div>
 
       <Card className="mt-4">

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { CircleCheck, Building, CreditCard, FileText, Sparkles, CalendarClock } from 'lucide-react';
-import { Card, CardHeader, PageHeader, Stat, Table, EmptyState, page } from '../../components/dashboard/ui';
+import { Card, CardHeader, PageHeader, Stat, Table, EmptyState, InfoTip, page } from '../../components/dashboard/ui';
 import { MobileList } from '../../components/dashboard/tables';
 import { useAccountData } from '../../context/AccountDataContext';
 import { orderLabel, fmtDate } from '../../lib/orders';
@@ -33,11 +33,11 @@ export default function Billing() {
 
   return (
     <motion.div {...page}>
-      <PageHeader title="Billing" sub="What you've paid for your servers and how long your rack space is covered." />
+      <PageHeader title="Billing" hint="What you've paid for your servers and how long your rack space is covered." />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Stat label="Hardware & rack space paid" value={usd(paid.reduce((a, o) => a + o.quote.total, 0))} sub={`${paid.length} paid ${paid.length === 1 ? 'order' : 'orders'}`} icon={FileText} accent />
-        <Stat label="Rack space prepaid until" value={nextExpiry ? fmtDate(nextExpiry) : '—'} sub={nextExpiry ? 'Earliest across your servers' : 'Starts when an order is paid'} icon={CalendarClock} />
+        <Stat label="Hardware & rack space paid" value={usd(paid.reduce((a, o) => a + o.quote.total, 0))} hint={`Across ${paid.length} paid ${paid.length === 1 ? 'order' : 'orders'}.`} icon={FileText} accent />
+        <Stat label="Rack space prepaid until" value={nextExpiry ? fmtDate(nextExpiry) : '—'} hint={nextExpiry ? 'The earliest expiry across your servers.' : 'Coverage starts when an order is paid.'} icon={CalendarClock} />
         <Card className="p-5">
           <div className="flex items-center gap-2 text-[15px] font-semibold"><Sparkles size={16} className="text-coco-lilac" /> Handled by CoCo</div>
           <div className="mt-3 space-y-2">
@@ -52,7 +52,7 @@ export default function Billing() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Rack space" sub={`Colocation, power and remote hands are prepaid for ${RACK_PREPAID_MONTHS} months with every order`} icon={Building} />
+          <CardHeader title="Rack space" hint={`Colocation, power and remote hands are prepaid for ${RACK_PREPAID_MONTHS} months with every order.`} icon={Building} />
           {rows.length === 0 ? (
             <EmptyState title="No servers yet">Each server you own and its prepaid rack space are listed here.</EmptyState>
           ) : (
@@ -85,8 +85,10 @@ export default function Billing() {
         </Card>
 
         <Card className="p-6">
-          <div className="flex items-center gap-2 text-[15px] font-semibold"><CreditCard size={16} className="text-coco-lilac" /> Purchases</div>
-          <p className="mt-1 text-[12.5px] text-white/45">Card payments are processed by Stripe. CoCo never stores your card details.</p>
+          <div className="flex items-center gap-2 text-[15px] font-semibold">
+            <CreditCard size={16} className="text-coco-lilac" /> Purchases
+            <InfoTip>Card payments are processed by Stripe. CoCo never stores your card details.</InfoTip>
+          </div>
           {paid.length === 0 ? (
             <p className="mt-6 text-[13px] text-white/40">No paid orders yet.</p>
           ) : (

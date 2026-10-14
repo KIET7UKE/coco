@@ -25,18 +25,18 @@ export default function Payments() {
 
   return (
     <motion.div {...page}>
-      <PageHeader title="Payments" sub="Your server purchases and their payment status." />
+      <PageHeader title="Payments" hint="Your server purchases and their payment status." />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Paid" value={usd(sum((o) => o.paymentStatus === 'paid'))} sub="Servers and rack space" icon={CircleCheck} accent />
-        <Stat label="Awaiting payment" value={usd(sum((o) => PENDING.includes(o.paymentStatus)))} sub="Wire transfers and clearing payments" icon={Clock} />
-        <Stat label="Orders" value={orders.length} sub={`${orders.filter((o) => o.paymentStatus === 'paid').length} paid`} icon={ReceiptText} />
-        <Stat label="Servers owned" value={servers.length} sub="From paid orders" icon={Server} />
+        <Stat label="Paid" value={usd(sum((o) => o.paymentStatus === 'paid'))} hint="Total paid for servers and rack space." icon={CircleCheck} accent />
+        <Stat label="Awaiting payment" value={usd(sum((o) => PENDING.includes(o.paymentStatus)))} hint="Wire transfers on their way and card payments still clearing." icon={Clock} />
+        <Stat label="Orders" value={orders.length} hint={`${orders.filter((o) => o.paymentStatus === 'paid').length} of them paid.`} icon={ReceiptText} />
+        <Stat label="Servers owned" value={servers.length} hint="Servers from your paid orders." icon={Server} />
       </div>
 
       <Card className="mt-4">
         <CardHeader
           title="Orders"
-          sub="Wire orders are confirmed here once your transfer arrives"
+          hint="Wire orders are confirmed here once your transfer arrives."
           icon={ReceiptText}
           action={orders.length > 0 && <div className="hidden md:block"><Segmented id="pay" options={FILTERS} value={filter} onChange={setFilter} /></div>}
         />

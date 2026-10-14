@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Cpu, Gauge, Users, Server, ArrowRight, CircleDollarSign, Wallet, TriangleAlert, Info, PackageCheck, ShoppingCart, BarChart3 } from 'lucide-react';
-import { Card, CardHeader, PageHeader, Stat, Button, Badge, EmptyState, page } from '../../components/dashboard/ui';
+import { Card, CardHeader, PageHeader, Stat, Button, Badge, EmptyState, Hinted, InfoTip, page } from '../../components/dashboard/ui';
 import { Bars, Ring } from '../../components/dashboard/charts';
 import { ServersTable } from '../../components/dashboard/tables';
 import { usd } from '../../data/packages';
@@ -48,7 +48,7 @@ export default function Portfolio() {
     <motion.div {...page}>
       <PageHeader
         title={`${greeting()}, ${firstName}`}
-        sub={servers.length ? "Here's how your servers are performing across the CoCo network." : 'Welcome to CoCo. Your servers and earnings will show up here.'}
+        hint={servers.length ? "Here's how your servers are performing across the CoCo network." : 'Welcome to CoCo. Your servers and earnings will show up here.'}
         actions={<Button onClick={() => navigate(path('/buy'))}>Buy server</Button>}
       />
 
@@ -66,10 +66,12 @@ export default function Portfolio() {
 
       <div className="grid gap-4 xl:grid-cols-3">
         <Card className="xl:col-span-2">
-          <CardHeader title="My Portfolio" sub="Revenue earned from compute sold on your servers" />
+          <CardHeader title="My Portfolio" hint="Revenue earned from compute sold on your servers." />
           <div className="grid grid-cols-2 gap-4 px-4 pt-5 sm:gap-6 sm:px-5">
             <div>
-              <div className="text-[12.5px] text-white/50">This Month's Revenue</div>
+              <div className="flex text-[12.5px] text-white/50">
+                <Hinted hint="Month to date: revenue since the 1st of this month, compared with the same point last month.">This Month's Revenue</Hinted>
+              </div>
               <div className="mt-1 flex flex-wrap items-baseline gap-x-2.5">
                 <span className="text-[26px] font-bold tracking-tight sm:text-4xl">
                   <Counter value={p.thisMonthRevenue ?? 0} format={(n) => usd(n)} />
@@ -80,14 +82,14 @@ export default function Portfolio() {
                   </span>
                 )}
               </div>
-              <div className="mt-0.5 text-[12px] text-white/35">Month to date</div>
             </div>
             <div className="border-l border-white/[0.06] pl-4 sm:pl-6">
-              <div className="text-[12.5px] text-white/50">Revenue to date</div>
+              <div className="flex text-[12.5px] text-white/50">
+                <Hinted hint={`Everything your servers have earned so far, against ${usd(p.totalInvested ?? 0)} invested.`}>Revenue to date</Hinted>
+              </div>
               <div className="mt-1 text-[26px] font-bold tracking-tight text-white/80 sm:text-4xl">
                 <Counter value={p.revenueToDate ?? 0} format={(n) => usd(n)} />
               </div>
-              <div className="mt-0.5 text-[12px] text-white/35">{usd(p.totalInvested ?? 0)} invested</div>
             </div>
           </div>
           <div className="px-3 pb-3 pt-4">
@@ -104,7 +106,7 @@ export default function Portfolio() {
         <div className="grid gap-4">
           <Card className="p-5">
             <div className="flex items-center justify-between">
-              <span className="text-[15px] font-semibold">Utilization</span>
+              <Hinted hint="Share of your online vCPU currently sold to customers." className="text-[15px] font-semibold">Utilization</Hinted>
               <Gauge size={16} className="text-white/30" />
             </div>
             <div className="mt-4 flex items-center gap-5">
@@ -124,11 +126,13 @@ export default function Portfolio() {
           <Card className="relative overflow-hidden p-5">
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-coco-purple/25 blur-3xl" />
             <div className="relative flex items-center justify-between">
-              <span className="text-[15px] font-semibold">Pending Payout</span>
+              <span className="flex items-center gap-1.5 text-[15px] font-semibold">
+                Pending Payout
+                <InfoTip>This month's revenue after CoCo's {Math.round((p.cocoFeeRate ?? 0.2) * 100)}% fee.</InfoTip>
+              </span>
               <CircleDollarSign size={16} className="text-white/30" />
             </div>
             <div className="relative mt-2 text-4xl font-bold tracking-tight tabular">{usd(p.pendingPayout ?? 0)}</div>
-            <div className="relative mt-3 text-[12.5px] text-white/50">This month's revenue after CoCo's {Math.round((p.cocoFeeRate ?? 0.2) * 100)}% fee.</div>
             <Link to={path('/payouts')} className="relative mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-coco-lilac hover:text-white">
               View payout breakdown <ArrowRight size={14} />
             </Link>
@@ -137,13 +141,18 @@ export default function Portfolio() {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Online Compute" value={`${p.availableCompute ?? 0} vCPU`} sub="Across online servers" icon={Cpu} />
-        <Stat label="Compute Sold" value={`${p.computeSold ?? 0} vCPU`} sub={`${(p.availableCompute ?? 0) - (p.computeSold ?? 0)} vCPU free to sell`} icon={Cpu} />
-        <Stat label="Active Customers" value={<Counter value={p.activeCustomers ?? 0} />} sub="Running workloads now" icon={Users} />
+        <Stat label="Online Compute" value={`${p.availableCompute ?? 0} vCPU`} hint="vCPU across all your servers that are online." icon={Cpu} />
+        <Stat
+          label="Compute Sold"
+          value={`${p.computeSold ?? 0} vCPU`}
+          hint={`vCPU rented to customers right now. ${(p.availableCompute ?? 0) - (p.computeSold ?? 0)} vCPU is still free to sell.`}
+          icon={Cpu}
+        />
+        <Stat label="Active Customers" value={<Counter value={p.activeCustomers ?? 0} />} hint="Customers running workloads on your servers now." icon={Users} />
         <Stat
           label="Servers"
           value={<Counter value={p.totalServers ?? 0} />}
-          sub={p.totalServers ? `${p.activeServers} online${p.pendingServers ? ` · ${p.pendingServers} on the way` : ''}` : 'None yet'}
+          hint={p.totalServers ? `${p.activeServers} online${p.pendingServers ? `, ${p.pendingServers} on the way` : ''}.` : "You don't own any servers yet."}
           icon={Server}
         />
       </div>
@@ -152,7 +161,7 @@ export default function Portfolio() {
         <Card className="mt-4">
           <CardHeader
             title="Servers"
-            sub="Click a server to see hardware, data center, status and revenue"
+            hint="Click a server to see its hardware, data center, status and revenue."
             icon={Server}
             action={<Link to={path('/servers')} className="text-[13px] font-medium text-coco-lilac hover:text-white">View all {servers.length}</Link>}
           />
@@ -164,7 +173,7 @@ export default function Portfolio() {
         <Card className="xl:col-span-2">
           <CardHeader
             title="Orders"
-            sub="Your server purchases and their payment status"
+            hint="Your server purchases and their payment status."
             icon={Wallet}
             action={orders.length > 0 && <Link to={path('/payments')} className="text-[13px] font-medium text-coco-lilac hover:text-white">View all {orders.length}</Link>}
           />
@@ -172,13 +181,15 @@ export default function Portfolio() {
             <ul className="mt-3 divide-y divide-white/[0.05] border-t border-white/[0.06]">
               {orders.slice(0, 4).map((o) => (
                 <li key={o.reference} className="flex items-center justify-between gap-3 px-4 py-3.5 sm:px-5">
-                  <div className="min-w-0">
-                    <div className="truncate text-[13.5px] font-semibold">{orderLabel(o)}</div>
-                    <div className="truncate text-[12px] text-white/45">{o.reference} · {o.dataCenter.facility}, {o.dataCenter.city} · {fmtDate(o.createdAt)}</div>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <span className="truncate text-[13.5px] font-semibold">{orderLabel(o)}</span>
+                    <InfoTip label={`Order ${o.reference} details`}>
+                      {o.reference} · {o.dataCenter.facility}, {o.dataCenter.city} · {fmtDate(o.createdAt)}
+                    </InfoTip>
                   </div>
-                  <div className="flex shrink-0 flex-col items-end gap-1">
-                    <span className="text-[13.5px] font-semibold tabular">{usd(o.quote.total)}</span>
+                  <div className="flex shrink-0 items-center gap-3">
                     <Badge>{orderStatus(o)}</Badge>
+                    <span className="text-[13.5px] font-semibold tabular">{usd(o.quote.total)}</span>
                   </div>
                 </li>
               ))}
@@ -188,7 +199,7 @@ export default function Portfolio() {
           )}
         </Card>
         <Card>
-          <CardHeader title="Recent activity" sub="Across your orders and servers" />
+          <CardHeader title="Recent activity" hint="Updates across your orders and servers." />
           {activity.length ? (
             <ul className="mt-3 space-y-1 px-3 pb-4">
               {activity.map((a, i) => {

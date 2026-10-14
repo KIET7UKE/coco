@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { Cog, Database, GitBranch, Globe, Layers, Loader2 } from 'lucide-react';
+import { Clock, Cog, Database, GitBranch, Globe, Layers, Loader2 } from 'lucide-react';
 
-export const SERVICE_ICONS = { web: Globe, worker: Cog, postgres: Database, redis: Layers, repo: GitBranch };
+export const SERVICE_ICONS = { web: Globe, worker: Cog, cron: Clock, postgres: Database, redis: Layers, repo: GitBranch };
 
 const STATUS = {
   idle: { label: 'Not deployed', dot: 'bg-white/30', text: 'text-white/45' },
