@@ -1,7 +1,7 @@
 import { getStripe } from '../config/stripe.js';
 import { primaryClientUrl } from '../config/env.js';
 import { User } from '../models/User.js';
-import { getPlan } from '../data/devPlans.js';
+import { getPlan, planPriceId } from '../data/devPlans.js';
 import { HttpError } from '../lib/http.js';
 import { usageBetween, overageCents } from './devPricingService.js';
 
@@ -16,8 +16,6 @@ export const DEV_BILLING_EVENTS = new Set([
   'invoice.paid',
 ]);
 
-const PRICE_ENV = { hobby: 'STRIPE_PRICE_HOBBY', pro: 'STRIPE_PRICE_PRO' };
-
 function requireStripe() {
   const stripe = getStripe();
   if (!stripe) throw new HttpError(503, 'not_configured', 'Card payments are not configured');
@@ -26,7 +24,7 @@ function requireStripe() {
 
 export async function createPlanCheckout(user, tier) {
   const stripe = requireStripe();
-  const price = process.env[PRICE_ENV[tier]];
+  const price = planPriceId(tier);
   if (!price) throw new HttpError(503, 'not_configured', `The ${getPlan(tier).name} plan is not available yet`);
 
   // An existing subscription changes plan through the portal so Stripe prorates it.

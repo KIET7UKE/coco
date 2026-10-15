@@ -1,6 +1,9 @@
 import { Server } from '../models/Server.js';
 import { Order } from '../models/Order.js';
+import { Payout } from '../models/Payout.js';
+import { UsageRecord } from '../models/UsageRecord.js';
 import { COCO_FEE } from '../services/pricingService.js';
+import { weekStartOf } from '../services/billingJobs.js';
 import { serverView } from '../lib/serverView.js';
 import { str } from '../lib/http.js';
 
@@ -38,9 +41,33 @@ export async function requestDisconnect(req, res) {
 
 const round1 = (n) => Math.round(n * 10) / 10;
 
+/** Weekly payouts from metered usage: settled weeks plus a live estimate for the current one. */
+async function payoutSummary(userId, servers) {
+  const weekStart = weekStartOf(new Date());
+  const [history, [week]] = await Promise.all([
+    Payout.find({ owner: userId }).sort({ weekStart: -1 }).limit(12),
+    UsageRecord.aggregate([
+      { $match: { hour: { $gte: weekStart }, server: { $in: servers.map((s) => s._id) }, billing: { $in: ['credits', 'plan'] } } },
+      { $group: { _id: null, gross: { $sum: '$billedCost' } } },
+    ]),
+  ]);
+  const grossCents = Math.floor(week?.gross ?? 0);
+  const feeCents = Math.round(grossCents * COCO_FEE);
+  const unpaid = history.filter((p) => p.status !== 'paid');
+  return {
+    schedule: 'weekly',
+    feeRate: COCO_FEE,
+    unpaidCents: unpaid.reduce((a, p) => a + p.netCents, 0),
+    paidCents: history.filter((p) => p.status === 'paid').reduce((a, p) => a + p.netCents, 0),
+    thisWeek: { weekStart, grossCents, feeCents, netCents: grossCents - feeCents },
+    history: history.map((p) => p.toPublic()),
+  };
+}
+
 export async function getPortfolioSummary(req, res) {
   const userId = req.user._id;
   const [servers, orders] = await Promise.all([Server.find({ userId }), Order.find({ userId })]);
+  const payouts = await payoutSummary(userId, servers);
 
   const online = servers.filter((s) => s.status === 'Online');
   const availableCompute = online.reduce((a, s) => a + (s.vcpu || s.cores * 2 || 0), 0);
@@ -75,6 +102,7 @@ export async function getPortfolioSummary(req, res) {
       cocoFee,
       pendingPayout: Math.round((thisMonthRevenue - cocoFee) * 100) / 100,
       cocoFeeRate: COCO_FEE,
+      payouts,
       totalInvested: orders.filter((o) => o.paymentStatus === 'paid').reduce((a, o) => a + (o.quote?.total || 0), 0),
       orders: {
         total: orders.length,

@@ -24,10 +24,19 @@ export const devApi = {
   billing: (opts) => get('/billing', opts),
   subscribe: (tier) => post('/billing/subscribe', { tier }),
   portal: () => post('/billing/portal', {}),
+  topUp: (amountCents) => post('/credits/topup', { amountCents }),
+  ledger: (opts) => get('/credits/ledger', opts),
 };
 
 export const money = (cents, digits = 2) =>
   `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+
+export const signedMoney = (cents) => (cents < 0 ? `−${money(-cents)}` : money(cents));
+
+/** Accounts without a Hobby/Pro subscription spend prepaid credit. */
+export const usesCredits = (billing) => Boolean(billing?.credits) && billing.credits.billing !== 'plan';
+
+export const isFunded = (billing) => Boolean(billing?.credits) && billing.credits.fundedCents >= billing.credits.minTopupCents;
 
 export const timeAgo = (date) => {
   if (!date) return '—';

@@ -64,6 +64,26 @@ All routes need an admin session (sign in at `/api/auth/login`; the cookie is se
 | GET | `/api/admin/servers?status=` | |
 | PATCH | `/api/admin/servers/:serial` | any of `status`, `statusNote`, `cpuUtil`, `ramUtil`, `storageUtil`, `networkUtil`, `gpuUtil`, `uptime`, `customers`, `allocatedVcpu`, `allocatedRamGb`, `revenue`, `revenueToDate`, `load`, `alert: { level, title, detail }` |
 | GET | `/api/admin/users?role=` | |
+| GET | `/api/admin/credits?q=` | accounts with prepaid credit, or any account matching `q` |
+| GET | `/api/admin/credits/:userId/ledger` | |
+| POST | `/api/admin/credits/:userId/adjust` | `{ "amountCents": 2500, "note": "Outage refund" }` (negative deducts) |
+| GET | `/api/admin/payouts?status=pending\|held\|paid` | |
+| POST | `/api/admin/payouts/settle` | settles any finished week now |
+| POST | `/api/admin/payouts/:id/mark-paid` | `{ "reference": "ACH 4471", "note": "" }` |
+| POST | `/api/admin/payouts/:id/hold` / `release` | `{ "note": "" }` |
 
-Server utilization on the dashboard is `allocatedVcpu / total vCPU`. Payouts are this month's `revenue` minus
-CoCo's 20% fee; rack space is prepaid for 24 months, so nothing else is deducted.
+Server utilization on the dashboard is `allocatedVcpu / total vCPU`; services placed on a server keep
+`allocatedVcpu`, `allocatedRamGb` and `customers` in sync automatically.
+
+### Prepaid credits and weekly payouts
+
+- Developers prepay credit through Stripe Checkout (`POST /api/dev/credits/topup`, minimum $20). Deploying needs
+  $20 paid in at some point and a positive balance. Active Hobby/Pro subscribers and admins are not charged credit.
+- Every 5 minutes, uncharged metered usage is debited from the balance (`CreditLedger`, one entry per user per hour).
+  Under $5 the user is emailed once; at $0 their running services are stopped (data kept) until they top up and redeploy.
+- Each service is placed on an Online server with free vCPU. Usage records carry that server, so its owner earns it.
+- Weeks run Monday 00:00 to Monday 00:00 UTC. About a day after a week ends (usage samples older than 24h are
+  rejected, so the week is final), one `Payout` per server owner is created: usage revenue minus CoCo's 20% fee.
+  Rack space is prepaid for 24 months, so nothing else is deducted. Admins mark payouts paid with the bank reference.
+- Timers are lease-locked in Mongo (`JobLock`), so running several backend instances never charges or settles twice.
+- Payouts settled while `DEV_RUNTIME` is not `external` come from simulated usage and are flagged; never pay them out.

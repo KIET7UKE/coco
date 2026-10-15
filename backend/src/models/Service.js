@@ -14,6 +14,8 @@ const serviceSchema = new mongoose.Schema(
     memoryGb: { type: Number, min: 0.25, max: 32, default: 1 },
     replicas: { type: Number, min: 1, max: 10, default: 1 },
     status: { type: String, enum: SERVICE_STATUSES, default: 'idle' },
+    server: { type: mongoose.Schema.Types.ObjectId, ref: 'Server', default: null, index: true },
+    stoppedReason: { type: String, default: '' },
     lastDeployedAt: { type: Date, default: null },
   },
   { timestamps: true }
@@ -30,6 +32,7 @@ serviceSchema.methods.toPublic = function () {
     memoryGb: this.memoryGb,
     replicas: this.replicas,
     status: this.status,
+    stoppedReason: this.stoppedReason,
     lastDeployedAt: this.lastDeployedAt,
     createdAt: this.createdAt,
   };

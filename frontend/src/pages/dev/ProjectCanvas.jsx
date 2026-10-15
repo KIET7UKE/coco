@@ -6,6 +6,7 @@ import { Button, Card, PageHeader, page } from '../../components/dashboard/ui';
 import ServiceNode from '../../components/dev/ServiceNode';
 import { useDevData, useDevResource } from '../../context/DevDataContext';
 import { monthlyCost, getPlan } from '../../data/devPlans';
+import { isFunded } from '../../lib/devApi';
 import { fieldClass } from './Projects';
 
 const NODE_W = 208;
@@ -136,7 +137,7 @@ export default function ProjectCanvas() {
   const { data, error, reload } = useDevResource(() => api.project(id), [api, id], { interval: 5000 });
   const services = data?.services ?? [];
   const { pos, links, height, width } = layout(services);
-  const maxSize = getPlan(billing?.plan?.id)?.maxSize ?? 1;
+  const maxSize = getPlan(billing?.plan?.id)?.maxSize ?? (isFunded(billing) ? 8 : 1);
 
   const remove = async () => {
     if (!window.confirm(`Delete ${data.project.name} and all of its services? This cannot be undone.`)) return;

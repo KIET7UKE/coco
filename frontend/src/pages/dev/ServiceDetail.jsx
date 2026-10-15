@@ -188,7 +188,8 @@ export default function ServiceDetail() {
   const { data, error: loadError, reload } = useDevResource(() => api.service(id), [api, id], { interval: 4000 });
   const service = data?.service;
   const Icon = SERVICE_ICONS[service?.type] ?? Rocket;
-  const maxSize = getPlan(billing?.plan?.id)?.maxSize ?? 1;
+  const funded = billing?.credits && billing.credits.fundedCents >= billing.credits.minTopupCents;
+  const maxSize = getPlan(billing?.plan?.id)?.maxSize ?? (funded ? 8 : 1);
 
   const run = (fn) => async () => {
     setError('');
@@ -196,7 +197,7 @@ export default function ServiceDetail() {
       await fn();
       reload();
     } catch (err) {
-      setError(err.code === 'plan_required' ? 'plan_required' : err.message);
+      setError(err.code === 'plan_required' || err.code === 'credits_required' ? { billing: err.message } : err.message);
     }
   };
 
@@ -227,6 +228,9 @@ export default function ServiceDetail() {
           service ? (
             <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <StatusPill status={service.status} />
+              {service.status === 'stopped' && service.stoppedReason === 'insufficient_credits' && (
+                <span className="text-amber-300">Stopped: credit ran out</span>
+              )}
               <span>{service.vcpu} vCPU · {service.memoryGb} GB · {service.replicas} replica{service.replicas === 1 ? '' : 's'}</span>
               {service.domain && <span className="inline-flex items-center gap-1.5"><Globe size={13} /> {service.domain}</span>}
               {service.schedule && (
@@ -252,8 +256,8 @@ export default function ServiceDetail() {
       />
       {error && (
         <div className="mb-5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-[13px] text-rose-300">
-          {error === 'plan_required' ? (
-            <>Choose a Hobby or Pro plan to deploy. <Link to={`${base}/billing`} className="font-semibold underline">See plans</Link></>
+          {error.billing ? (
+            <>{error.billing} <Link to={`${base}/billing`} className="font-semibold underline">Add credits</Link></>
           ) : (
             error
           )}

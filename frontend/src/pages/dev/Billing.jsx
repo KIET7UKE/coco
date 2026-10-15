@@ -1,13 +1,94 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Check, CreditCard, ExternalLink } from 'lucide-react';
+import { Check, CreditCard, ExternalLink, Wallet } from 'lucide-react';
 import { Button, Card, CardHeader, Meter, PageHeader, page } from '../../components/dashboard/ui';
-import { useDevData } from '../../context/DevDataContext';
-import { money } from '../../lib/devApi';
+import { useDevData, useDevResource } from '../../context/DevDataContext';
+import { money, usesCredits } from '../../lib/devApi';
 import { PLANS, RATES, HOURS_PER_MONTH, getPlan } from '../../data/devPlans';
 
 const fmtDate = (d) => (d ? new Date(d).toLocaleDateString([], { month: 'short', day: 'numeric' }) : '—');
+const signed = (cents) => (cents < 0 ? `−${money(-cents)}` : money(cents));
+const TOPUP_PRESETS = [2000, 5000, 10000];
+const LEDGER_LABELS = { topup: 'Top-up', usage: 'Compute usage', adjustment: 'Adjustment' };
+
+function Credits({ api, credits, busy, onTopUp }) {
+  const [custom, setCustom] = useState('');
+  const { data } = useDevResource(() => api.ledger(), [api, credits.balanceCents]);
+  const customCents = Math.round(Number(custom) * 100);
+  const customValid = Number.isFinite(customCents) && customCents >= credits.minTopupCents && customCents <= credits.maxTopupCents;
+  const unfunded = credits.fundedCents < credits.minTopupCents;
+  const low = credits.balanceCents < credits.lowBalanceCents;
+  const entries = (data?.entries ?? []).slice(0, 10);
+
+  return (
+    <Card className="p-5">
+      <div className="flex flex-wrap items-start justify-between gap-5">
+        <div>
+          <div className="flex items-center gap-2 text-[12.5px] text-white/50"><Wallet size={14} /> Credit balance</div>
+          <div className={`mt-1 text-3xl font-bold tabular ${low ? 'text-amber-300' : ''}`}>{signed(credits.balanceCents)}</div>
+          <div className="mt-1 max-w-sm text-[12.5px] text-white/45">
+            {unfunded
+              ? `Add at least ${money(credits.minTopupCents, 0)} to start deploying. Compute is charged from your balance as it runs.`
+              : 'Compute is charged from your balance as it runs. Services stop when it reaches $0.'}
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap gap-2">
+            {TOPUP_PRESETS.map((cents) => (
+              <Button key={cents} variant="white" disabled={Boolean(busy)} onClick={() => onTopUp(cents)} className="disabled:opacity-50">
+                {busy === `topup-${cents}` ? 'Redirecting…' : `Add ${money(cents, 0)}`}
+              </Button>
+            ))}
+          </div>
+          <form
+            className="flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (customValid) onTopUp(customCents);
+            }}
+          >
+            <input
+              type="number"
+              min={credits.minTopupCents / 100}
+              max={credits.maxTopupCents / 100}
+              step="1"
+              inputMode="decimal"
+              placeholder={`Custom, min $${credits.minTopupCents / 100}`}
+              value={custom}
+              onChange={(e) => setCustom(e.target.value)}
+              className="w-44 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-[13.5px] outline-none focus:border-coco-purple/60"
+            />
+            <Button type="submit" variant="ghost" disabled={!customValid || Boolean(busy)} className="disabled:opacity-50">
+              {busy === `topup-${customCents}` ? 'Redirecting…' : 'Add'}
+            </Button>
+          </form>
+        </div>
+      </div>
+      {credits.suspended && (
+        <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[13px] text-amber-200">
+          Your services were stopped when your balance ran out. Add credits, then redeploy them.
+        </div>
+      )}
+      {entries.length > 0 && (
+        <div className="mt-5 border-t border-white/[0.06] pt-4">
+          <div className="mb-2 text-[12px] text-white/45">Recent activity</div>
+          <ul className="divide-y divide-white/[0.05] text-[13px]">
+            {entries.map((e) => (
+              <li key={e.id} className="flex items-center justify-between gap-4 py-2">
+                <span className="text-white/70">{LEDGER_LABELS[e.type] ?? e.type}{e.type === 'adjustment' && e.note ? ` · ${e.note}` : ''}</span>
+                <span className="flex items-center gap-4">
+                  <span className="text-white/35">{fmtDate(e.createdAt)}</span>
+                  <span className={`w-24 text-right font-medium tabular ${e.amountCents < 0 ? 'text-white/60' : 'text-emerald-300'}`}>{signed(e.amountCents)}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </Card>
+  );
+}
 
 export default function Billing() {
   const { api, billing, reload } = useDevData();
@@ -35,17 +116,17 @@ export default function Billing() {
     if (!billing || autoStarted.current || !getPlan(tier)) return;
     autoStarted.current = true;
     setParams({}, { replace: true });
-    if (!billing.plan) go(tier, () => api.subscribe(tier));
+    if (!billing.plan && billing.availablePlans?.includes(tier)) go(tier, () => api.subscribe(tier));
   }, [billing, params, setParams]);
 
-  // The webhook activates the plan a moment after Stripe redirects back, so poll briefly.
-  const checkoutResult = useRef(params.get('checkout'));
+  // The webhook activates the plan or adds the credit a moment after Stripe redirects back, so poll briefly.
+  const checkoutResult = useRef(params.get('checkout') ? ['plan', params.get('checkout')] : params.get('topup') ? ['topup', params.get('topup')] : null);
   useEffect(() => {
-    const result = checkoutResult.current;
-    if (!result) return undefined;
+    if (!checkoutResult.current) return undefined;
+    const [kind, result] = checkoutResult.current;
     setParams({}, { replace: true });
     if (result !== 'success') return undefined;
-    setNotice('Payment received. Activating your plan…');
+    setNotice(kind === 'topup' ? 'Payment received. Adding your credit…' : 'Payment received. Activating your plan…');
     let tries = 0;
     const t = setInterval(() => {
       reload();
@@ -57,17 +138,26 @@ export default function Billing() {
     return () => clearInterval(t);
   }, []);
 
+  const balance = billing?.credits?.balanceCents;
+  const initialBalance = useRef(balance);
   useEffect(() => {
-    if (billing?.plan && notice) setNotice('');
-  }, [billing?.plan, notice]);
+    if (initialBalance.current === undefined) initialBalance.current = balance;
+  }, [balance]);
+  useEffect(() => {
+    const kind = checkoutResult.current?.[0];
+    const done = kind === 'topup' ? balance !== undefined && balance !== initialBalance.current : Boolean(billing?.plan);
+    if (done && notice) setNotice('');
+  }, [billing?.plan, balance, notice]);
 
   const pct = billing?.includedCents ? (billing.usedCents / billing.includedCents) * 100 : 0;
+  // Only plans with a Stripe price configured on the backend can be bought, plus the user's current plan.
+  const plans = billing ? PLANS.filter((p) => billing.availablePlans?.includes(p.id) || billing.plan?.id === p.id) : [];
 
   return (
     <motion.div {...page}>
       <PageHeader
         title="Billing"
-        sub="Plans include usage credits. Anything above that is billed on your next invoice."
+        sub="Prepay credits for compute, starting at $20. Usage is charged from your balance as it runs."
         actions={
           billing?.hasPortal && (
             <Button variant="ghost" onClick={() => go('portal', api.portal)} disabled={busy === 'portal'}>
@@ -84,6 +174,13 @@ export default function Billing() {
         </div>
       )}
 
+      {usesCredits(billing) && (
+        <div className="mb-5">
+          <Credits api={api} credits={billing.credits} busy={busy} onTopUp={(cents) => go(`topup-${cents}`, () => api.topUp(cents))} />
+        </div>
+      )}
+
+      {billing && !usesCredits(billing) && (
       <Card className="p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -107,9 +204,15 @@ export default function Billing() {
           </div>
         </div>
       </Card>
+      )}
 
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
-        {PLANS.map((p) => {
+      {plans.length > 0 && (
+      <>
+      {usesCredits(billing) && (
+        <div className="mb-3 mt-6 text-[13px] text-white/50">Prefer a monthly plan? Plans include usage each month; anything above is billed on your next invoice.</div>
+      )}
+      <div className={`grid gap-4 md:grid-cols-2 ${usesCredits(billing) ? '' : 'mt-5'}`}>
+        {plans.map((p) => {
           const current = billing?.plan?.id === p.id;
           return (
             <Card key={p.id} className={`flex flex-col p-6 ${p.featured ? 'border-coco-purple/40 bg-[#120a1d]' : ''}`}>
@@ -139,6 +242,8 @@ export default function Billing() {
           );
         })}
       </div>
+      </>
+      )}
 
       <Card className="mt-5">
         <CardHeader title="Resource rates" sub="10% below Railway, metered per second" icon={CreditCard} />

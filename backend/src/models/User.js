@@ -61,6 +61,13 @@ const userSchema = new mongoose.Schema(
       includedCents: { type: Number, default: 0 },
       overageBilledFor: { type: Date, default: null },
     },
+    // Cached sum of CreditLedger. The ledger is the source of truth; see creditService.
+    credits: {
+      balanceCents: { type: Number, default: 0 },
+      fundedCents: { type: Number, default: 0 },
+      lowNotifiedAt: { type: Date, default: null },
+      suspendedAt: { type: Date, default: null },
+    },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
       default: {},

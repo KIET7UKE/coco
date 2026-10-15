@@ -1,18 +1,19 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     tailwindcss(),
   ],
   server: {
-    // The backend (backend/, port 5001). middleware.js does the same on Vercel.
+    // The Coco backend (backend/). middleware.js does the same on Vercel. COCO_BACKEND_URL has no
+    // VITE_ prefix, so it stays out of the browser bundle.
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
+        target: (loadEnv(mode, process.cwd(), '').COCO_BACKEND_URL || 'http://localhost:5001').trim().replace(/\/+$/, '').replace(/\/api$/, ''),
         changeOrigin: true,
       },
     },
@@ -23,4 +24,4 @@ export default defineConfig({
     // Kept at Vite's default so the generated CSS (and the design) stays exactly as it was.
     cssTarget: ['chrome111', 'edge111', 'firefox114', 'safari16.4', 'ios16.4'],
   },
-})
+}))

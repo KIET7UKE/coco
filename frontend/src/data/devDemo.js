@@ -316,6 +316,8 @@ export function createDemoDevApi() {
       overageCents: Math.max(0, usedCents - includedCents),
       rates: RATES,
       hasPortal: false,
+      availablePlans: ['hobby', 'pro'],
+      credits: { billing: 'plan', balanceCents: 0, fundedCents: 0, minTopupCents: 2000, maxTopupCents: 500000, lowBalanceCents: 500, suspended: false },
       demo: true,
     };
   }
@@ -524,6 +526,13 @@ export function createDemoDevApi() {
     },
     async portal() {
       return { url: '/register' };
+    },
+    async topUp() {
+      return { url: '/register' };
+    },
+    async ledger() {
+      await wait();
+      return { entries: [] };
     },
   };
 }

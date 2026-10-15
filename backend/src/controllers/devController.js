@@ -8,6 +8,8 @@ import { startDeployment } from '../services/deployService.js';
 import { ingestUsage, usageSeries } from '../services/meteringService.js';
 import { billingSummary } from '../services/devPricingService.js';
 import { createPlanCheckout, createPortalSession } from '../services/devBillingService.js';
+import { assertCanRun, createTopupCheckout, recentLedger, MIN_TOPUP_CENTS } from '../services/creditService.js';
+import { syncAllocation } from '../services/placementService.js';
 import { isAdmin } from '../middlewares/auth.js';
 import { HttpError, str } from '../lib/http.js';
 
@@ -35,10 +37,14 @@ const num = (value, min, max, fallback) => {
   return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
 };
 
+// Prepaid accounts that have funded the $20 minimum get Hobby-sized limits.
+const CREDIT_LIMITS = { maxVcpu: 8, maxMemoryGb: 8 };
+
 function planLimits(user) {
   if (isAdmin(user)) return { maxVcpu: 32, maxMemoryGb: 32 };
   const plan = user.devPlan?.status === 'active' ? getPlan(user.devPlan.tier) : null;
-  return plan ?? { maxVcpu: 1, maxMemoryGb: 1 };
+  if (plan) return plan;
+  return (user.credits?.fundedCents ?? 0) >= MIN_TOPUP_CENTS ? CREDIT_LIMITS : { maxVcpu: 1, maxMemoryGb: 1 };
 }
 
 function resources(body, user, current = {}) {
@@ -96,11 +102,12 @@ export async function updateProject(req, res) {
 
 export async function deleteProject(req, res) {
   const project = await ownedProject(req);
-  const services = await Service.find({ project: project._id }, { _id: 1 }).lean();
+  const services = await Service.find({ project: project._id }, { _id: 1, server: 1 }).lean();
   const ids = services.map((s) => s._id);
   await Deployment.deleteMany({ service: { $in: ids } });
   await Service.deleteMany({ _id: { $in: ids } });
   await project.deleteOne();
+  await syncAllocation(services.map((s) => s.server));
   res.json({ success: true });
 }
 
@@ -149,6 +156,7 @@ export async function updateService(req, res) {
   if (typeof req.body?.source === 'string') service.source = str(req.body.source, 200);
   Object.assign(service, resources(req.body ?? {}, req.user, service));
   await service.save();
+  await syncAllocation([service.server]);
   res.json({ service: service.toPublic() });
 }
 
@@ -156,14 +164,13 @@ export async function deleteService(req, res) {
   const service = await ownedService(req);
   await Deployment.deleteMany({ service: service._id });
   await service.deleteOne();
+  await syncAllocation([service.server]);
   res.json({ success: true });
 }
 
 export async function deployService(req, res) {
   const service = await ownedService(req);
-  if (!isAdmin(req.user) && req.user.devPlan?.status !== 'active') {
-    throw new HttpError(402, 'plan_required', 'Choose a Hobby or Pro plan to deploy');
-  }
+  await assertCanRun(req.user);
   if (service.status === 'deploying') throw new HttpError(409, 'deploy_in_progress', 'A deployment is already running');
   const commit = str(req.body?.commit, 80) || Math.random().toString(16).slice(2, 9);
   const deployment = await startDeployment(service, { commit });
@@ -173,8 +180,10 @@ export async function deployService(req, res) {
 export async function stopService(req, res) {
   const service = await ownedService(req);
   service.status = 'stopped';
+  service.stoppedReason = '';
   await service.save();
   await Deployment.updateMany({ service: service._id, status: 'active' }, { $set: { status: 'removed', finishedAt: new Date() } });
+  await syncAllocation([service.server]);
   res.json({ service: service.toPublic() });
 }
 
@@ -220,6 +229,14 @@ export async function subscribe(req, res) {
 
 export async function portal(req, res) {
   res.json(await createPortalSession(req.user));
+}
+
+export async function topUp(req, res) {
+  res.json(await createTopupCheckout(req.user, req.body?.amountCents));
+}
+
+export async function getLedger(req, res) {
+  res.json({ entries: await recentLedger(req.user._id) });
 }
 
 export async function ingest(req, res) {

@@ -10,28 +10,40 @@ const hourOf = (date) => {
 };
 
 const MAX_SAMPLE_SEC = 3600 * 32 * 10;
+// Older samples are rejected so a week's usage is final before it is settled and paid out.
+export const LATE_SAMPLE_MS = 24 * 3_600_000;
+const FUTURE_SKEW_MS = 5 * 60_000;
+
+function sampleTime(at) {
+  const t = at === undefined || at === null ? Date.now() : at instanceof Date ? at.getTime() : Date.parse(at);
+  const now = Date.now();
+  return Number.isFinite(t) && t >= now - LATE_SAMPLE_MS && t <= now + FUTURE_SKEW_MS ? new Date(t) : null;
+}
 
 /** Accepts `{ serviceId, at, vcpuSec, memGbSec }` samples from the runtime; returns how many were stored. */
 export async function ingestUsage(samples) {
-  const valid = (Array.isArray(samples) ? samples : []).slice(0, 1000).filter(
-    (s) =>
-      mongoose.isValidObjectId(s?.serviceId) &&
-      Number.isFinite(s.vcpuSec) && s.vcpuSec >= 0 && s.vcpuSec <= MAX_SAMPLE_SEC &&
-      Number.isFinite(s.memGbSec) && s.memGbSec >= 0 && s.memGbSec <= MAX_SAMPLE_SEC &&
-      !Number.isNaN(Date.parse(s.at ?? new Date()))
-  );
+  const valid = (Array.isArray(samples) ? samples : [])
+    .slice(0, 1000)
+    .filter(
+      (s) =>
+        mongoose.isValidObjectId(s?.serviceId) &&
+        Number.isFinite(s.vcpuSec) && s.vcpuSec >= 0 && s.vcpuSec <= MAX_SAMPLE_SEC &&
+        Number.isFinite(s.memGbSec) && s.memGbSec >= 0 && s.memGbSec <= MAX_SAMPLE_SEC
+    )
+    .map((s) => ({ ...s, at: sampleTime(s.at) }))
+    .filter((s) => s.at);
   if (!valid.length) return 0;
 
-  const services = await Service.find({ _id: { $in: valid.map((s) => s.serviceId) } }, { owner: 1 }).lean();
-  const ownerOf = new Map(services.map((s) => [String(s._id), s.owner]));
+  const services = await Service.find({ _id: { $in: valid.map((s) => s.serviceId) } }, { owner: 1, server: 1 }).lean();
+  const byId = new Map(services.map((s) => [String(s._id), s]));
 
   const ops = valid
-    .filter((s) => ownerOf.has(String(s.serviceId)))
+    .filter((s) => byId.has(String(s.serviceId)))
     .map((s) => ({
       updateOne: {
-        filter: { service: s.serviceId, hour: hourOf(s.at ?? new Date()) },
+        filter: { service: s.serviceId, hour: hourOf(s.at) },
         update: {
-          $setOnInsert: { owner: ownerOf.get(String(s.serviceId)) },
+          $setOnInsert: { owner: byId.get(String(s.serviceId)).owner, server: byId.get(String(s.serviceId)).server ?? null },
           $inc: { vcpuSec: s.vcpuSec, memGbSec: s.memGbSec, costCents: costFor(s.vcpuSec, s.memGbSec) },
         },
         upsert: true,

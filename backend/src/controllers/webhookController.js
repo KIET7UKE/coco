@@ -2,6 +2,7 @@ import { getStripe } from '../config/stripe.js';
 import { fulfillOrder } from '../services/provisionService.js';
 import { Order } from '../models/Order.js';
 import { DEV_BILLING_EVENTS, handleDevBillingEvent } from '../services/devBillingService.js';
+import { CREDIT_EVENTS, handleCreditEvent } from '../services/creditService.js';
 
 const HANDLED = new Set([
   'checkout.session.completed',
@@ -39,6 +40,15 @@ export async function handleStripeWebhook(req, res) {
   } catch (err) {
     console.warn('[StripeWebhook] Signature check failed:', err.message);
     return res.status(400).json({ error: 'invalid_signature' });
+  }
+
+  if (CREDIT_EVENTS.has(event.type)) {
+    try {
+      if (await handleCreditEvent(event)) return res.json({ received: true });
+    } catch (err) {
+      console.error(`[StripeWebhook] Failed to process credit top-up ${event.type}:`, err);
+      return res.status(500).json({ error: 'processing_failed' });
+    }
   }
 
   if (DEV_BILLING_EVENTS.has(event.type)) {

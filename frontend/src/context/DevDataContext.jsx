@@ -32,7 +32,11 @@ export function DevDataProvider({ demo = false, children }) {
   }, [api, demo, refreshUser]);
 
   useEffect(() => {
-    if (user?.id) reload();
+    if (!user?.id) return undefined;
+    reload();
+    // Credit is charged every few minutes, so keep the sidebar balance current.
+    const t = setInterval(reload, 60_000);
+    return () => clearInterval(t);
   }, [user?.id, reload]);
 
   const value = useMemo(

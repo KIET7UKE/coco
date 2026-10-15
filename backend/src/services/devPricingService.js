@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { UsageRecord } from '../models/UsageRecord.js';
-import { getPlan, RATES, PLANS } from '../data/devPlans.js';
+import { getPlan, RATES, PLANS, availablePlanIds } from '../data/devPlans.js';
+import { creditSummary } from './creditService.js';
 
 function monthWindow(now = new Date()) {
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
@@ -41,6 +42,8 @@ export async function billingSummary(user) {
     overageCents: overageCents(usage.costCents, includedCents),
     rates: RATES,
     plans: Object.values(PLANS),
+    availablePlans: availablePlanIds(),
     hasPortal: Boolean(user.stripeCustomerId),
+    credits: await creditSummary(user),
   };
 }
