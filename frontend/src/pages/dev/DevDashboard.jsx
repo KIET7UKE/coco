@@ -8,7 +8,7 @@ import { Meter } from '../../components/dashboard/ui';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../context/AuthContext';
 import { DevDataProvider, useDevData } from '../../context/DevDataContext';
-import { money } from '../../lib/devApi';
+import { isFunded, money, signedMoney, usesCredits } from '../../lib/devApi';
 import Overview from './Overview';
 import Projects from './Projects';
 import ProjectCanvas from './ProjectCanvas';
@@ -23,9 +23,34 @@ const NAV = [
   { to: '/billing', label: 'Billing', icon: CreditCard },
 ];
 
+function CreditBalanceWidget({ billing, base }) {
+  const { balanceCents, fundedCents, minTopupCents, lowBalanceCents, suspended } = billing.credits;
+  const funded = isFunded(billing);
+  const pct = funded ? (Math.max(0, balanceCents) / Math.max(fundedCents, minTopupCents)) * 100 : 0;
+  const low = funded && balanceCents < lowBalanceCents;
+  return (
+    <Link to={`${base}/billing`} className="relative block overflow-hidden rounded-2xl border border-coco-purple/25 bg-[#120a1d] p-4">
+      <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-coco-purple/30 blur-2xl" />
+      <div className="relative text-[12px] text-white/50">Credit balance</div>
+      <div className={`relative mt-1 text-xl font-bold tabular ${low ? 'text-amber-300' : ''}`}>{signedMoney(balanceCents)}</div>
+      <Meter value={pct} className="relative mt-2.5" />
+      <div className="relative mt-2 text-[11.5px] text-white/45">
+        {!funded
+          ? `Add ${money(minTopupCents, 0)} to start deploying`
+          : suspended || balanceCents <= 0
+            ? 'Out of credit. Top up to redeploy'
+            : low
+              ? 'Running low. Top up soon'
+              : 'Charged as your services run'}
+      </div>
+    </Link>
+  );
+}
+
 function CreditCardWidget() {
   const { billing, base } = useDevData();
   if (!billing) return null;
+  if (usesCredits(billing)) return <CreditBalanceWidget billing={billing} base={base} />;
   const pct = billing.includedCents ? (billing.usedCents / billing.includedCents) * 100 : 0;
   return (
     <Link to={`${base}/billing`} className="relative block overflow-hidden rounded-2xl border border-coco-purple/25 bg-[#120a1d] p-4">

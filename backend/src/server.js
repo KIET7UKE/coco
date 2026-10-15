@@ -7,6 +7,7 @@ import { app } from './app.js';
 import { connectDB } from './config/db.js';
 import { recoverStaleDeployments } from './services/deployService.js';
 import { startSimulatedMeter } from './services/meteringService.js';
+import { startBillingJobs } from './services/billingJobs.js';
 
 const PORT = process.env.PORT || 5001;
 
@@ -29,6 +30,7 @@ async function bootstrap() {
 
   recoverStaleDeployments().catch((err) => console.error('[Deploy] Stale recovery failed:', err?.message));
   startSimulatedMeter();
+  startBillingJobs();
 
   process.on('unhandledRejection', (err) => {
     console.error('[Coco Server] Unhandled Rejection:', err);

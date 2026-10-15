@@ -4,12 +4,13 @@ import { Activity, ArrowRight, Boxes, CreditCard, Rocket, Server } from 'lucide-
 import { Card, CardHeader, EmptyState, PageHeader, Stat, page } from '../../components/dashboard/ui';
 import { StatusPill, SERVICE_ICONS } from '../../components/dev/ServiceNode';
 import { useDevData, useDevResource } from '../../context/DevDataContext';
-import { money, timeAgo } from '../../lib/devApi';
+import { isFunded, money, signedMoney, timeAgo, usesCredits } from '../../lib/devApi';
 
 export default function Overview() {
   const { user, api, base } = useDevData();
   const { data, error } = useDevResource(() => api.overview(), [api], { interval: 10_000 });
   const billing = data?.billing;
+  const credits = usesCredits(billing);
 
   return (
     <motion.div {...page}>
@@ -25,14 +26,16 @@ export default function Overview() {
 
       {error && <div className="mb-5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-[13px] text-rose-300">{error.message}</div>}
 
-      {billing && !billing.plan && (
+      {credits && (!isFunded(billing) || billing.credits.balanceCents <= 0) && (
         <Card className="mb-5 flex flex-col gap-3 border-coco-purple/30 bg-[#120a1d] p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="text-[15px] font-semibold">Pick a plan to start deploying</div>
-            <div className="text-[13px] text-white/55">Hobby is $5/month with $5 of usage included. Pro is $25/month with $25 included.</div>
+            <div className="text-[15px] font-semibold">
+              {isFunded(billing) ? 'Your credit has run out' : `Add ${money(billing.credits.minTopupCents, 0)} in credits to start deploying`}
+            </div>
+            <div className="text-[13px] text-white/55">Prepay once, then compute is charged from your balance as it runs. No subscription.</div>
           </div>
           <Link to={`${base}/billing`} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-[13.5px] font-semibold text-black hover:bg-white/90">
-            Choose a plan <ArrowRight size={15} />
+            Add credits <ArrowRight size={15} />
           </Link>
         </Card>
       )}
@@ -40,8 +43,17 @@ export default function Overview() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Projects" value={data?.projects ?? '—'} icon={Boxes} />
         <Stat label="Active services" value={data ? `${data.activeServices} / ${data.services}` : '—'} icon={Server} />
-        <Stat label="Usage this period" value={billing ? money(billing.usedCents) : '—'} sub={billing?.plan ? `of ${money(billing.includedCents, 0)} included` : 'No plan'} icon={Activity} accent />
-        <Stat label="Projected overage" value={billing ? money(billing.overageCents) : '—'} sub="Billed on your next invoice" icon={CreditCard} />
+        {credits ? (
+          <>
+            <Stat label="Credit balance" value={signedMoney(billing.credits.balanceCents)} sub={`${money(billing.credits.fundedCents)} added in total`} icon={CreditCard} accent />
+            <Stat label="Usage this month" value={money(billing.usedCents)} sub="Charged from your balance" icon={Activity} />
+          </>
+        ) : (
+          <>
+            <Stat label="Usage this period" value={billing ? money(billing.usedCents) : '—'} sub={billing?.plan ? `of ${money(billing.includedCents, 0)} included` : 'No plan'} icon={Activity} accent />
+            <Stat label="Projected overage" value={billing ? money(billing.overageCents) : '—'} sub="Billed on your next invoice" icon={CreditCard} />
+          </>
+        )}
       </div>
 
       <Card className="mt-5">

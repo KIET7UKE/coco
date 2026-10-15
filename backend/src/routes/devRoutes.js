@@ -30,5 +30,7 @@ router.get('/usage', dev.getUsage);
 router.get('/billing', dev.getBilling);
 router.post('/billing/subscribe', dev.subscribe);
 router.post('/billing/portal', dev.portal);
+router.post('/credits/topup', dev.topUp);
+router.get('/credits/ledger', dev.getLedger);
 
 export default router;

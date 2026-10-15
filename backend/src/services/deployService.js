@@ -1,5 +1,6 @@
 import { Deployment, MAX_LOG_LINES } from '../models/Deployment.js';
 import { Service } from '../models/Service.js';
+import { placeService, syncAllocation } from './placementService.js';
 
 const IN_FLIGHT = ['queued', 'building', 'deploying'];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -32,23 +33,37 @@ export async function runDeployment(deployment, service) {
     await wait(1500);
     await log(deployment, 'Health check passed');
 
+    // The service may have been stopped (by its owner or for unpaid credit) while this was building.
+    const { modifiedCount } = await Service.updateOne(
+      { _id: service._id, status: 'deploying' },
+      { $set: { status: 'active', lastDeployedAt: new Date() } }
+    );
+    if (!modifiedCount) {
+      await log(deployment, 'Service was stopped before release. Deployment discarded.', 'removed');
+      await Deployment.updateOne({ _id: deployment._id }, { $set: { finishedAt: new Date() } });
+      return;
+    }
     await Deployment.updateMany(
       { service: service._id, status: 'active', _id: { $ne: deployment._id } },
       { $set: { status: 'removed', finishedAt: new Date() } }
     );
     await log(deployment, 'Deployment is live', 'active');
     await Deployment.updateOne({ _id: deployment._id }, { $set: { finishedAt: new Date() } });
-    await Service.updateOne({ _id: service._id }, { $set: { status: 'active', lastDeployedAt: new Date() } });
   } catch (err) {
     console.error('[Deploy] Failed:', err?.message);
     await Deployment.updateOne({ _id: deployment._id }, { $set: { status: 'failed', finishedAt: new Date() } }).catch(() => {});
-    await Service.updateOne({ _id: service._id }, { $set: { status: 'failed' } }).catch(() => {});
+    await Service.updateOne({ _id: service._id, status: 'deploying' }, { $set: { status: 'failed' } }).catch(() => {});
+  } finally {
+    await syncAllocation([service.server]).catch(() => {});
   }
 }
 
 export async function startDeployment(service, { commit = '' } = {}) {
+  const previous = service.server;
+  service.server = await placeService(service);
   const deployment = await Deployment.create({ service: service._id, owner: service.owner, commit });
-  await Service.updateOne({ _id: service._id }, { $set: { status: 'deploying' } });
+  await Service.updateOne({ _id: service._id }, { $set: { status: 'deploying', stoppedReason: '', server: service.server } });
+  await syncAllocation([previous, service.server]);
   runDeployment(deployment, service);
   return deployment;
 }

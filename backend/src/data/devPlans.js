@@ -12,6 +12,16 @@ export const PLANS = {
 export const PLAN_IDS = Object.keys(PLANS);
 export const getPlan = (id) => PLANS[id] ?? null;
 
+// Recurring Stripe Price per plan. A plan is offered only once its price is configured.
+export const PLAN_PRICE_ENV = { hobby: 'STRIPE_PRICE_HOBBY', pro: 'STRIPE_PRICE_PRO' };
+// Placeholders like `price_xxx` from .env.example don't count as configured.
+const PRICE_ID = /^price_[A-Za-z0-9]{8,}$/;
+export function planPriceId(id) {
+  const value = PLAN_PRICE_ENV[id] ? process.env[PLAN_PRICE_ENV[id]]?.trim() : '';
+  return value && PRICE_ID.test(value) ? value : '';
+}
+export const availablePlanIds = () => PLAN_IDS.filter((id) => planPriceId(id));
+
 /** Cost in fractional cents for metered seconds. Round only when billing. */
 export function costFor(vcpuSec, memGbSec) {
   return ((vcpuSec / 3600) * RATES.vcpuHour + (memGbSec / 3600) * RATES.memGbHour) * 100;
